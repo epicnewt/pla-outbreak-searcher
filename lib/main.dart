@@ -1,9 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:mmo_searcher/mass_outbreak/search/components/mass_outbreak_search.dart';
-import 'package:mmo_searcher/mass_outbreak/search/model/filters.dart';
+import 'package:mmo_searcher/mass_outbreak/search/pages/mass_outbreak_search.dart';
 
 void main() {
   runApp(const MyApp());
