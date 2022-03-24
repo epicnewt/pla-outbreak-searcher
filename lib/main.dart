@@ -2,9 +2,20 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:mmo_searcher/mass_outbreak/search/pages/mass_outbreak_search.dart';
+import 'package:mmo_searcher/mass_outbreak/search/pages/mass_outbreak_search_result.dart';
+import 'package:provider/provider.dart';
+
+bool demo = true;
 
 void main() {
-  runApp(const MyApp());
+  runApp(MaterialApp(
+    title: "Pokémon Arceus Legends RNG Tools",
+    initialRoute: 'mo-search',
+    routes: {
+      'mo-search': (context) => dummyMassOutbreakSearch,
+      'mo-search-results': (context) => const MassOutbreakSearchResult()
+    },
+  ));
 }
 
 extension Hex on int {
@@ -69,13 +80,7 @@ class NxReader {
 
   Future<List<int>> readPointer(String pointer, int size) async {
     print('readPointer($pointer)');
-    var jumps = pointer
-        .replaceAll("[", "")
-        .replaceAll('+', '')
-        .replaceFirst("main", "")
-        .replaceAll('+', '')
-        .split("]")
-        .map((j) => {j.toUpperCase()});
+    var jumps = pointer.replaceAll("[", "").replaceAll('+', '').replaceFirst("main", "").replaceAll('+', '').split("]").map((j) => {j.toUpperCase()});
 
     return acquireLock(() async {
       sendCommand('pointerPeek 0x${size.toHex()} 0x${jumps.join(' 0x')}');
@@ -106,7 +111,10 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const SearchMassOutbreak(),
+      home: Builder(builder: (context) {
+        // return dummyMassOutbreakSearch;
+        return MassOutbreakSearchResult();
+      }),
     );
   }
 }
@@ -122,7 +130,7 @@ class SearchMassOutbreak extends StatelessWidget {
   // case the title) provided by the parent (in this case the App widget) and
   // used by the build method of the State. Fields in a Widget subclass are
   // always marked "final".
-@override
+  @override
   Widget build(BuildContext context) {
     return dummyMassOutbreakSearch;
   }

@@ -11,8 +11,8 @@ class DummyMassOutbreakSearcher implements MassOutbreakSearcher {
   }
 
   @override
-  Future<SearchResult> search(MassOutbreakInformation moInfo, Filters filters) {
-    return Future.delayed(const Duration(seconds: 1), () => SearchResult());
+  Future<SearchResult> search(MassOutbreakInformation moInfo, Filters filters, int rolls) {
+    return Future.delayed(const Duration(seconds: 1), () => SearchResult(BigInt.parse("2E2B6AFB84F888DB", radix: 16), [0,0,0,1,3,-2], 26));
   }
 
   @override
