@@ -2,37 +2,18 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mmo_searcher/mass_outbreak/search/model/search_result.dart';
+import 'package:mmo_searcher/mass_outbreak/search/rng/path/mo/search.dart';
+import 'package:mmo_searcher/mass_outbreak/search/rng/spawn.dart';
+import 'package:mmo_searcher/pokedex/gender_ratios.dart';
 import 'package:provider/provider.dart';
-
-class Advance {
-  List<int> actions;
-  List<ReseedSet> reseeds;
-
-  Advance(this.actions, this.reseeds);
-}
-
-class ReseedSet {
-  String groupSeed;
-  List<Spawn> spawns;
-
-  ReseedSet(this.groupSeed, this.spawns);
-}
-
-class Spawn {
-  String gender;
-  String evs;
-  String nature;
-
-  Spawn(this.gender, this.evs, this.nature);
-}
 
 class MassOutbreakSearchResultState extends ChangeNotifier {
   BigInt _seed;
   List<int> _path;
-  List<Advance> _advances;
-  int _rolls = 26;
+  PokedexEntry _pkmn;
+  int _rolls = 27;
 
-  List<Advance> get advances => _advances;
+  List<Advance> get advances => MassOutbreakResult(_seed, _path, _pkmn).advances(_rolls);
 
   rolls(int rolls) {
     _rolls = rolls;
@@ -45,25 +26,7 @@ class MassOutbreakSearchResultState extends ChangeNotifier {
 
   String pathDescription() => _path.join("|");
 
-  MassOutbreakSearchResultState(this._seed, this._path, this._rolls)
-      : _advances = [
-          Advance(
-            [2],
-            [
-              ReseedSet("E21967CB3B73E5DA",
-                  [Spawn("M", "333012", "Docile"), Spawn("F", "000000", "Lax"), Spawn("F", "003012", "Docile"), Spawn("M", "123012", "Docile")]),
-              ReseedSet("E21967CB3B73E5DA", [Spawn("M", "333012", "Docile"), Spawn("F", "000000", "Lax")]),
-            ],
-          ),
-          Advance(
-            [],
-            [
-              ReseedSet("E21967CB3B73E5DA",
-                  [Spawn("M", "333012", "Docile"), Spawn("F", "000000", "Lax"), Spawn("F", "003012", "Docile"), Spawn("M", "123012", "Docile")]),
-              ReseedSet("E21967CB3B73E5DA", [Spawn("G", "333012", "Docile"), Spawn("F", "000000", "Lax")]),
-            ],
-          ),
-        ];
+  MassOutbreakSearchResultState(this._seed, this._path, this._rolls, this._pkmn);
 }
 
 class ExpandableToggle extends ChangeNotifier {
@@ -134,12 +97,13 @@ class MassOutbreakSearchResult extends StatelessWidget {
     var searchResults = ModalRoute.of(context)!.settings.arguments as SearchResult;
     return ChangeNotifierProvider(
       create: (context) {
-        return MassOutbreakSearchResultState(searchResults.seed, searchResults.path, searchResults.rolls);
+        return MassOutbreakSearchResultState(searchResults.seed, searchResults.path, searchResults.rolls, searchResults.pkmn);
       },
       child: Builder(builder: (context) {
+        var searchResultState = Provider.of<MassOutbreakSearchResultState>(context, listen: true);
         return Scaffold(
           appBar: AppBar(
-            title: Text(Provider.of<MassOutbreakSearchResultState>(context, listen: true).pathDescription()),
+            title: Text(searchResultState.pathDescription()),
           ),
           body: SafeArea(
             child: SingleChildScrollView(
@@ -173,7 +137,7 @@ class MassOutbreakSearchResult extends StatelessWidget {
                                               return ListTile(
                                                 leading: FaIcon(genderSymbol(e.gender)),
                                                 title: Text(
-                                                  "${e.evs} ${e.nature}",
+                                                  "${e.evs} ${e.nature}" + (e.shiny ? " shiny" : "") + (e.alpha ? " alpha" : ""),
                                                   style: TextStyle(decoration: boolToggle.value ? TextDecoration.lineThrough : TextDecoration.none),
                                                 ),
                                                 onTap: () {
