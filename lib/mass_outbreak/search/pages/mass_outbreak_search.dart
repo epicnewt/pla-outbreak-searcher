@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:mmo_searcher/mass_outbreak/search/model/mass_outbreak_searcher_service.dart';
 import 'package:mmo_searcher/mass_outbreak/search/model/filters.dart';
 import 'package:mmo_searcher/mass_outbreak/search/pages/state/mass_outbreak_filter_state.dart';
 import 'package:mmo_searcher/mass_outbreak/search/pages/state/mass_outbreak_information_state.dart';
 import 'package:mmo_searcher/mass_outbreak/search/pages/state/mass_outbreak_rolls_state.dart';
-import 'package:mmo_searcher/mass_outbreak/search/dummy/dummy_mass_outbreak_searcher.dart';
 import 'package:mmo_searcher/mass_outbreak/search/model/mass_outbreak_searcher.dart';
 import 'package:provider/provider.dart';
 
@@ -245,4 +245,4 @@ MultiProvider connect(MassOutbreakSearcher service, {Widget? child}) {
   );
 }
 
-var dummyMassOutbreakSearch = connect(DummyMassOutbreakSearcher());
+var dummyMassOutbreakSearch = connect(MassOutbreakSearcherService());

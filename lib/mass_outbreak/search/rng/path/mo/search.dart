@@ -73,10 +73,10 @@ class MassOutbreakResult {
   }
 }
 
-MassOutbreakResult? searchMassOutbreak(BigInt seed, int spawns, int rolls, PokedexEntry pkmn) {
+MassOutbreakResult? searchMassOutbreak(BigInt seed, int spawns, int rolls, PokedexEntry pkmn, bool Function(Spawn) matcher) {
   for (var path in passivePaths(spawns)) {
     var spawns = getFinalReseedOfPath(seed, pkmn, path, rolls);
-    var hasMatch = spawns.any((pkmn) => pkmn.alpha && pkmn.shiny);
+    var hasMatch = spawns.any(matcher);
     if (hasMatch) {
       print("Found match: ${path.join("|")}");
       for (var e in spawns) {

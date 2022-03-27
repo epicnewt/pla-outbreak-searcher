@@ -11,41 +11,41 @@ final XOROSHIRO _spawnerRng = XOROSHIRO();
 List<Spawn> getFinalReseedOfPath(BigInt seed, PokedexEntry pkmn, List<int> path, int rolls) {
   _mainRng.reseed(seed);
 
-  for (int i = 0; i < path.length - 1; i++) {
-    //skip last
-    for (int p = 0; p < 4; p++) {
+  void spawn(int n) {
+    for (int p = 0; p < n; p++) {
       _mainRng.next();
       _mainRng.next();
     }
     _mainRng.reseed(_mainRng.next());
+  }
+
+  for (int i = 0; i < path.length - 1; i++) {
+    //skip last
+    spawn(4);
 
     for (int p = 0; p < path[i]; p++) {
-      _mainRng.next();
-      _mainRng.next();
-      _mainRng.reseed(_mainRng.next());
+      spawn(1);
     }
   }
 
   var lastAction = path.last;
 
   if (lastAction > 0) {
-    for (int p = 0; p < 4; p++) {
-      _mainRng.next();
-      _mainRng.next();
-    }
-    _mainRng.reseed(_mainRng.next());
+    spawn(4);
 
     for (int p = 1; p < lastAction; p++) {
-      _mainRng.next();
-      _mainRng.next();
-      _mainRng.reseed(_mainRng.next());
+      spawn(1);
     }
   }
 
-  var spawn = lastAction == 0 ? 4 : 1;
+  var count = lastAction == 0 ? 4 : 1;
   var spawnedAlpha = false;
 
-  return List.generate(spawn, (index) => generateSpawn(_mainRng, _spawnerRng, spawnedAlpha, pkmn, rolls), growable: false);
+  return List.generate(count, (index) {
+    var spawn = generateSpawn(_mainRng, _spawnerRng, spawnedAlpha, pkmn, rolls);
+    spawnedAlpha = spawnedAlpha || spawn.alpha;
+    return spawn;
+  }, growable: false);
 }
 
 Spawn generateSpawn(XOROSHIRO mainRng, XOROSHIRO spawnerRng, bool spawnedAlpha, PokedexEntry pkmn, int rolls) {

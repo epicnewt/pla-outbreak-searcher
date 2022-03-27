@@ -1,9 +1,6 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:mmo_searcher/mass_outbreak/search/pages/mass_outbreak_search.dart';
 import 'package:mmo_searcher/mass_outbreak/search/pages/mass_outbreak_search_result.dart';
-import 'package:provider/provider.dart';
 
 bool demo = true;
 
@@ -11,85 +8,9 @@ void main() {
   runApp(MaterialApp(
     title: "Pokémon Arceus Legends RNG Tools",
     initialRoute: 'mo-search',
-    routes: {
-      'mo-search': (context) => dummyMassOutbreakSearch,
-      'mo-search-results': (context) => const MassOutbreakSearchResult()
-    },
+    routes: {'mo-search': (context) => dummyMassOutbreakSearch, 'mo-search-results': (context) => const MassOutbreakSearchResult()},
   ));
 }
-
-extension Hex on int {
-  toHex() {
-    return toRadixString(16).toUpperCase();
-  }
-}
-
-class NxReader {
-  Socket? connection;
-  List<int> input = [];
-  bool locked = false;
-  String host;
-
-  NxReader(this.host) {
-    print('Starting initial connection!');
-    this.connect().then(
-      (value) {
-        print('Initial connection!');
-      },
-    );
-  }
-
-  Future<dynamic> connect() async {
-    // host
-    connection = await Socket.connect(host, 6000);
-    print("Connected to $host");
-    connection?.write("configure echoCommands 0\r\n");
-    connection?.listen((event) {
-      print('Received: $event');
-      input.addAll(event);
-    });
-  }
-
-  Future<T> acquireLock<T>(Future<T> Function() fn) async {
-    if (!locked && connection != null) {
-      locked = true;
-      var result = await fn();
-      locked = false;
-      return result;
-    }
-
-    print("Waiting for lock");
-    return Future.delayed(Duration.zero, () => acquireLock(fn));
-  }
-
-  Future<List<int>> readLine() async {
-    var lineEnd = input.indexOf(10);
-
-    if (lineEnd < 0) {
-      return Future.delayed(Duration.zero, () => readLine());
-    }
-
-    var data = input.sublist(0, lineEnd);
-    input.removeRange(0, lineEnd + 1);
-    return data;
-  }
-
-  void sendCommand(String command) {
-    connection?.write(command + '\r\n');
-  }
-
-  Future<List<int>> readPointer(String pointer, int size) async {
-    print('readPointer($pointer)');
-    var jumps = pointer.replaceAll("[", "").replaceAll('+', '').replaceFirst("main", "").replaceAll('+', '').split("]").map((j) => {j.toUpperCase()});
-
-    return acquireLock(() async {
-      sendCommand('pointerPeek 0x${size.toHex()} 0x${jumps.join(' 0x')}');
-      return readLine();
-    });
-  }
-}
-
-var reader = NxReader("192.168.0.10");
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
