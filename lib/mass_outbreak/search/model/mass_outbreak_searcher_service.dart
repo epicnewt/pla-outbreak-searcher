@@ -70,7 +70,7 @@ class MassOutbreakSearcherService implements MassOutbreakSearcher {
     var pkmn = pokedex[moInfo.species]!;
     var result = searchMassOutbreak(
       BigInt.parse(moInfo.seed, radix: 16),
-      moInfo.spawns,
+      moInfo.spawns ?? 10,
       rolls,
       pkmn,
       (spawn) {

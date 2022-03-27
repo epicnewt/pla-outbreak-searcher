@@ -79,24 +79,36 @@ MultiProvider connect(MassOutbreakSearcher service, {Widget? child}) {
                         }),
                       ],
                     ),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 5, horizontal: 0),
-                      child: TextField(
-                        // obscureText: false,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'seed',
-                        ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),
+                      child: Consumer<MassOutbreakInformationState>(
+                        builder: (context, value, child) {
+                          return TextField(
+                            // obscureText: false,
+                            enabled: false,
+                            controller: TextEditingController(text: value.massOutbreakInformation.seed.toUpperCase()),
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'seed',
+                            ),
+                          );
+                        },
                       ),
                     ),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 5, horizontal: 0),
-                      child: TextField(
-                        // obscureText: false,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'spawns',
-                        ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),
+                      child: Consumer<MassOutbreakInformationState>(
+                        builder: (context, value, child) {
+                          return TextField(
+                            // obscureText: false,
+                            enabled: false,
+                            controller: TextEditingController(text: (value.massOutbreakInformation.spawns ?? "").toString()),
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'spawns',
+                            ),
+                          );
+                        },
                       ),
                     ),
                     Consumer<MassOutbreakRollsState>(builder: (context, rolls, _) {

@@ -1,12 +1,12 @@
 
 class MassOutbreakInformation {
   late final String seed;
-  late final int spawns;
+  late final int? spawns;
   late final int species;
 
   MassOutbreakInformation.empty() {
     seed = "";
-    spawns = 10;
+    spawns = null;
     species = -1;
   }
 
