@@ -13,10 +13,20 @@ class MassOutbreakSearchResultState extends ChangeNotifier {
   PokedexEntry _pkmn;
   int _rolls = 27;
 
-  List<Advance> get advances => MassOutbreakResult(_seed, _path, _pkmn).advances(_rolls);
+  Map<int, List<Advance>> cache = {};
+
+  List<Advance> get advances {
+    var lookup = cache[_rolls];
+    if (lookup == null) {
+      lookup = MassOutbreakResult(_seed, _path, _pkmn).advances(_rolls);
+      cache[_rolls] = lookup;
+    }
+    return lookup;
+  }
 
   set rolls(int rolls) {
     _rolls = rolls;
+    notifyListeners();
   }
 
   updateAdvances() {
@@ -123,94 +133,97 @@ class MassOutbreakSearchResult extends StatelessWidget {
           ),
           body: SafeArea(
             child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  Row(
-
-                    children: [
-                      Image.asset("assets/sprites/" + searchResultState.pkmn.nationalDexNumber.toString().padLeft(3, "0") + ".png"),
-                      Text(
-                        searchResultState.pkmn.pokemon,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-                      ),
-                    ],
-                  ),
-                  Consumer<MassOutbreakRollsState>(builder: (context, rolls, _) {
-                    return LayoutBuilder(
-                      builder: (context, constraints) {
-                        return ToggleButtons(
-                          constraints: BoxConstraints.expand(
-                            width: constraints.maxWidth / 3 - (3 + 1.0) / 3,
-                            height: 35,
-                          ),
-                          children: const [
-                            Text("Complete"),
-                            Text("Perfect"),
-                            Text("Shiny Charm"),
-                          ],
-                          onPressed: (i) {
-                            rolls.toggleDexCompletion(i);
-                          },
-                          isSelected: rolls.dexCompletion,
-                        );
-                      },
-                    );
-                  }),
-                  Builder(builder: (context) {
-                    var state = context.watch<MassOutbreakSearchResultState>();
-                    return ExpandableToggle.wrap((p0) {
-                      return ExpansionPanelList(
-                        expansionCallback: (panelIndex, isExpanded) {
-                          p0.toggle(panelIndex);
+              child: Padding(
+                padding: const EdgeInsets.all(15),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Image.asset("assets/sprites/" + searchResultState.pkmn.nationalDexNumber.toString().padLeft(3, "0") + ".png"),
+                        Text(
+                          searchResultState.pkmn.pokemon,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                        ),
+                      ],
+                    ),
+                    Consumer<MassOutbreakRollsState>(builder: (context, rollsState, _) {
+                      return LayoutBuilder(
+                        builder: (context, constraints) {
+                          return ToggleButtons(
+                            constraints: BoxConstraints.expand(
+                              width: constraints.maxWidth / 3 - (3 + 1.0) / 3,
+                              height: 35,
+                            ),
+                            children: const [
+                              Text("Complete"),
+                              Text("Perfect"),
+                              Text("Shiny Charm"),
+                            ],
+                            onPressed: (i) {
+                              rollsState.toggleDexCompletion(i);
+                              Provider.of<MassOutbreakSearchResultState>(context, listen: false).rolls = rollsState.rolls;
+                            },
+                            isSelected: rollsState.dexCompletion,
+                          );
                         },
-                        children: [
-                          ...state.advances.mapIndexed((i, e) {
-                            return ExpansionPanel(
-                              isExpanded: p0.value(i),
-                              headerBuilder: (context, _) {
-                                return ListTile(
-                                  title: Text("Advance: ${i + 1}"),
-                                  subtitle: actionDescription(e.actions),
-                                );
-                              },
-                              body: Column(
-                                children: e.reseeds
-                                    .expand((e) =>
-                                [
-                                  ListTile(
-                                    title: Text(e.groupSeed),
-                                  ),
-                                  ...e.spawns.map(
-                                        (e) {
-                                      return BooleanToggle.wrap(
-                                            (boolToggle) {
-                                          return ListTile(
-                                            leading: FaIcon(genderSymbol(e.gender)),
-                                            title: Text(
-                                              "${e.evs} ${e.nature}" + (e.shiny ? " shiny" : "") + (e.alpha ? " alpha" : ""),
-                                              style: TextStyle(decoration: boolToggle.value ? TextDecoration.lineThrough : TextDecoration.none),
-                                            ),
-                                            onTap: () {
-                                              boolToggle.toggle();
-                                            },
-                                          );
-                                        },
-                                        initial: false,
-                                      );
-                                    },
-                                  )
-                                ])
-                                    .toList(),
-                              ),
-                            );
-                          }),
-                        ],
-                        // children: [Column()],
                       );
-                    });
-                  }),
-                ],
+                    }),
+                    Builder(builder: (context) {
+                      var state = context.watch<MassOutbreakSearchResultState>();
+                      return ExpandableToggle.wrap((p0) {
+                        return ExpansionPanelList(
+                          expansionCallback: (panelIndex, isExpanded) {
+                            p0.toggle(panelIndex);
+                          },
+                          children: [
+                            ...state.advances.mapIndexed((i, e) {
+                              return ExpansionPanel(
+                                isExpanded: p0.value(i),
+                                headerBuilder: (context, _) {
+                                  return ListTile(
+                                    title: Text("Advance: ${i + 1}"),
+                                    subtitle: actionDescription(e.actions),
+                                  );
+                                },
+                                body: Column(
+                                  children: e.reseeds
+                                      .expand((e) =>
+                                  [
+                                    ListTile(
+                                      title: Text(e.groupSeed),
+                                    ),
+                                    ...e.spawns.map(
+                                          (e) {
+                                        return BooleanToggle.wrap(
+                                              (boolToggle) {
+                                            return ListTile(
+                                              leading: FaIcon(genderSymbol(e.gender)),
+                                              title: Text(
+                                                "${e.evs} ${e.nature}" + (e.shiny ? " shiny" : "") + (e.alpha ? " alpha" : ""),
+                                                style: TextStyle(decoration: boolToggle.value ? TextDecoration.lineThrough : TextDecoration.none),
+                                              ),
+                                              onTap: () {
+                                                boolToggle.toggle();
+                                              },
+                                            );
+                                          },
+                                          initial: false,
+                                        );
+                                      },
+                                    )
+                                  ])
+                                      .toList(),
+                                ),
+                              );
+                            }),
+                          ],
+                          // children: [Column()],
+                        );
+                      });
+                    }),
+                  ],
+                ),
               ),
             ),
           ),
