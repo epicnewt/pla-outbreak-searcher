@@ -107,7 +107,7 @@ work(List<Object> params) {
 
   var count = 0;
 
-  for (var path in passivePaths(sp.spawns, baseLimit: sp.multimatch ? 4 : 15)) {
+  for (var path in passivePaths(sp.spawns, baseLimit: sp.multimatch ? 5 : 15)) {
     if (++count % 64 == 0) {
       count = 0;
       sendPort.send(64);

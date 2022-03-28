@@ -2,13 +2,13 @@
 Iterable<List<int>> passivePaths(int spawns, {int depth = 1, int maxDepth = 20, baseLimit = 11}) sync* {
   for (int d = depth; d <= maxDepth; d++) {
     var maxDespawns = BigInt.from(spawns - 4);
-    final base = (maxDespawns >= BigInt.from(baseLimit)) ? BigInt.from(baseLimit) : (maxDespawns + BigInt.one);
+    final base = ((maxDespawns + BigInt.one) > BigInt.from(baseLimit)) ? BigInt.from(baseLimit) : (maxDespawns + BigInt.one);
     print("depth: $d, base: $base");
     var start = BigInt.zero;
     var end = (base - BigInt.one) * base.pow(d - 1);
     var step = BigInt.one;
     List<int> path = List.filled(d, 0);
-    List<BigInt> bases = List.generate(d, (index) => base.pow(index));
+    List<BigInt> bases = List.generate(d, (index) => base.pow(index)).reversed.toList();
 
     for (var p = start; p <= end; p += step) {
       var pathSum = BigInt.zero;
@@ -18,30 +18,33 @@ Iterable<List<int>> passivePaths(int spawns, {int depth = 1, int maxDepth = 20, 
       }
 
       var r = p;
-      var i = path.length - 1;
+      var i = path.length;
+      var s = true;
       while (r > BigInt.zero) {
         var digit = r % base;
         pathSum += digit;
         r = r ~/ base;
-        path[i--] = digit.toInt();
+        path[--i] = digit.toInt();
+
+        if (s) {
+          s = s && digit == BigInt.zero;
+          if (!s) {
+            step = bases[i];
+          }
+        }
+      }
+
+      if (pathSum > maxDespawns) {
+        continue;
       }
 
       if (i > 0) {
         path.fillRange(0, i, 0);
       }
 
-      if (pathSum == maxDespawns) {
-        for (i = 0; i < d; i++) {
-          var index = path.length - 1 - i;
-          if (path[index] != 0) {
-            break;
-          }
-          step = bases[index];
-        }
-      } else if (pathSum < maxDespawns) {
+
+      if (pathSum != maxDespawns) {
         step = BigInt.one;
-      } else {
-        continue;
       }
 
       yield path;
@@ -52,7 +55,10 @@ Iterable<List<int>> passivePaths(int spawns, {int depth = 1, int maxDepth = 20, 
 
 main() {
   var sw = Stopwatch();
-  for (var value in passivePaths(15)) {
-  }
+  sw.start();
+  for (var value in passivePaths(14, maxDepth: 15, baseLimit: 11)) {
+    print(value);
+  } //1:44 to beat
+  sw.stop();
   print(sw.elapsed);
 }
