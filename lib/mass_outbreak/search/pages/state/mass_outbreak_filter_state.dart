@@ -6,6 +6,7 @@ class MassOutbreakFilterState extends ChangeNotifier {
   bool _alpha = true;
   bool _male = true;
   bool _female = true;
+  bool _multimatch = true;
 
   bool get show => _show;
 
@@ -45,6 +46,13 @@ class MassOutbreakFilterState extends ChangeNotifier {
     if (!value) {
       male = true;
     }
+    notifyListeners();
+  }
+
+  bool get multimatch => _multimatch;
+
+  set multimatch(bool value) {
+    _multimatch = value;
     notifyListeners();
   }
 }

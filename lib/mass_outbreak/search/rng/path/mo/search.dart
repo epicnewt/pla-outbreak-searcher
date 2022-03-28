@@ -1,3 +1,5 @@
+import 'dart:isolate';
+
 import 'package:mmo_searcher/mass_outbreak/search/rng/path/mo/pass_path_generator.dart';
 import 'package:mmo_searcher/mass_outbreak/search/rng/path/mo/path_advancer.dart';
 import 'package:mmo_searcher/mass_outbreak/search/rng/spawn.dart';
@@ -71,19 +73,114 @@ class MassOutbreakResult {
 
     return advances;
   }
+
+  @override
+  String toString() {
+    return 'MassOutbreakResult{seed: $seed, path: $path, pokemon: $pokemon}';
+  }
 }
 
-MassOutbreakResult? searchMassOutbreak(BigInt seed, int spawns, int rolls, PokedexEntry pkmn, bool Function(Spawn) matcher) {
-  for (var path in passivePaths(spawns)) {
-    var spawns = getFinalReseedOfPath(seed, pkmn, path, rolls);
+work(List<Object> params) {
+  SendPort sendPort = params[0] as SendPort;
+  SearchParams sp = params[1] as SearchParams;
+
+  print(sp);
+
+  bool matcher(Spawn spawn) {
+    if (sp.shiny && !spawn.shiny) {
+      return false;
+    }
+    if (sp.alpha && !spawn.alpha) {
+      return false;
+    }
+    if (!sp.pkmn.isGenderFixed() && !(sp.male && sp.female)) {
+      if (sp.male && spawn.gender != "M") {
+        return false;
+      }
+      if (sp.female && spawn.gender != "F") {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  var count = 0;
+
+  for (var path in passivePaths(sp.spawns, baseLimit: sp.multimatch ? 4 : 15)) {
+    if (++count % 64 == 0) {
+      count = 0;
+      sendPort.send(64);
+    }
+
+    var spawns = getFinalReseedOfPath(sp.seed, sp.pkmn, path, sp.rolls);
     var hasMatch = spawns.any(matcher);
     if (hasMatch) {
-      print("Found match: ${path.join("|")}");
-      for (var e in spawns) {
-        print("  ${e.gender} ${e.evs} ${e.nature} ${e.shiny} ${e.alpha}");
+      var massOutbreakResult = MassOutbreakResult(sp.seed, path, sp.pkmn);
+      if (sp.multimatch) {
+        var advances = massOutbreakResult.advances(sp.rolls);
+        for (var a in advances) {
+          for (int i = 0; i < a.reseeds.length - 1; i++) {
+            if (a.reseeds[i].spawns.any(matcher)) {
+              try {
+                sendPort.send(massOutbreakResult);
+              } catch (e) {
+                print(e);
+              }
+              return;
+            }
+          }
+        }
+        continue;
       }
-      return MassOutbreakResult(seed, path, pkmn);
+      try {
+        sendPort.send(massOutbreakResult);
+      } catch (e) {
+        print(e);
+      }
+      return;
     }
   }
-  return null;
+
+  sendPort.send(null);
+}
+
+void isolatedSearch(SearchParams params, Function onTick, void Function(MassOutbreakResult?) onMatch) async {
+  var receivePort = ReceivePort();
+  var isolate = await Isolate.spawn(work, [receivePort.sendPort, params]);
+  receivePort.listen((message) {
+    if (message == null) {
+      onMatch(null);
+    } else if (message is int) {
+      onTick();
+    } else if (message is MassOutbreakResult) {
+      onMatch(message);
+      receivePort.close();
+    }
+  });
+  receivePort.handleError((error) {
+    print("Error in isolate :: $error");
+  });
+  isolate.addErrorListener(receivePort.sendPort);
+}
+
+class SearchParams {
+  BigInt seed;
+  int spawns;
+  int rolls;
+  PokedexEntry pkmn;
+  bool multimatch;
+
+  //filters
+  bool shiny;
+  bool alpha;
+  bool male;
+  bool female;
+
+  SearchParams(this.seed, this.spawns, this.rolls, this.pkmn, this.multimatch, this.shiny, this.alpha, this.male, this.female);
+
+  @override
+  String toString() {
+    return 'SearchParams{seed: $seed, spawns: $spawns, rolls: $rolls, pkmn: $pkmn, multimatch: $multimatch, shiny: $shiny, alpha: $alpha, male: $male, female: $female}';
+  }
 }

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:mmo_searcher/mass_outbreak/search/model/mass_outbreak_searcher_service.dart';
 import 'package:mmo_searcher/mass_outbreak/search/model/filters.dart';
+import 'package:mmo_searcher/mass_outbreak/search/model/mass_outbreak_searcher.dart';
+import 'package:mmo_searcher/mass_outbreak/search/model/mass_outbreak_searcher_service.dart';
+import 'package:mmo_searcher/mass_outbreak/search/model/search_result.dart';
 import 'package:mmo_searcher/mass_outbreak/search/pages/state/mass_outbreak_filter_state.dart';
 import 'package:mmo_searcher/mass_outbreak/search/pages/state/mass_outbreak_information_state.dart';
 import 'package:mmo_searcher/mass_outbreak/search/pages/state/mass_outbreak_rolls_state.dart';
-import 'package:mmo_searcher/mass_outbreak/search/model/mass_outbreak_searcher.dart';
+import 'package:mmo_searcher/pokedex/gender_ratios.dart';
 import 'package:provider/provider.dart';
 
 MultiProvider connect(MassOutbreakSearcher service, {Widget? child}) {
@@ -53,13 +55,18 @@ MultiProvider connect(MassOutbreakSearcher service, {Widget? child}) {
             padding: const EdgeInsets.all(15),
             child: Consumer<MassOutbreakInformationState>(
               builder: (context, moInfo, _) {
-                String data =  moInfo.getPokemon()?.pokemon ?? '???';
+                String data = moInfo.getPokemon()?.pokemon ?? '???';
                 return Column(
                   children: <Widget>[
                     Row(
                       children: [
                         ...(moInfo.massOutbreakInformation.species == -1
-                            ? [const FaIcon(FontAwesomeIcons.circleQuestion, size: 48 + 8,)]
+                            ? [
+                                const FaIcon(
+                                  FontAwesomeIcons.circleQuestion,
+                                  size: 48 + 8,
+                                )
+                              ]
                             : [
                                 Image.asset("assets/sprites/" + moInfo.massOutbreakInformation.species.toString().padLeft(3, "0") + ".png"),
                                 Text(
@@ -169,48 +176,62 @@ MultiProvider connect(MassOutbreakSearcher service, {Widget? child}) {
                                   )
                                 ],
                               ),
-                              Consumer<MassOutbreakInformationState>(
-                                builder: (context, mo, _) {
-                                  if (mo.getPokemon()?.isGenderFixed() ?? false) {
-                                    return Column();
-                                  }
-                                  return Column(
-                                    children: [
-                                      Row(
-                                        children: [
-                                          const FaIcon(FontAwesomeIcons.mars),
-                                          const Padding(
-                                            padding: EdgeInsets.only(left: 10),
-                                            child: Text("Male"),
-                                          ),
-                                          const Spacer(),
-                                          Switch.adaptive(
-                                            value: filters.male,
-                                            onChanged: (v) {
-                                              filters.male = v;
-                                            },
-                                          )
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          const FaIcon(FontAwesomeIcons.venus),
-                                          const Padding(
-                                            padding: EdgeInsets.only(left: 10),
-                                            child: Text("Female"),
-                                          ),
-                                          const Spacer(),
-                                          Switch.adaptive(
-                                            value: filters.female,
-                                            onChanged: (v) {
-                                              filters.female = v;
-                                            },
-                                          )
-                                        ],
-                                      ),
-                                    ],
-                                  );
+                              Consumer<MassOutbreakInformationState>(builder: (context, mo, _) {
+                                if (mo.getPokemon()?.isGenderFixed() ?? false) {
+                                  return Column();
                                 }
+                                return Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        const FaIcon(FontAwesomeIcons.mars),
+                                        const Padding(
+                                          padding: EdgeInsets.only(left: 10),
+                                          child: Text("Male"),
+                                        ),
+                                        const Spacer(),
+                                        Switch.adaptive(
+                                          value: filters.male,
+                                          onChanged: (v) {
+                                            filters.male = v;
+                                          },
+                                        )
+                                      ],
+                                    ),
+                                    Row(
+                                      children: [
+                                        const FaIcon(FontAwesomeIcons.venus),
+                                        const Padding(
+                                          padding: EdgeInsets.only(left: 10),
+                                          child: Text("Female"),
+                                        ),
+                                        const Spacer(),
+                                        Switch.adaptive(
+                                          value: filters.female,
+                                          onChanged: (v) {
+                                            filters.female = v;
+                                          },
+                                        )
+                                      ],
+                                    ),
+                                  ],
+                                );
+                              }),
+                              Row(
+                                children: [
+                                  const FaIcon(FontAwesomeIcons.anglesRight),
+                                  const Padding(
+                                    padding: EdgeInsets.only(left: 10),
+                                    child: Text("Multimatch"),
+                                  ),
+                                  const Spacer(),
+                                  Switch.adaptive(
+                                    value: filters.multimatch,
+                                    onChanged: (v) {
+                                      filters.multimatch = v;
+                                    },
+                                  )
+                                ],
                               ),
                             ] else
                               ...[]
@@ -221,28 +242,34 @@ MultiProvider connect(MassOutbreakSearcher service, {Widget? child}) {
                     Row(
                       children: [
                         Expanded(
-                          child: Builder(
-                            builder: (context) {
-                              return ElevatedButton(
-                                onPressed: () async {
-                                  var filters = Provider.of<MassOutbreakFilterState>(context, listen: false);
-                                  var rolls = Provider.of<MassOutbreakRollsState>(context, listen: false);
-                                  var searchResult = await Provider.of<MassOutbreakSearcher>(context, listen: false).search(
-                                    Provider.of<MassOutbreakInformationState>(context, listen: false).massOutbreakInformation,
-                                    Filters(
-                                      filters.shiny,
-                                      filters.alpha,
-                                      filters.male,
-                                      filters.female
-                                    ),
-                                    rolls.rolls
-                                  );
-                                  Navigator.pushNamed(context, "mo-search-results", arguments: searchResult);
-                                },
-                                child: const Text("Search"),
-                              );
-                            }
-                          ),
+                          child: Builder(builder: (context) {
+                            return ElevatedButton(
+                              onPressed: () async {
+                                var filters = Provider.of<MassOutbreakFilterState>(context, listen: false);
+                                var rolls = Provider.of<MassOutbreakRollsState>(context, listen: false);
+                                var infoState = Provider.of<MassOutbreakInformationState>(context, listen: false);
+                                var searchResult = await Provider.of<MassOutbreakSearcher>(context, listen: false).search(
+                                  infoState.massOutbreakInformation,
+                                  Filters(filters.shiny, filters.alpha, filters.male, filters.female),
+                                  rolls.rolls,
+                                  filters.multimatch,
+                                  (match) {
+                                    if (match != null) {
+                                      Navigator.pushNamed(context, "mo-search-results", arguments: SearchResult(
+                                          match.seed,
+                                          match.path,
+                                          rolls.rolls,
+                                          match.pokemon
+                                      ));
+                                    }
+                                  },
+                                  () {
+                                  },
+                                );
+                              },
+                              child: const Text("Search"),
+                            );
+                          }),
                         ),
                       ],
                     ),

@@ -16,6 +16,11 @@ class PokedexEntry {
     }
 
     PokedexEntry(this.pokemon, this.nationalDexNumber, this.genderRatio);
+
+    @override
+  String toString() {
+    return 'PokedexEntry{pokemon: $pokemon, nationalDexNumber: $nationalDexNumber, genderRatio: $genderRatio}';
+  }
 }
 
 Map<int, PokedexEntry> pokedex = {
