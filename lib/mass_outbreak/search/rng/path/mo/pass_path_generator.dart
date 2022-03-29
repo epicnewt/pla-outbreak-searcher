@@ -1,64 +1,222 @@
+const Map<int, Map<int, Map<int, int>>> totalCombinations = {
+  10: {
+    1: {5: 4, 11: 6},
+    2: {5: 6, 11: 8},
+    3: {5: 26, 11: 36},
+    4: {5: 93, 11: 120},
+    5: {5: 274, 11: 330},
+    6: {5: 692, 11: 792},
+    7: {5: 1554, 11: 1716},
+    8: {5: 3187, 11: 3432},
+    9: {5: 6083, 11: 6435},
+    10: {5: 10954, 11: 11440},
+    11: {5: 18798, 11: 19448},
+    12: {5: 30977, 11: 31824},
+    13: {5: 49308, 11: 50388},
+    14: {5: 76168, 11: 77520},
+    15: {5: 114614, 11: 116280},
+    16: {5: 168519, 11: 170544},
+    17: {5: 242725, 11: 245157},
+    18: {5: 343214, 11: 346104},
+    19: {5: 477298, 11: 480700},
+    20: {5: 653829, 11: 657800}
+  },
+  11: {
+    1: {5: 4, 11: 7},
+    2: {5: 6, 11: 9},
+    3: {5: 27, 11: 45},
+    4: {5: 108, 11: 165},
+    5: {5: 359, 11: 495},
+    6: {5: 1012, 11: 1287},
+    7: {5: 2505, 11: 3003},
+    8: {5: 5602, 11: 6435},
+    9: {5: 11558, 11: 12870},
+    10: {5: 22339, 11: 24310},
+    11: {5: 40908, 11: 43758},
+    12: {5: 71589, 11: 75582},
+    13: {5: 120522, 11: 125970},
+    14: {5: 196223, 11: 203490},
+    15: {5: 310264, 11: 319770},
+    16: {5: 478089, 11: 490314},
+    17: {5: 719983, 11: 735471},
+    18: {5: 1062212, 11: 1081575},
+    19: {5: 1538353, 11: 1562275},
+    20: {5: 2190834, 11: 2220075}
+  },
+  12: {
+    1: {5: 4, 11: 8},
+    2: {5: 6, 11: 10},
+    3: {5: 27, 11: 55},
+    4: {5: 118, 11: 220},
+    5: {5: 439, 11: 715},
+    6: {5: 1377, 11: 2002},
+    7: {5: 3751, 11: 5005},
+    8: {5: 9137, 11: 11440},
+    9: {5: 20358, 11: 24310},
+    10: {5: 42194, 11: 48620},
+    11: {5: 82378, 11: 92378},
+    12: {5: 152956, 11: 167960},
+    13: {5: 272102, 11: 293930},
+    14: {5: 466493, 11: 497420},
+    15: {5: 774364, 11: 817190},
+    16: {5: 1249379, 11: 1307504},
+    17: {5: 1965471, 11: 2042975},
+    18: {5: 3022822, 11: 3124550},
+    19: {5: 4555173, 11: 4686825},
+    20: {5: 6738674, 11: 6906900}
+  },
+  13: {
+    1: {5: 4, 11: 9},
+    2: {5: 6, 11: 11},
+    3: {5: 27, 11: 66},
+    4: {5: 124, 11: 286},
+    5: {5: 507, 11: 1001},
+    6: {5: 1758, 11: 3003},
+    7: {5: 5257, 11: 8008},
+    8: {5: 13932, 11: 19448},
+    9: {5: 33498, 11: 43758},
+    10: {5: 74405, 11: 92378},
+    11: {5: 154781, 11: 184756},
+    12: {5: 304734, 11: 352716},
+    13: {5: 572468, 11: 646646},
+    14: {5: 1032773, 11: 1144066},
+    15: {5: 1798569, 11: 1961256},
+    16: {5: 3036320, 11: 3268760},
+    17: {5: 4986287, 11: 5311735},
+    18: {5: 7988760, 11: 8436285},
+    19: {5: 12517599, 11: 13123110},
+    20: {5: 19222624, 11: 20030010}
+  },
+  14: {
+    1: {5: 4, 11: 10},
+    2: {5: 6, 11: 12},
+    3: {5: 27, 11: 78},
+    4: {5: 127, 11: 364},
+    5: {5: 559, 11: 1365},
+    6: {5: 2123, 11: 4368},
+    7: {5: 6943, 11: 12376},
+    8: {5: 19987, 11: 31824},
+    9: {5: 51818, 11: 75582},
+    10: {5: 123284, 11: 167960},
+    11: {5: 273141, 11: 352716},
+    12: {5: 569967, 11: 705432},
+    13: {5: 1130180, 11: 1352078},
+    14: {5: 2144533, 11: 2496144},
+    15: {5: 3916139, 11: 4457400},
+    16: {5: 6913895, 11: 7726160},
+    17: {5: 11846143, 11: 13037895},
+    18: {5: 19760546, 11: 21474180},
+    19: {5: 32177487, 11: 34597290},
+    20: {5: 51265839, 11: 54627300}
+  },
+  15: {
+    1: {5: 4, 11: 10},
+    2: {5: 6, 11: 12},
+    3: {5: 27, 11: 87},
+    4: {5: 128, 11: 446},
+    5: {5: 594, 11: 1804},
+    6: {5: 2443, 11: 6163},
+    7: {5: 8694, 11: 18528},
+    8: {5: 27127, 11: 50339},
+    9: {5: 75758, 11: 125906},
+    10: {5: 192959, 11: 293849},
+    11: {5: 455146, 11: 646546},
+    12: {5: 1006315, 11: 1351957},
+    13: {5: 2105518, 11: 2704012},
+    14: {5: 4200743, 11: 5200131},
+    15: {5: 8040714, 11: 9657504},
+    16: {5: 14839995, 11: 17383635},
+    17: {5: 26517619, 11: 30421499},
+    18: {5: 46035440, 11: 51895646},
+    19: {5: 77869713, 11: 86492901},
+    20: {5: 128658254, 11: 141120164}
+  }
+};
 
 Iterable<List<int>> passivePaths(int spawns, {int depth = 1, int maxDepth = 20, baseLimit = 11}) sync* {
   for (int d = depth; d <= maxDepth; d++) {
-    var maxDespawns = BigInt.from(spawns - 4);
-    final base = ((maxDespawns + BigInt.one) > BigInt.from(baseLimit)) ? BigInt.from(baseLimit) : (maxDespawns + BigInt.one);
-    print("depth: $d, base: $base");
-    var start = BigInt.zero;
-    var end = (base - BigInt.one) * base.pow(d - 1);
-    var step = BigInt.one;
-    List<int> path = List.filled(d, 0);
-    List<BigInt> bases = List.generate(d, (index) => base.pow(index)).reversed.toList();
+    var maxDespawns = spawns - 4;
+    final int base = ((maxDespawns + 1) > baseLimit) ? baseLimit : (maxDespawns + 1);
+    final List<int> path = List.filled(d, 0);
 
-    for (var p = start; p <= end; p += step) {
-      var pathSum = BigInt.zero;
+    final int baseMax = base - 1;
+    var pathSum = 0;
+    var maxPathSum = maxDespawns.toInt();
 
-      if (depth != maxDepth && (p % base) > BigInt.zero) {
-        continue;
-      }
+    var lastI = path.length - 1;
+    var step = lastI;
 
-      var r = p;
-      var i = path.length;
-      var s = true;
-      while (r > BigInt.zero) {
-        var digit = r % base;
-        pathSum += digit;
-        r = r ~/ base;
-        path[--i] = digit.toInt();
-
-        if (s) {
-          s = s && digit == BigInt.zero;
-          if (!s) {
-            step = bases[i];
-          }
+    setStep() {
+      for (int j = lastI; j >= 0; j--) {
+        var value = path[j];
+        if (value != 0) {
+          step = j;
+          break;
         }
       }
+    }
 
-      if (pathSum > maxDespawns) {
+    add() {
+      if (path[step] == baseMax) {
+        for (int i = step; i >= 0; i--) {
+          if (path[i] != baseMax) {
+            path[i] += 1;
+            pathSum += 1;
+            break;
+          }
+          path[i] = 0;
+          pathSum -= baseMax;
+        }
+      } else {
+        pathSum += 1;
+        path[step] += 1;
+      }
+    }
+
+    int last() => path[lastI];
+
+    while (path[0] != baseMax) {
+      if (depth != maxDepth && last() > 0) {
+        add();
         continue;
       }
 
-      if (i > 0) {
-        path.fillRange(0, i, 0);
+      if (pathSum == maxPathSum) {
+        setStep();
+        yield path;
+      } else if (pathSum < maxPathSum) {
+        step = lastI;
+        yield path;
       }
 
+      add();
+    }
 
-      if (pathSum != maxDespawns) {
-        step = BigInt.one;
-      }
-
+    if (d != 1) {
       yield path;
-      // path = List.filled(d, 0);
     }
   }
 }
 
 main() {
   var sw = Stopwatch();
-  sw.start();
-  for (var value in passivePaths(14, maxDepth: 15, baseLimit: 11)) {
-    print(value);
-  } //1:44 to beat
-  sw.stop();
-  print(sw.elapsed);
+
+  //spawns, depth, baseLimit -> total
+
+  for (int spawns = 10; spawns <= 15; spawns++) {
+    totalCombinations.putIfAbsent(spawns, () => {});
+    for (int depth = 0; depth <= 20; depth++) {
+      totalCombinations[spawns]!.putIfAbsent(depth, () => {});
+      for (var baseLimit in [5, 11]) {
+        sw.start();
+        var count = passivePaths(spawns, maxDepth: depth, baseLimit: baseLimit).length;
+        sw.stop();
+        totalCombinations[spawns]![depth]![baseLimit] = count;
+        print("passivePaths($spawns, maxDepth: $depth, baseLimit: $baseLimit) -> ${count} :: ${sw.elapsed}            \r");
+        sw.reset();
+      }
+    }
+  }
+
+  print(totalCombinations);
 }
