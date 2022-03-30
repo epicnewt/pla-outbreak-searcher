@@ -20,21 +20,22 @@ var _mainRng = XOROSHIRO();
 var _mainRngLite = XOROSHIROLite();
 
 class Spawn {
-  static Spawn NULL = Spawn(false, false, [], "", "");
+  static final Spawn DUMMY_ALPHA = Spawn(false, true, [], "", "");
   static final UINT = BigInt.from(0xFFFFFFFF);
   static final USHORT = BigInt.from(0xFFFF);
   static final UINT_Lite = 0xFFFFFFFF;
   static final USHORT_Lite = 0xFFFF;
 
-  bool shiny;
-  bool alpha;
-  List<int> ivs;
-  String evs;
-  String gender;
-  String nature;
+  final bool shiny;
+  final bool alpha;
+  final List<int> ivs;
+  final String evs;
+  final String gender;
+  final String nature;
 
   Spawn(this.shiny, this.alpha, this.ivs, this.gender, this.nature):
       evs = ivs.map((e) => _evs[e]).join("");
+
 
 
   static Spawn fromSeed(BigInt seed, PokedexEntry pkmn, bool alpha, int rolls) {
@@ -87,7 +88,7 @@ class Spawn {
     return Spawn(shiny, alpha, ivs, gender, nature);
   }
 
-  static Spawn fromSeedLite(int seed, PokedexEntry pkmn, bool alpha, int rolls) {
+  static Spawn? fromSeedLite(int seed, PokedexEntry pkmn, bool alpha, int rolls, {bool shinyRequired = false}) {
     _mainRngLite.reseed(seed);
 
     var ec = _mainRngLite.rand(UINT_Lite);
@@ -98,6 +99,10 @@ class Spawn {
     for (int i = 0; i < rolls && !shiny; i++) {
       pid = _mainRngLite.rand(UINT_Lite);
       shiny = (pid >> 16) ^ (sidtid >> 16) ^ (pid & USHORT_Lite) ^ (sidtid & USHORT_Lite) < 0x10;
+    }
+
+    if (shinyRequired && !shiny) {
+      return null;
     }
 
     List<int> ivs = List.filled(6, -1);

@@ -138,8 +138,7 @@ Iterable<List<int>> passivePaths(int spawns, {int depth = 1, int maxDepth = 20, 
     print(d);
 
     var maxDespawns = spawns - 4;
-    final int base =
-        ((maxDespawns > despawnLimit) ? despawnLimit : maxDespawns) + 1;
+    final int base = ((maxDespawns > despawnLimit) ? despawnLimit : maxDespawns) + 1;
     final List<int> path = List.filled(d, 0);
 
     final int baseMax = base - 1;

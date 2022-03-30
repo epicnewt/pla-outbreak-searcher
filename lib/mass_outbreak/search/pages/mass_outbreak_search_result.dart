@@ -8,7 +8,7 @@ import 'package:mmo_searcher/pokedex/gender_ratios.dart';
 import 'package:provider/provider.dart';
 
 class MassOutbreakSearchResultState extends ChangeNotifier {
-  BigInt _seed;
+  int _seed;
   List<int> _path;
   PokedexEntry _pkmn;
   int _rolls = 27;
@@ -44,7 +44,7 @@ class MassOutbreakSearchResultState extends ChangeNotifier {
 
   List<int> get path => _path;
 
-  BigInt get seed => _seed;
+  int get seed => _seed;
 
 
 }

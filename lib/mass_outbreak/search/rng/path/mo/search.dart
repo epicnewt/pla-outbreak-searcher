@@ -4,6 +4,7 @@ import 'package:mmo_searcher/mass_outbreak/search/rng/path/mo/pass_path_generato
 import 'package:mmo_searcher/mass_outbreak/search/rng/path/mo/path_advancer.dart';
 import 'package:mmo_searcher/mass_outbreak/search/rng/spawn.dart';
 import 'package:mmo_searcher/mass_outbreak/search/rng/xoroshiro.dart';
+import 'package:mmo_searcher/mass_outbreak/search/utils/num.dart';
 import 'package:mmo_searcher/pokedex/gender_ratios.dart';
 
 class Advance {
@@ -21,15 +22,15 @@ class ReseedSet {
 }
 
 class MassOutbreakResult {
-  final BigInt seed;
+  final int seed;
   final List<int> path;
   final PokedexEntry pokemon;
 
   MassOutbreakResult(this.seed, this.path, this.pokemon);
 
   List<Advance> advances(int rolls) {
-    XOROSHIRO rng = XOROSHIRO();
-    XOROSHIRO spawnRng = XOROSHIRO();
+    XOROSHIROLite rng = XOROSHIROLite();
+    XOROSHIROLite spawnRng = XOROSHIROLite();
     rng.reseed(seed);
 
     List<Advance> advances = [];
@@ -37,16 +38,16 @@ class MassOutbreakResult {
     List<ReseedSet> reseeds = [];
     List<Spawn> spawns = [];
     bool alphaSpawned = false;
-    BigInt currentSeed = seed;
+    int currentSeed = seed;
 
     generatePokemon() {
-      var spawn = generateSpawn(rng, spawnRng, alphaSpawned, pokemon, rolls);
+      var spawn = generateSpawnLite(rng, spawnRng, alphaSpawned, pokemon, rolls)!;
       alphaSpawned = alphaSpawned || spawn.alpha;
       spawns.add(spawn);
     }
 
     reseed() {
-      reseeds.add(ReseedSet(currentSeed.toRadixString(16).toUpperCase(), spawns));
+      reseeds.add(ReseedSet(currentSeed.toHex(), spawns));
       currentSeed = rng.reseedWithNext();
       spawns = [];
       alphaSpawned = false;
@@ -80,19 +81,15 @@ class MassOutbreakResult {
   }
 }
 
-work(List<Object> params) {
+void fastSearch(List<Object> params) {
   SendPort sendPort = params[0] as SendPort;
   SearchParams sp = params[1] as SearchParams;
 
-  print(sp);
-
   bool matcher(Spawn spawn) {
-    if (sp.shiny && !spawn.shiny) {
+    if (spawn == Spawn.DUMMY_ALPHA) {
       return false;
     }
-    if (sp.alpha && !spawn.alpha) {
-      return false;
-    }
+
     if (!sp.pkmn.isGenderFixed() && !(sp.male && sp.female)) {
       if (sp.male && spawn.gender != "M") {
         return false;
@@ -105,49 +102,143 @@ work(List<Object> params) {
     return true;
   }
 
-  var count = 0;
+  List<int> pathSeedsState = List.generate(25, (index) => -1);
+  List<int?> pathSeeds = List.generate(25, (index) => null);
 
-  for (var path in passivePaths(sp.spawns, despawnLimit: sp.multimatch ? 5 : 15)) {
-    if (++count % 64 == 0) {
-      count = 0;
-      sendPort.send(64);
+  List<Spawn> currentMatches = []; //cleared for each path
+
+  var rng = XOROSHIROLite();
+  var spawnerRng = XOROSHIROLite();
+  var lastPathLength = 1;
+
+  for (var path in passivePaths(sp.spawns, depth: 17, maxDepth: 20)) {
+    currentMatches.clear();
+
+    if (lastPathLength < path.length) {
+      lastPathLength = path.length;
+      pathSeedsState.fillRange(0, path.length, -1);
     }
 
-    var spawns = getFinalReseedOfPath(sp.seed, sp.pkmn, path, sp.rolls);
-    var hasMatch = spawns.any(matcher);
-    if (hasMatch) {
-      var massOutbreakResult = MassOutbreakResult(sp.seed, path, sp.pkmn);
-      if (sp.multimatch) {
-        var advances = massOutbreakResult.advances(sp.rolls);
-        for (var a in advances) {
-          for (int i = 0; i < a.reseeds.length - 1; i++) {
-            if (a.reseeds[i].spawns.any(matcher)) {
-              try {
-                sendPort.send(massOutbreakResult);
-              } catch (e) {
-                print(e);
-              }
-              return;
-            }
+    for (var i = 0; i < path.length; i++) {
+      var lastPathAction = pathSeedsState[i];
+      var lastSeed = i == 0 ? sp.seed : pathSeeds[i - 1];
+      var action = path[i];
+      var isLast = i == path.length - 1;
+
+      if (lastPathAction == action) {
+        continue;
+      } else if (lastPathAction == -1) {
+        // we need to generate a new seed
+        rng.reseed(lastSeed!);
+
+        if (isLast && action == 0) {
+          // we want to avoid advancing the seed here
+          // it will be used to spawn pokemon
+          pathSeeds[i] = lastSeed;
+        } else {
+          var newSeed = rng.advanceAndReseed(4);
+          for (var i = 0; i < action; i++) {
+            newSeed = rng.advanceAndReseed(1);
           }
+          pathSeeds[i] = newSeed;
         }
+      } else if (lastPathAction < action) {
+        // extend actions
+        var newSeed = pathSeeds[i];
+        rng.reseed(newSeed!);
+        if (isLast && lastPathAction == 0) {
+          // we have to advance the seed
+          newSeed = rng.advanceAndReseed(4);
+        }
+        for (var i = lastPathAction; i < action; i++) {
+          newSeed = rng.advanceAndReseed(1);
+        }
+        pathSeeds[i] = newSeed;
+        pathSeedsState.fillRange(i, path.length, -1);
+      } else {
+        throw StateError("Cannot process path: $path :: $lastPathAction >= $action");
+      }
+
+      pathSeedsState[i] = action;
+    }
+
+    var count = path.last == 0 ? 4 : 1;
+    var spawnedAlpha = false;
+
+    for (var i = 0; i < count; i++) {
+      var spawn = generateSpawnLite(rng, spawnerRng, spawnedAlpha, sp.pkmn, sp.rolls, alphaRequired: sp.alpha, shinyRequired: sp.shiny);
+
+      if (spawn == null) {
+        // wasn't alpha or shiny
         continue;
       }
-      try {
-        sendPort.send(massOutbreakResult);
-      } catch (e) {
-        print(e);
+
+      if (matcher(spawn)) {
+        currentMatches.add(spawn);
       }
+
+      if (sp.alpha && spawn.alpha) {
+        // no more alphas will spawn
+        break;
+      }
+
+      spawnedAlpha = spawnedAlpha || spawn.alpha;
+    }
+
+    if (currentMatches.isNotEmpty) {
+      if (sp.multimatch) {
+        if (!findAdditonalMatchInPath(sp.seed, path, sp.rolls, sp.pkmn, matcher, alphaRequired: sp.alpha, shinyRequired: sp.shiny)) {
+          continue;
+        }
+      }
+
+      sendPort.send(MassOutbreakResult(sp.seed, path, sp.pkmn));
       return;
+    }
+
+    // print("$path :: ${pathSeeds[path.length - 1].toHex()}");
+  }
+}
+
+var _mainRng = XOROSHIROLite();
+var _spawnerRng = XOROSHIROLite();
+
+bool findAdditonalMatchInPath(int seed, List<int> path, int rolls, PokedexEntry pkmn, bool Function(Spawn spawn) matcher,
+    {required bool alphaRequired, required bool shinyRequired}) {
+  _mainRng.reseed(seed);
+
+  for (var action in path) {
+    bool spawnedAlpha = false;
+
+    if (action == 0) {
+      _mainRng.advanceAndReseed(4);
+    } else {
+      for (var i = -3; i < action; i++) {
+        var spawn = generateSpawnLite(_mainRng, _spawnerRng, spawnedAlpha, pkmn, rolls, alphaRequired: alphaRequired, shinyRequired: shinyRequired);
+        if (spawn != null) {
+          spawnedAlpha = spawnedAlpha || spawn.alpha;
+
+          if (matcher(spawn)) {
+            return true;
+          }
+        }
+
+        if (i >= 0) {
+          _mainRng.reseedWithNext();
+          spawnedAlpha = false;
+        }
+      }
+
+      _mainRng.advanceAndReseed(1); // we don't check this one because we can't catch it.
     }
   }
 
-  sendPort.send(null);
+  return false;
 }
 
 void isolatedSearch(SearchParams params, Function onTick, void Function(MassOutbreakResult?) onMatch) async {
   var receivePort = ReceivePort();
-  var isolate = await Isolate.spawn(work, [receivePort.sendPort, params]);
+  var isolate = await Isolate.spawn(fastSearch, [receivePort.sendPort, params]);
   receivePort.listen((message) {
     if (message == null) {
       onMatch(null);
@@ -165,7 +256,7 @@ void isolatedSearch(SearchParams params, Function onTick, void Function(MassOutb
 }
 
 class SearchParams {
-  BigInt seed;
+  int seed;
   int spawns;
   int rolls;
   PokedexEntry pkmn;

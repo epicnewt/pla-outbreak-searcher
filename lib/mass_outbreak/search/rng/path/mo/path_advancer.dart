@@ -11,6 +11,7 @@ final ALPHA_LIMIT_LITE_PARITY = 1;
 final XOROSHIRO _mainRng = XOROSHIRO();
 final XOROSHIRO _spawnerRng = XOROSHIRO();
 
+@Deprecated("message")
 List<Spawn> getFinalReseedOfPath(BigInt seed, PokedexEntry pkmn, List<int> path, int rolls) {
   _mainRng.reseed(seed);
 
@@ -58,11 +59,21 @@ Spawn generateSpawn(XOROSHIRO mainRng, XOROSHIRO spawnerRng, bool spawnedAlpha, 
   return Spawn.fromSeed(spawnerRng.next(), pkmn, alpha, rolls);
 }
 
-Spawn generateSpawnLite(XOROSHIROLite mainRng, XOROSHIROLite spawnerRng, bool spawnedAlpha, PokedexEntry pkmn, int rolls, {required bool alphaRequired}) {
+Spawn? generateSpawnLite(XOROSHIROLite mainRng, XOROSHIROLite spawnerRng, bool spawnedAlpha, PokedexEntry pkmn, int rolls,
+    {bool alphaRequired = false, bool shinyRequired = false}) {
   spawnerRng.reseed(mainRng.next());
   mainRng.next();
 
   //we know ALPHA limit is odd so first bit can be ignored
   var alpha = (((spawnerRng.next() >>> 1) > ALPHA_LIMIT_ULITE)) && !spawnedAlpha;
-  return ((alphaRequired && alpha) || !alphaRequired) ? Spawn.fromSeedLite(spawnerRng.next(), pkmn, alpha, rolls) : Spawn.NULL;
+
+  if (alphaRequired && !alpha) {
+    return null;
+  }
+
+  if (shinyRequired && alpha) {
+    return Spawn.fromSeedLite(spawnerRng.next(), pkmn, alpha, rolls, shinyRequired: shinyRequired) ?? Spawn.DUMMY_ALPHA;
+  }
+
+  return Spawn.fromSeedLite(spawnerRng.next(), pkmn, alpha, rolls, shinyRequired: shinyRequired);
 }

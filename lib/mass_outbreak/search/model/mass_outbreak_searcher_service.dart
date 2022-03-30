@@ -74,7 +74,7 @@ class MassOutbreakSearcherService implements MassOutbreakSearcher {
 
     isolatedSearch(
       SearchParams(
-        BigInt.parse(moInfo.seed, radix: 16),
+        int.parse(moInfo.seed, radix: 16),
         moInfo.spawns ?? 10,
         rolls,
         pkmn,
@@ -88,7 +88,7 @@ class MassOutbreakSearcherService implements MassOutbreakSearcher {
       onMatch,
     );
 
-    return Future(() => SearchResult(BigInt.zero, [], rolls, pokedex[moInfo.species]!));
+    return Future(() => SearchResult(0, [], rolls, pokedex[moInfo.species]!));
   }
 
   @override
