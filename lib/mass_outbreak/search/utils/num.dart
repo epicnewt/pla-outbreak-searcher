@@ -7,6 +7,12 @@ extension BigIntHex on BigInt {
   }
 }
 
+extension UIntString on String {
+  int parseUInt({int radix = 16}) {
+    return int.parse(substring(1), radix: radix) | (int.parse(substring(0, 1), radix: radix) << (4 * (length - 1)));
+  }
+}
+
 extension UIntHex on int {
   String toHex() {
     var h = (this >>> 60);

@@ -143,7 +143,7 @@ class MassOutbreakSearchResult extends StatelessWidget {
                         Text(
                           searchResultState.pkmn.pokemon,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
                         ),
                       ],
                     ),

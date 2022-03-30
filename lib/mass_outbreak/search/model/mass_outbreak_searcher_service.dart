@@ -74,7 +74,7 @@ class MassOutbreakSearcherService implements MassOutbreakSearcher {
 
     isolatedSearch(
       SearchParams(
-        int.parse(moInfo.seed, radix: 16),
+        moInfo.seed.parseUInt(radix: 16),
         moInfo.spawns ?? 10,
         rolls,
         pkmn,
