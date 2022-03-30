@@ -111,7 +111,7 @@ void fastSearch(List<Object> params) {
   var spawnerRng = XOROSHIROLite();
   var lastPathLength = 1;
 
-  for (var path in passivePaths(sp.spawns, depth: 17, maxDepth: 20)) {
+  for (var path in passivePaths(sp.spawns, maxDepth: 20)) {
     currentMatches.clear();
 
     if (lastPathLength < path.length) {
