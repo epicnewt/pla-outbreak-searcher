@@ -4,7 +4,7 @@ import 'package:mmo_searcher/mass_outbreak/search/rng/path/mo/pass_path_generato
 import 'package:mmo_searcher/mass_outbreak/search/rng/path/mo/path_advancer.dart';
 import 'package:mmo_searcher/mass_outbreak/search/rng/spawn.dart';
 import 'package:mmo_searcher/mass_outbreak/search/rng/xoroshiro.dart';
-import 'package:mmo_searcher/mass_outbreak/search/utils/num.dart';
+import 'package:mmo_searcher/num.dart';
 import 'package:mmo_searcher/pokedex/gender_ratios.dart';
 
 class Advance {

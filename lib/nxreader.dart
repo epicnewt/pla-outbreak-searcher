@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:mmo_searcher/mass_outbreak/search/utils/num.dart';
+import 'package:mmo_searcher/num.dart';
 
 const debug = false;
 
