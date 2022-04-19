@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mmo_searcher/pokedex/gender_ratios.dart';
+import 'package:mmo_searcher/pokedex/pokedex.dart';
 
 import '../../model/mass_outbreak_information.dart';
 

@@ -4,7 +4,7 @@ import 'package:mmo_searcher/mass_outbreak/search/model/mass_outbreak_searcher.d
 import 'package:mmo_searcher/mass_outbreak/search/model/search_result.dart';
 import 'package:mmo_searcher/mass_outbreak/search/rng/path/mo/search.dart';
 import 'package:mmo_searcher/num.dart';
-import 'package:mmo_searcher/pokedex/gender_ratios.dart';
+import 'package:mmo_searcher/pokedex/pokedex.dart';
 
 import '../../../nxreader.dart';
 

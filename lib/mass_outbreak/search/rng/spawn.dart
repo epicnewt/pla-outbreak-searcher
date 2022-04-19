@@ -1,5 +1,8 @@
 import 'package:mmo_searcher/mass_outbreak/search/rng/xoroshiro.dart';
-import 'package:mmo_searcher/pokedex/gender_ratios.dart';
+import 'package:mmo_searcher/massive_mass_outbreak/meta_data/encounter_slots.dart';
+import 'package:mmo_searcher/pokedex/pokedex.dart';
+
+final ALPHA_LIMIT_ULITE = 0xFD7720F353A4BBFF >>> 1;
 
 const _natures = [
   "Hardy", "Lonely", "Brave", "Adamant", "Naughty",
@@ -88,7 +91,7 @@ class Spawn {
     return Spawn(shiny, alpha, ivs, gender, nature);
   }
 
-  static Spawn? fromSeedLite(int seed, PokedexEntry pkmn, bool alpha, int rolls, {bool shinyRequired = false}) {
+  static Spawn? fromSeedLite(int seed, PokedexEntry pkmn, bool alpha, int rolls, {int guranteedIVs = -1, bool shinyRequired = false}) {
     _mainRngLite.reseed(seed);
 
     var ec = _mainRngLite.rand(UINT_Lite);
@@ -107,8 +110,9 @@ class Spawn {
 
     List<int> ivs = List.filled(6, -1);
 
-    if (alpha) {
-      for (int p = 0; p < 3; p++) {
+    if (alpha || guranteedIVs >= 0) {
+      var perfectIVs = guranteedIVs == -1 ? 3 : guranteedIVs;
+      for (int p = 0; p < perfectIVs; p++) {
         var index = 0;
         do {
           index = (_mainRngLite.rand(6) & USHORT_Lite).toInt();
@@ -141,4 +145,25 @@ class Spawn {
 
     return Spawn(shiny, alpha, ivs, gender, nature);
   }
+}
+
+Spawn? generateSpawnLite(XOROSHIROLite mainRng, XOROSHIROLite spawnerRng, bool spawnedAlpha, PokedexEntry? pkmn, int rolls,
+    {EncounterTable? encounterTable, bool isBonusSpawn = false, bool forceAlpha = false, bool alphaRequired = false, bool shinyRequired = false}) {
+  spawnerRng.reseed(mainRng.next());
+  mainRng.next();
+
+  //we know ALPHA limit is odd so first bit can be ignored
+  var encounterSlot = (encounterTable ?? EncounterTable.massoutbreak).findSlot(spawnerRng.next());
+  var alpha = encounterSlot.alpha;
+
+  if (alphaRequired && !alpha) {
+    return null;
+  }
+
+  var guarateedIVs = (alpha && isBonusSpawn) ? 4 : ((alpha || isBonusSpawn) ? 3 : 0);
+
+  Spawn? _default = alpha ? Spawn.DUMMY_ALPHA : null;
+
+  PokedexEntry pokedexEntry = pkmn ?? encounterSlot.pkmn;
+  return Spawn.fromSeedLite(spawnerRng.next(), pokedexEntry, alpha, rolls, shinyRequired: shinyRequired, guranteedIVs: guarateedIVs) ?? _default;
 }

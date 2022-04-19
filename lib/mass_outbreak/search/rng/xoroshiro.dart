@@ -72,7 +72,7 @@ class XOROSHIROLite {
   reseed(int s0, {int? s1}) {
     this.s0 = s0;
     this.s1 = s1 ?? DEFAULT_S1;
-    _current = _updateCurrent();
+    _current = this.s0;
   }
 
   int reseedWithNext() {

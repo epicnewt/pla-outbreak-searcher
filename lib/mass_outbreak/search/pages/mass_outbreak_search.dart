@@ -7,7 +7,7 @@ import 'package:mmo_searcher/mass_outbreak/search/model/search_result.dart';
 import 'package:mmo_searcher/mass_outbreak/search/pages/state/mass_outbreak_filter_state.dart';
 import 'package:mmo_searcher/mass_outbreak/search/pages/state/mass_outbreak_information_state.dart';
 import 'package:mmo_searcher/mass_outbreak/search/pages/state/mass_outbreak_rolls_state.dart';
-import 'package:mmo_searcher/pokedex/gender_ratios.dart';
+import 'package:mmo_searcher/pokedex/pokedex.dart';
 import 'package:provider/provider.dart';
 
 MultiProvider connect(MassOutbreakSearcher service, {Widget? child}) {

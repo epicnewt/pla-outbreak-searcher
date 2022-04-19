@@ -5,7 +5,7 @@ import 'package:mmo_searcher/mass_outbreak/search/rng/path/mo/path_advancer.dart
 import 'package:mmo_searcher/mass_outbreak/search/rng/spawn.dart';
 import 'package:mmo_searcher/mass_outbreak/search/rng/xoroshiro.dart';
 import 'package:mmo_searcher/num.dart';
-import 'package:mmo_searcher/pokedex/gender_ratios.dart';
+import 'package:mmo_searcher/pokedex/pokedex.dart';
 
 class Advance {
   final List<int> actions;

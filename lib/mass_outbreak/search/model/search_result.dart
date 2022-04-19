@@ -1,5 +1,5 @@
 
-import 'package:mmo_searcher/pokedex/gender_ratios.dart';
+import 'package:mmo_searcher/pokedex/pokedex.dart';
 
 class SearchResult {
   final int _seed;
