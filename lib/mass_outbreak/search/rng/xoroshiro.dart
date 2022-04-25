@@ -1,5 +1,7 @@
 
 
+import 'package:mmo_searcher/num.dart';
+
 class XOROSHIRO {
   static final ULONG = BigInt.parse("0xFFFFFFFFFFFFFFFF");
   static final DEFAULT_S1 = BigInt.parse("0x82A2B175229D6A5B");
@@ -12,7 +14,7 @@ class XOROSHIRO {
   reseed(BigInt s0, {BigInt? s1}) {
     this.s0 = s0;
     this.s1 = s1 ?? DEFAULT_S1;
-    _current = _updateCurrent();
+    _current = s0;
   }
 
   BigInt reseedWithNext() {
@@ -117,5 +119,10 @@ class XOROSHIROLite {
     }
     reseed(next());
     return s0;
+  }
+
+  @override
+  String toString() {
+    return "[0x${s0.toHex()}, 0x${s1.toHex()}]";
   }
 }

@@ -1,7 +1,12 @@
 import 'package:mmo_searcher/mass_outbreak/search/rng/xoroshiro.dart';
+import 'package:mmo_searcher/massive_mass_outbreak/meta_data/encounter_slots.dart';
+import 'package:mmo_searcher/massive_mass_outbreak/search/mmo_path_advancer.dart';
+import 'package:mmo_searcher/massive_mass_outbreak/search/mmo_path_generator.dart';
+import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_info.dart';
 import 'package:mmo_searcher/pokedex/pokedex.dart';
 
 import '../../spawn.dart';
+import 'package:mmo_searcher/num.dart';
 
 final ALPHA_LIMIT = BigInt.parse("FD7720F353A4BBFF", radix: 16);
 // final ALPHA_LIMIT_LITE = 0xFD7720F353A4BBFF;
@@ -27,7 +32,7 @@ List<Spawn> getFinalReseedOfPath(BigInt seed, PokedexEntry pkmn, List<int> path,
     spawn(4);
 
     for (int p = 0; p < path[i]; p++) {
-      spawn(1);
+      spawn(1); // all passive
     }
   }
 
@@ -52,8 +57,27 @@ List<Spawn> getFinalReseedOfPath(BigInt seed, PokedexEntry pkmn, List<int> path,
 }
 
 Spawn generateSpawn(XOROSHIRO mainRng, XOROSHIRO spawnerRng, bool spawnedAlpha, PokedexEntry pkmn, int rolls) {
+  print("genSpawn[legacy](${mainRng.current.toHex()})");
   spawnerRng.reseed(mainRng.next());
   mainRng.next();
   var alpha = (spawnerRng.next() > ALPHA_LIMIT) && !spawnedAlpha;
   return Spawn.fromSeed(spawnerRng.next(), pkmn, alpha, rolls);
+}
+
+void main(List<String> args) {
+  print(getFinalReseedOfPath(BigInt.parse("6a45ca26d8347bf0", radix: 16), pokedex[74]!, [0], 14));
+
+  var mutableMMOPath = MutableMMOPath();
+  mutableMMOPath.initialPath = [1,3,2];
+  mutableMMOPath.revisit = [1];
+  mutableMMOPath.bonusPath = [2];
+  var generateSpawnsOfPath2 = generateSpawnsOfPath(MMOPath(mutableMMOPath), MMOInfo(
+    BigInt.parse("6a45ca26d8347bf0", radix: 16).toUInt(),
+    10,
+    6,
+    encounterSlotsMap["E680740C6BE14EFB"]!,
+    encounterSlotsMap["2058ED6587597255"]!,
+    ), 14, alphaRequired: true, shinyRequired: true);
+  print(generateSpawnsOfPath2?.seedsOfSpawnGroups.map((a) => a.map((b) => b.map((c) => c.toHex()))));
+  print(generateSpawnsOfPath2?.pokemon);
 }

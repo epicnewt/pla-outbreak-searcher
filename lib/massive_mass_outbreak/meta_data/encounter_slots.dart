@@ -1,33 +1,32 @@
 import 'package:mmo_searcher/big_num.dart';
+import 'package:mmo_searcher/mass_outbreak/search/rng/xoroshiro.dart';
+import 'package:mmo_searcher/num.dart';
 import 'package:mmo_searcher/pokedex/pokedex.dart';
 
 class EncounterTable {
   static final EncounterTable massoutbreak = EncounterTable([
-    EncounterSlot.fromMap({
-      "slot": "FD7720F353A4BBFF".parseBigInt(),
-      "name": "PkMn",
-      "alpha": false,
-      "level": [],
-      "ivs": 0
-    }),
-    EncounterSlot.fromMap({
-      "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
-      "name": "PkMn",
-      "alpha": true,
-      "level": [],
-      "ivs": 3
-    })
+    EncounterSlot.fromMap({"slot": "FD7720F353A4BBFF".parseBigInt(), "name": 'Non-Alpha', "pkmn": pokedex[-1]!, "alpha": false, "level": [], "ivs": 0}),
+    EncounterSlot.fromMap({"slot": "FFFFFFFFFFFFFFFF".parseBigInt(), "name": 'Alpha', "pkmn": pokedex[-1]!, "alpha": true, "level": [], "ivs": 3})
   ]);
-
 
   final List<EncounterSlot> slots;
   const EncounterTable(this.slots);
 
   EncounterSlot findSlot(int seed) {
-    return slots.lastWhere((element) {
-      var seedBI = (BigInt.from(seed >> 1) << 1) & (seed & 1 == 1 ? BigInt.one : BigInt.zero);
-      return element.slot <= (seedBI);
-    });
+    var seedBI = BigInt.parse(seed.toHex(), radix: 16);
+
+    var last = BigInt.zero;
+    for (var i = 0; i < slots.length; i++) {
+      var next = slots[i].slot;
+
+      if (last < seedBI && seedBI <= next) {
+        return slots[i];
+      }
+
+      last = next;
+    }
+
+    return slots.last;
   }
 }
 
@@ -43,14 +42,18 @@ class EncounterSlot {
   List<int> get level => _data['level']! as List<int>;
   int get ivs => _data['ivs']! as int;
 
-  PokedexEntry get pkmn => pokedex[722]!;
+  PokedexEntry get pkmn {
+    if (_data['pkmn'] == null) {
+      print("Cannot find dex entry: ${name}");
+    }
+    return _data['pkmn'] as PokedexEntry;
+  }
 
   @override
   String toString() {
     // TODO: implement toString
     return "${[slot, name, alpha]}";
   }
-
 }
 
 Map<String, EncounterTable> encounterSlotsMap = {
@@ -58,6 +61,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Pikachu",
+      "pkmn": findDexEntry("Pikachu"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -65,6 +69,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Pikachu",
+      "pkmn": findDexEntry("Pikachu"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -72,6 +77,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Raichu",
+      "pkmn": findDexEntry("Raichu"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -79,6 +85,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Raichu",
+      "pkmn": findDexEntry("Raichu"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -88,6 +95,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Raichu",
+      "pkmn": findDexEntry("Raichu"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -95,6 +103,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Raichu",
+      "pkmn": findDexEntry("Raichu"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -104,6 +113,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Pikachu",
+      "pkmn": findDexEntry("Pikachu"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -113,6 +123,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Raichu",
+      "pkmn": findDexEntry("Raichu"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -122,6 +133,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Zubat",
+      "pkmn": findDexEntry("Zubat"),
       "alpha": false,
       "level": [19, 21],
       "ivs": 0
@@ -129,6 +141,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Zubat",
+      "pkmn": findDexEntry("Zubat"),
       "alpha": true,
       "level": [34, 36],
       "ivs": 3
@@ -136,6 +149,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Golbat",
+      "pkmn": findDexEntry("Golbat"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -143,6 +157,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Golbat",
+      "pkmn": findDexEntry("Golbat"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -152,6 +167,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Golbat",
+      "pkmn": findDexEntry("Golbat"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -159,6 +175,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Golbat",
+      "pkmn": findDexEntry("Golbat"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -168,6 +185,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Zubat",
+      "pkmn": findDexEntry("Zubat"),
       "alpha": true,
       "level": [34, 36],
       "ivs": 4
@@ -177,6 +195,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Golbat",
+      "pkmn": findDexEntry("Golbat"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -186,6 +205,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Golbat",
+      "pkmn": findDexEntry("Golbat"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -193,6 +213,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Golbat",
+      "pkmn": findDexEntry("Golbat"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -200,6 +221,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Crobat",
+      "pkmn": findDexEntry("Crobat"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -207,6 +229,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Crobat",
+      "pkmn": findDexEntry("Crobat"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 3
@@ -216,6 +239,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Crobat",
+      "pkmn": findDexEntry("Crobat"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -223,6 +247,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Crobat",
+      "pkmn": findDexEntry("Crobat"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -232,6 +257,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Golbat",
+      "pkmn": findDexEntry("Golbat"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -241,6 +267,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Crobat",
+      "pkmn": findDexEntry("Crobat"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -250,6 +277,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Paras",
+      "pkmn": findDexEntry("Paras"),
       "alpha": false,
       "level": [21, 23],
       "ivs": 0
@@ -257,6 +285,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Paras",
+      "pkmn": findDexEntry("Paras"),
       "alpha": true,
       "level": [36, 38],
       "ivs": 3
@@ -264,6 +293,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Parasect",
+      "pkmn": findDexEntry("Parasect"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -271,6 +301,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Parasect",
+      "pkmn": findDexEntry("Parasect"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -280,6 +311,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Parasect",
+      "pkmn": findDexEntry("Parasect"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -287,6 +319,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Parasect",
+      "pkmn": findDexEntry("Parasect"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -296,6 +329,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Paras",
+      "pkmn": findDexEntry("Paras"),
       "alpha": true,
       "level": [36, 38],
       "ivs": 4
@@ -305,6 +339,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Parasect",
+      "pkmn": findDexEntry("Parasect"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -314,6 +349,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Abra",
+      "pkmn": findDexEntry("Abra"),
       "alpha": false,
       "level": [13, 15],
       "ivs": 0
@@ -321,6 +357,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Abra",
+      "pkmn": findDexEntry("Abra"),
       "alpha": true,
       "level": [28, 30],
       "ivs": 3
@@ -328,6 +365,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Kadabra",
+      "pkmn": findDexEntry("Kadabra"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -335,6 +373,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Kadabra",
+      "pkmn": findDexEntry("Kadabra"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -344,6 +383,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Kadabra",
+      "pkmn": findDexEntry("Kadabra"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 3
@@ -351,6 +391,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Kadabra",
+      "pkmn": findDexEntry("Kadabra"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -360,6 +401,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Abra",
+      "pkmn": findDexEntry("Abra"),
       "alpha": true,
       "level": [28, 30],
       "ivs": 4
@@ -369,6 +411,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Kadabra",
+      "pkmn": findDexEntry("Kadabra"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -378,6 +421,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Kadabra",
+      "pkmn": findDexEntry("Kadabra"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -385,6 +429,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Kadabra",
+      "pkmn": findDexEntry("Kadabra"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -392,6 +437,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Alakazam",
+      "pkmn": findDexEntry("Alakazam"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -399,6 +445,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Alakazam",
+      "pkmn": findDexEntry("Alakazam"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 3
@@ -408,6 +455,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Alakazam",
+      "pkmn": findDexEntry("Alakazam"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -415,6 +463,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Alakazam",
+      "pkmn": findDexEntry("Alakazam"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -424,6 +473,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Kadabra",
+      "pkmn": findDexEntry("Kadabra"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -433,6 +483,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Alakazam",
+      "pkmn": findDexEntry("Alakazam"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -442,6 +493,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Geodude",
+      "pkmn": findDexEntry("Geodude"),
       "alpha": false,
       "level": [22, 24],
       "ivs": 0
@@ -449,6 +501,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Geodude",
+      "pkmn": findDexEntry("Geodude"),
       "alpha": true,
       "level": [37, 39],
       "ivs": 3
@@ -456,6 +509,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Graveler",
+      "pkmn": findDexEntry("Graveler"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -463,6 +517,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Graveler",
+      "pkmn": findDexEntry("Graveler"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -472,6 +527,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Graveler",
+      "pkmn": findDexEntry("Graveler"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 3
@@ -479,6 +535,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Graveler",
+      "pkmn": findDexEntry("Graveler"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -488,6 +545,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Geodude",
+      "pkmn": findDexEntry("Geodude"),
       "alpha": true,
       "level": [37, 39],
       "ivs": 4
@@ -497,6 +555,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Graveler",
+      "pkmn": findDexEntry("Graveler"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -506,6 +565,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Graveler",
+      "pkmn": findDexEntry("Graveler"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -513,6 +573,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Graveler",
+      "pkmn": findDexEntry("Graveler"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -520,6 +581,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Golem",
+      "pkmn": findDexEntry("Golem"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -527,6 +589,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Golem",
+      "pkmn": findDexEntry("Golem"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -536,6 +599,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Golem",
+      "pkmn": findDexEntry("Golem"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -543,6 +607,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Golem",
+      "pkmn": findDexEntry("Golem"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -552,6 +617,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Graveler",
+      "pkmn": findDexEntry("Graveler"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -561,6 +627,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Golem",
+      "pkmn": findDexEntry("Golem"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -570,6 +637,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Ponyta",
+      "pkmn": findDexEntry("Ponyta"),
       "alpha": false,
       "level": [37, 39],
       "ivs": 0
@@ -577,6 +645,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Ponyta",
+      "pkmn": findDexEntry("Ponyta"),
       "alpha": true,
       "level": [52, 54],
       "ivs": 3
@@ -584,6 +653,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Rapidash",
+      "pkmn": findDexEntry("Rapidash"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -591,6 +661,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Rapidash",
+      "pkmn": findDexEntry("Rapidash"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -600,6 +671,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Rapidash",
+      "pkmn": findDexEntry("Rapidash"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -607,6 +679,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Rapidash",
+      "pkmn": findDexEntry("Rapidash"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -616,6 +689,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Ponyta",
+      "pkmn": findDexEntry("Ponyta"),
       "alpha": true,
       "level": [52, 54],
       "ivs": 4
@@ -625,6 +699,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Rapidash",
+      "pkmn": findDexEntry("Rapidash"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -634,6 +709,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Scyther",
+      "pkmn": findDexEntry("Scyther"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -641,6 +717,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Scyther",
+      "pkmn": findDexEntry("Scyther"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -648,6 +725,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Kleavor",
+      "pkmn": findDexEntry("Kleavor"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -655,6 +733,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Kleavor",
+      "pkmn": findDexEntry("Kleavor"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -664,6 +743,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Kleavor",
+      "pkmn": findDexEntry("Kleavor"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -671,6 +751,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Kleavor",
+      "pkmn": findDexEntry("Kleavor"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -680,6 +761,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Scyther",
+      "pkmn": findDexEntry("Scyther"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -689,6 +771,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Kleavor",
+      "pkmn": findDexEntry("Kleavor"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -698,6 +781,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Pichu",
+      "pkmn": findDexEntry("Pichu"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -705,6 +789,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Pichu",
+      "pkmn": findDexEntry("Pichu"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -712,6 +797,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Pikachu",
+      "pkmn": findDexEntry("Pikachu"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -719,6 +805,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Pikachu",
+      "pkmn": findDexEntry("Pikachu"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -728,6 +815,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Pikachu",
+      "pkmn": findDexEntry("Pikachu"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -735,6 +823,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Pikachu",
+      "pkmn": findDexEntry("Pikachu"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -744,6 +833,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Pichu",
+      "pkmn": findDexEntry("Pichu"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -753,6 +843,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Pikachu",
+      "pkmn": findDexEntry("Pikachu"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -762,6 +853,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Stantler",
+      "pkmn": findDexEntry("Stantler"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -769,6 +861,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Stantler",
+      "pkmn": findDexEntry("Stantler"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -776,6 +869,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Wyrdeer",
+      "pkmn": findDexEntry("Wyrdeer"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -783,6 +877,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Wyrdeer",
+      "pkmn": findDexEntry("Wyrdeer"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -792,6 +887,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Wyrdeer",
+      "pkmn": findDexEntry("Wyrdeer"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -799,6 +895,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Wyrdeer",
+      "pkmn": findDexEntry("Wyrdeer"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -808,6 +905,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Stantler",
+      "pkmn": findDexEntry("Stantler"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -817,6 +915,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Wyrdeer",
+      "pkmn": findDexEntry("Wyrdeer"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -826,6 +925,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Wurmple",
+      "pkmn": findDexEntry("Wurmple"),
       "alpha": false,
       "level": [4, 6],
       "ivs": 0
@@ -833,6 +933,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Wurmple",
+      "pkmn": findDexEntry("Wurmple"),
       "alpha": true,
       "level": [19, 21],
       "ivs": 3
@@ -840,6 +941,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Silcoon",
+      "pkmn": findDexEntry("Silcoon"),
       "alpha": false,
       "level": [7, 9],
       "ivs": 0
@@ -847,6 +949,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Silcoon",
+      "pkmn": findDexEntry("Silcoon"),
       "alpha": true,
       "level": [22, 24],
       "ivs": 3
@@ -856,6 +959,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Silcoon",
+      "pkmn": findDexEntry("Silcoon"),
       "alpha": false,
       "level": [7, 9],
       "ivs": 3
@@ -863,6 +967,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Silcoon",
+      "pkmn": findDexEntry("Silcoon"),
       "alpha": true,
       "level": [22, 24],
       "ivs": 4
@@ -872,6 +977,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Wurmple",
+      "pkmn": findDexEntry("Wurmple"),
       "alpha": true,
       "level": [19, 21],
       "ivs": 4
@@ -881,6 +987,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Silcoon",
+      "pkmn": findDexEntry("Silcoon"),
       "alpha": true,
       "level": [22, 24],
       "ivs": 4
@@ -890,6 +997,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Wurmple",
+      "pkmn": findDexEntry("Wurmple"),
       "alpha": false,
       "level": [4, 6],
       "ivs": 0
@@ -897,6 +1005,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Wurmple",
+      "pkmn": findDexEntry("Wurmple"),
       "alpha": true,
       "level": [19, 21],
       "ivs": 3
@@ -904,6 +1013,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Cascoon",
+      "pkmn": findDexEntry("Cascoon"),
       "alpha": false,
       "level": [7, 9],
       "ivs": 0
@@ -911,6 +1021,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Cascoon",
+      "pkmn": findDexEntry("Cascoon"),
       "alpha": true,
       "level": [22, 24],
       "ivs": 3
@@ -920,6 +1031,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Cascoon",
+      "pkmn": findDexEntry("Cascoon"),
       "alpha": false,
       "level": [7, 9],
       "ivs": 3
@@ -927,6 +1039,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Cascoon",
+      "pkmn": findDexEntry("Cascoon"),
       "alpha": true,
       "level": [22, 24],
       "ivs": 4
@@ -936,6 +1049,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Wurmple",
+      "pkmn": findDexEntry("Wurmple"),
       "alpha": true,
       "level": [19, 21],
       "ivs": 4
@@ -945,6 +1059,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Cascoon",
+      "pkmn": findDexEntry("Cascoon"),
       "alpha": true,
       "level": [22, 24],
       "ivs": 4
@@ -954,6 +1069,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Silcoon",
+      "pkmn": findDexEntry("Silcoon"),
       "alpha": false,
       "level": [7, 9],
       "ivs": 0
@@ -961,6 +1077,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Silcoon",
+      "pkmn": findDexEntry("Silcoon"),
       "alpha": true,
       "level": [22, 24],
       "ivs": 3
@@ -968,6 +1085,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Beautifly",
+      "pkmn": findDexEntry("Beautifly"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -975,6 +1093,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Beautifly",
+      "pkmn": findDexEntry("Beautifly"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -984,6 +1103,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Beautifly",
+      "pkmn": findDexEntry("Beautifly"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -991,6 +1111,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Beautifly",
+      "pkmn": findDexEntry("Beautifly"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -1000,6 +1121,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Silcoon",
+      "pkmn": findDexEntry("Silcoon"),
       "alpha": true,
       "level": [22, 24],
       "ivs": 4
@@ -1009,6 +1131,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Beautifly",
+      "pkmn": findDexEntry("Beautifly"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -1018,6 +1141,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Cascoon",
+      "pkmn": findDexEntry("Cascoon"),
       "alpha": false,
       "level": [7, 9],
       "ivs": 0
@@ -1025,6 +1149,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Cascoon",
+      "pkmn": findDexEntry("Cascoon"),
       "alpha": true,
       "level": [22, 24],
       "ivs": 3
@@ -1032,6 +1157,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Dustox",
+      "pkmn": findDexEntry("Dustox"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -1039,6 +1165,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Dustox",
+      "pkmn": findDexEntry("Dustox"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -1048,6 +1175,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Dustox",
+      "pkmn": findDexEntry("Dustox"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -1055,6 +1183,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Dustox",
+      "pkmn": findDexEntry("Dustox"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -1064,6 +1193,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Cascoon",
+      "pkmn": findDexEntry("Cascoon"),
       "alpha": true,
       "level": [22, 24],
       "ivs": 4
@@ -1073,6 +1203,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Dustox",
+      "pkmn": findDexEntry("Dustox"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -1082,6 +1213,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Spheal",
+      "pkmn": findDexEntry("Spheal"),
       "alpha": false,
       "level": [29, 31],
       "ivs": 0
@@ -1089,6 +1221,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Spheal",
+      "pkmn": findDexEntry("Spheal"),
       "alpha": true,
       "level": [44, 46],
       "ivs": 3
@@ -1096,6 +1229,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Sealeo",
+      "pkmn": findDexEntry("Sealeo"),
       "alpha": false,
       "level": [41, 43],
       "ivs": 0
@@ -1103,6 +1237,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Sealeo",
+      "pkmn": findDexEntry("Sealeo"),
       "alpha": true,
       "level": [56, 58],
       "ivs": 3
@@ -1112,6 +1247,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Sealeo",
+      "pkmn": findDexEntry("Sealeo"),
       "alpha": false,
       "level": [41, 43],
       "ivs": 3
@@ -1119,6 +1255,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Sealeo",
+      "pkmn": findDexEntry("Sealeo"),
       "alpha": true,
       "level": [56, 58],
       "ivs": 4
@@ -1128,6 +1265,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Spheal",
+      "pkmn": findDexEntry("Spheal"),
       "alpha": true,
       "level": [44, 46],
       "ivs": 4
@@ -1137,6 +1275,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Sealeo",
+      "pkmn": findDexEntry("Sealeo"),
       "alpha": true,
       "level": [56, 58],
       "ivs": 4
@@ -1146,6 +1285,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Chimchar",
+      "pkmn": findDexEntry("Chimchar"),
       "alpha": false,
       "level": [11, 13],
       "ivs": 0
@@ -1153,6 +1293,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Chimchar",
+      "pkmn": findDexEntry("Chimchar"),
       "alpha": true,
       "level": [26, 28],
       "ivs": 3
@@ -1160,6 +1301,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Monferno",
+      "pkmn": findDexEntry("Monferno"),
       "alpha": false,
       "level": [33, 35],
       "ivs": 0
@@ -1167,6 +1309,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Monferno",
+      "pkmn": findDexEntry("Monferno"),
       "alpha": true,
       "level": [48, 50],
       "ivs": 3
@@ -1176,6 +1319,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Monferno",
+      "pkmn": findDexEntry("Monferno"),
       "alpha": false,
       "level": [33, 35],
       "ivs": 3
@@ -1183,6 +1327,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Monferno",
+      "pkmn": findDexEntry("Monferno"),
       "alpha": true,
       "level": [48, 50],
       "ivs": 4
@@ -1192,6 +1337,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Chimchar",
+      "pkmn": findDexEntry("Chimchar"),
       "alpha": true,
       "level": [26, 28],
       "ivs": 4
@@ -1201,6 +1347,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Monferno",
+      "pkmn": findDexEntry("Monferno"),
       "alpha": true,
       "level": [48, 50],
       "ivs": 4
@@ -1210,6 +1357,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Monferno",
+      "pkmn": findDexEntry("Monferno"),
       "alpha": false,
       "level": [33, 35],
       "ivs": 0
@@ -1217,6 +1365,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Monferno",
+      "pkmn": findDexEntry("Monferno"),
       "alpha": true,
       "level": [48, 50],
       "ivs": 3
@@ -1224,6 +1373,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Infernape",
+      "pkmn": findDexEntry("Infernape"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -1231,6 +1381,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Infernape",
+      "pkmn": findDexEntry("Infernape"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 3
@@ -1240,6 +1391,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Infernape",
+      "pkmn": findDexEntry("Infernape"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -1247,6 +1399,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Infernape",
+      "pkmn": findDexEntry("Infernape"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -1256,6 +1409,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Monferno",
+      "pkmn": findDexEntry("Monferno"),
       "alpha": true,
       "level": [48, 50],
       "ivs": 4
@@ -1265,6 +1419,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Infernape",
+      "pkmn": findDexEntry("Infernape"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -1274,6 +1429,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Starly",
+      "pkmn": findDexEntry("Starly"),
       "alpha": false,
       "level": [11, 13],
       "ivs": 0
@@ -1281,6 +1437,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Starly",
+      "pkmn": findDexEntry("Starly"),
       "alpha": true,
       "level": [26, 28],
       "ivs": 3
@@ -1288,6 +1445,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Staravia",
+      "pkmn": findDexEntry("Staravia"),
       "alpha": false,
       "level": [31, 33],
       "ivs": 0
@@ -1295,6 +1453,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Staravia",
+      "pkmn": findDexEntry("Staravia"),
       "alpha": true,
       "level": [46, 48],
       "ivs": 3
@@ -1304,6 +1463,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Staravia",
+      "pkmn": findDexEntry("Staravia"),
       "alpha": false,
       "level": [31, 33],
       "ivs": 3
@@ -1311,6 +1471,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Staravia",
+      "pkmn": findDexEntry("Staravia"),
       "alpha": true,
       "level": [46, 48],
       "ivs": 4
@@ -1320,6 +1481,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Starly",
+      "pkmn": findDexEntry("Starly"),
       "alpha": true,
       "level": [26, 28],
       "ivs": 4
@@ -1329,6 +1491,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Staravia",
+      "pkmn": findDexEntry("Staravia"),
       "alpha": true,
       "level": [46, 48],
       "ivs": 4
@@ -1338,6 +1501,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Staravia",
+      "pkmn": findDexEntry("Staravia"),
       "alpha": false,
       "level": [31, 33],
       "ivs": 0
@@ -1345,6 +1509,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Staravia",
+      "pkmn": findDexEntry("Staravia"),
       "alpha": true,
       "level": [46, 48],
       "ivs": 3
@@ -1352,6 +1517,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Staraptor",
+      "pkmn": findDexEntry("Staraptor"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -1359,6 +1525,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Staraptor",
+      "pkmn": findDexEntry("Staraptor"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -1368,6 +1535,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Staraptor",
+      "pkmn": findDexEntry("Staraptor"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -1375,6 +1543,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Staraptor",
+      "pkmn": findDexEntry("Staraptor"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -1384,6 +1553,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Staravia",
+      "pkmn": findDexEntry("Staravia"),
       "alpha": true,
       "level": [46, 48],
       "ivs": 4
@@ -1393,6 +1563,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Staraptor",
+      "pkmn": findDexEntry("Staraptor"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -1402,6 +1573,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Bidoof",
+      "pkmn": findDexEntry("Bidoof"),
       "alpha": false,
       "level": [12, 14],
       "ivs": 0
@@ -1409,6 +1581,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Bidoof",
+      "pkmn": findDexEntry("Bidoof"),
       "alpha": true,
       "level": [27, 29],
       "ivs": 3
@@ -1416,6 +1589,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Bibarel",
+      "pkmn": findDexEntry("Bibarel"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -1423,6 +1597,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Bibarel",
+      "pkmn": findDexEntry("Bibarel"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -1432,6 +1607,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Bibarel",
+      "pkmn": findDexEntry("Bibarel"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -1439,6 +1615,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Bibarel",
+      "pkmn": findDexEntry("Bibarel"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -1448,6 +1625,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Bidoof",
+      "pkmn": findDexEntry("Bidoof"),
       "alpha": true,
       "level": [27, 29],
       "ivs": 4
@@ -1457,6 +1635,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Bibarel",
+      "pkmn": findDexEntry("Bibarel"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -1466,6 +1645,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Kricketot",
+      "pkmn": findDexEntry("Kricketot"),
       "alpha": false,
       "level": [7, 9],
       "ivs": 0
@@ -1473,6 +1653,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Kricketot",
+      "pkmn": findDexEntry("Kricketot"),
       "alpha": true,
       "level": [22, 24],
       "ivs": 3
@@ -1480,6 +1661,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Kricketune",
+      "pkmn": findDexEntry("Kricketune"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -1487,6 +1669,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Kricketune",
+      "pkmn": findDexEntry("Kricketune"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -1496,6 +1679,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Kricketune",
+      "pkmn": findDexEntry("Kricketune"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -1503,6 +1687,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Kricketune",
+      "pkmn": findDexEntry("Kricketune"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -1512,6 +1697,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Kricketot",
+      "pkmn": findDexEntry("Kricketot"),
       "alpha": true,
       "level": [22, 24],
       "ivs": 4
@@ -1521,6 +1707,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Kricketune",
+      "pkmn": findDexEntry("Kricketune"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -1530,6 +1717,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Shinx",
+      "pkmn": findDexEntry("Shinx"),
       "alpha": false,
       "level": [12, 14],
       "ivs": 0
@@ -1537,6 +1725,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Shinx",
+      "pkmn": findDexEntry("Shinx"),
       "alpha": true,
       "level": [27, 29],
       "ivs": 3
@@ -1544,6 +1733,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Luxio",
+      "pkmn": findDexEntry("Luxio"),
       "alpha": false,
       "level": [27, 29],
       "ivs": 0
@@ -1551,6 +1741,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Luxio",
+      "pkmn": findDexEntry("Luxio"),
       "alpha": true,
       "level": [42, 44],
       "ivs": 3
@@ -1560,6 +1751,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Luxio",
+      "pkmn": findDexEntry("Luxio"),
       "alpha": false,
       "level": [27, 29],
       "ivs": 3
@@ -1567,6 +1759,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Luxio",
+      "pkmn": findDexEntry("Luxio"),
       "alpha": true,
       "level": [42, 44],
       "ivs": 4
@@ -1576,6 +1769,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Shinx",
+      "pkmn": findDexEntry("Shinx"),
       "alpha": true,
       "level": [27, 29],
       "ivs": 4
@@ -1585,6 +1779,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Luxio",
+      "pkmn": findDexEntry("Luxio"),
       "alpha": true,
       "level": [42, 44],
       "ivs": 4
@@ -1594,6 +1789,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Luxio",
+      "pkmn": findDexEntry("Luxio"),
       "alpha": false,
       "level": [27, 29],
       "ivs": 0
@@ -1601,6 +1797,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Luxio",
+      "pkmn": findDexEntry("Luxio"),
       "alpha": true,
       "level": [42, 44],
       "ivs": 3
@@ -1608,6 +1805,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Luxray",
+      "pkmn": findDexEntry("Luxray"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -1615,6 +1813,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Luxray",
+      "pkmn": findDexEntry("Luxray"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -1624,6 +1823,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Luxray",
+      "pkmn": findDexEntry("Luxray"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -1631,6 +1831,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Luxray",
+      "pkmn": findDexEntry("Luxray"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -1640,6 +1841,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Luxio",
+      "pkmn": findDexEntry("Luxio"),
       "alpha": true,
       "level": [42, 44],
       "ivs": 4
@@ -1649,6 +1851,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Luxray",
+      "pkmn": findDexEntry("Luxray"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -1658,6 +1861,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Buizel",
+      "pkmn": findDexEntry("Buizel"),
       "alpha": false,
       "level": [23, 25],
       "ivs": 0
@@ -1665,6 +1869,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Buizel",
+      "pkmn": findDexEntry("Buizel"),
       "alpha": true,
       "level": [38, 40],
       "ivs": 3
@@ -1672,6 +1877,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Floatzel",
+      "pkmn": findDexEntry("Floatzel"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -1679,6 +1885,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Floatzel",
+      "pkmn": findDexEntry("Floatzel"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -1688,6 +1895,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Floatzel",
+      "pkmn": findDexEntry("Floatzel"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -1695,6 +1903,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Floatzel",
+      "pkmn": findDexEntry("Floatzel"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -1704,6 +1913,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Buizel",
+      "pkmn": findDexEntry("Buizel"),
       "alpha": true,
       "level": [38, 40],
       "ivs": 4
@@ -1713,6 +1923,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Floatzel",
+      "pkmn": findDexEntry("Floatzel"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -1722,6 +1933,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Shellos-1",
+      "pkmn": findDexEntry("Shellos"),
       "alpha": false,
       "level": [27, 29],
       "ivs": 0
@@ -1729,6 +1941,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Shellos-1",
+      "pkmn": findDexEntry("Shellos"),
       "alpha": true,
       "level": [42, 44],
       "ivs": 3
@@ -1736,6 +1949,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Gastrodon-1",
+      "pkmn": findDexEntry("Gastrodon"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -1743,6 +1957,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Gastrodon-1",
+      "pkmn": findDexEntry("Gastrodon"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -1752,6 +1967,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Gastrodon-1",
+      "pkmn": findDexEntry("Gastrodon"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -1759,6 +1975,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Gastrodon-1",
+      "pkmn": findDexEntry("Gastrodon"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -1768,6 +1985,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Shellos-1",
+      "pkmn": findDexEntry("Shellos"),
       "alpha": true,
       "level": [42, 44],
       "ivs": 4
@@ -1777,6 +1995,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Gastrodon-1",
+      "pkmn": findDexEntry("Gastrodon"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -1786,6 +2005,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Drifloon",
+      "pkmn": findDexEntry("Drifloon"),
       "alpha": false,
       "level": [25, 27],
       "ivs": 0
@@ -1793,6 +2013,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Drifloon",
+      "pkmn": findDexEntry("Drifloon"),
       "alpha": true,
       "level": [40, 42],
       "ivs": 3
@@ -1800,6 +2021,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Drifblim",
+      "pkmn": findDexEntry("Drifblim"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -1807,6 +2029,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Drifblim",
+      "pkmn": findDexEntry("Drifblim"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -1816,6 +2039,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Drifblim",
+      "pkmn": findDexEntry("Drifblim"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -1823,6 +2047,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Drifblim",
+      "pkmn": findDexEntry("Drifblim"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -1832,6 +2057,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Drifloon",
+      "pkmn": findDexEntry("Drifloon"),
       "alpha": true,
       "level": [40, 42],
       "ivs": 4
@@ -1841,6 +2067,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Drifblim",
+      "pkmn": findDexEntry("Drifblim"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -1850,6 +2077,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Buneary",
+      "pkmn": findDexEntry("Buneary"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -1857,6 +2085,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Buneary",
+      "pkmn": findDexEntry("Buneary"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -1864,6 +2093,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Lopunny",
+      "pkmn": findDexEntry("Lopunny"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -1871,6 +2101,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Lopunny",
+      "pkmn": findDexEntry("Lopunny"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -1880,6 +2111,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Lopunny",
+      "pkmn": findDexEntry("Lopunny"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -1887,6 +2119,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Lopunny",
+      "pkmn": findDexEntry("Lopunny"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -1896,6 +2129,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Buneary",
+      "pkmn": findDexEntry("Buneary"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -1905,6 +2139,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Lopunny",
+      "pkmn": findDexEntry("Lopunny"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -1913,28 +2148,32 @@ Map<String, EncounterTable> encounterSlotsMap = {
   "4418CAFB9AE0F8F7": EncounterTable([
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
-      "name": "MimeJr.",
+      "name": "Mime Jr.",
+      "pkmn": findDexEntry("Mime Jr."),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
     }),
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
-      "name": "MimeJr.",
+      "name": "Mime Jr.",
+      "pkmn": findDexEntry("Mime Jr."),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
     }),
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
-      "name": "Mr.Mime",
+      "name": "Mr. Mime",
+      "pkmn": findDexEntry("Mr. Mime"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
     }),
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
-      "name": "Mr.Mime",
+      "name": "Mr. Mime",
+      "pkmn": findDexEntry("Mr. Mime"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -1943,14 +2182,16 @@ Map<String, EncounterTable> encounterSlotsMap = {
   "1F293212F14023D3": EncounterTable([
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
-      "name": "Mr.Mime",
+      "name": "Mr. Mime",
+      "pkmn": findDexEntry("Mr. Mime"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
     }),
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
-      "name": "Mr.Mime",
+      "name": "Mr. Mime",
+      "pkmn": findDexEntry("Mr. Mime"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -1959,7 +2200,8 @@ Map<String, EncounterTable> encounterSlotsMap = {
   "1F293112F1402220": EncounterTable([
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
-      "name": "MimeJr.",
+      "name": "Mime Jr.",
+      "pkmn": findDexEntry("Mime Jr."),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -1968,7 +2210,8 @@ Map<String, EncounterTable> encounterSlotsMap = {
   "1F293412F1402739": EncounterTable([
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
-      "name": "Mr.Mime",
+      "name": "Mr. Mime",
+      "pkmn": findDexEntry("Mr. Mime"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -1978,6 +2221,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Chatot",
+      "pkmn": findDexEntry("Chatot"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -1985,6 +2229,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Chatot",
+      "pkmn": findDexEntry("Chatot"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -1994,6 +2239,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Chatot",
+      "pkmn": findDexEntry("Chatot"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -2003,6 +2249,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Munchlax",
+      "pkmn": findDexEntry("Munchlax"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -2010,6 +2257,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Munchlax",
+      "pkmn": findDexEntry("Munchlax"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -2017,6 +2265,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Snorlax",
+      "pkmn": findDexEntry("Snorlax"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -2024,6 +2273,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Snorlax",
+      "pkmn": findDexEntry("Snorlax"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 3
@@ -2033,6 +2283,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Snorlax",
+      "pkmn": findDexEntry("Snorlax"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -2040,6 +2291,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Snorlax",
+      "pkmn": findDexEntry("Snorlax"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -2049,6 +2301,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Munchlax",
+      "pkmn": findDexEntry("Munchlax"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -2058,6 +2311,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Snorlax",
+      "pkmn": findDexEntry("Snorlax"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -2067,6 +2321,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Zorua-1",
+      "pkmn": findDexEntry("Zorua"),
       "alpha": false,
       "level": [27, 29],
       "ivs": 0
@@ -2074,6 +2329,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Zorua-1",
+      "pkmn": findDexEntry("Zorua"),
       "alpha": true,
       "level": [42, 44],
       "ivs": 3
@@ -2081,6 +2337,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Zoroark-1",
+      "pkmn": findDexEntry("Zoroark"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -2088,6 +2345,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Zoroark-1",
+      "pkmn": findDexEntry("Zoroark"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -2097,6 +2355,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Zoroark-1",
+      "pkmn": findDexEntry("Zoroark"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -2104,6 +2363,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Zoroark-1",
+      "pkmn": findDexEntry("Zoroark"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -2113,6 +2373,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Zorua-1",
+      "pkmn": findDexEntry("Zorua"),
       "alpha": true,
       "level": [42, 44],
       "ivs": 4
@@ -2122,6 +2383,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Zoroark-1",
+      "pkmn": findDexEntry("Zoroark"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -2131,6 +2393,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Psyduck",
+      "pkmn": findDexEntry("Psyduck"),
       "alpha": false,
       "level": [30, 32],
       "ivs": 0
@@ -2138,6 +2401,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Psyduck",
+      "pkmn": findDexEntry("Psyduck"),
       "alpha": true,
       "level": [45, 47],
       "ivs": 3
@@ -2145,6 +2409,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Golduck",
+      "pkmn": findDexEntry("Golduck"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -2152,6 +2417,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Golduck",
+      "pkmn": findDexEntry("Golduck"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -2161,6 +2427,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Golduck",
+      "pkmn": findDexEntry("Golduck"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -2168,6 +2435,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Golduck",
+      "pkmn": findDexEntry("Golduck"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -2177,6 +2445,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Psyduck",
+      "pkmn": findDexEntry("Psyduck"),
       "alpha": true,
       "level": [45, 47],
       "ivs": 4
@@ -2186,6 +2455,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Golduck",
+      "pkmn": findDexEntry("Golduck"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -2195,6 +2465,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Gastly",
+      "pkmn": findDexEntry("Gastly"),
       "alpha": false,
       "level": [22, 24],
       "ivs": 0
@@ -2202,6 +2473,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Gastly",
+      "pkmn": findDexEntry("Gastly"),
       "alpha": true,
       "level": [37, 39],
       "ivs": 3
@@ -2209,6 +2481,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Haunter",
+      "pkmn": findDexEntry("Haunter"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -2216,6 +2489,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Haunter",
+      "pkmn": findDexEntry("Haunter"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -2225,6 +2499,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Haunter",
+      "pkmn": findDexEntry("Haunter"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 3
@@ -2232,6 +2507,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Haunter",
+      "pkmn": findDexEntry("Haunter"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -2241,6 +2517,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Gastly",
+      "pkmn": findDexEntry("Gastly"),
       "alpha": true,
       "level": [37, 39],
       "ivs": 4
@@ -2250,6 +2527,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Haunter",
+      "pkmn": findDexEntry("Haunter"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -2259,6 +2537,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Haunter",
+      "pkmn": findDexEntry("Haunter"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -2266,6 +2545,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Haunter",
+      "pkmn": findDexEntry("Haunter"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -2273,6 +2553,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Gengar",
+      "pkmn": findDexEntry("Gengar"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -2280,6 +2561,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Gengar",
+      "pkmn": findDexEntry("Gengar"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 3
@@ -2289,6 +2571,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Gengar",
+      "pkmn": findDexEntry("Gengar"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -2296,6 +2579,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Gengar",
+      "pkmn": findDexEntry("Gengar"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -2305,6 +2589,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Haunter",
+      "pkmn": findDexEntry("Haunter"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -2314,6 +2599,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Gengar",
+      "pkmn": findDexEntry("Gengar"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -2323,6 +2609,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Onix",
+      "pkmn": findDexEntry("Onix"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -2330,6 +2617,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Onix",
+      "pkmn": findDexEntry("Onix"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -2337,6 +2625,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Steelix",
+      "pkmn": findDexEntry("Steelix"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -2344,6 +2633,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Steelix",
+      "pkmn": findDexEntry("Steelix"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 3
@@ -2353,6 +2643,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Steelix",
+      "pkmn": findDexEntry("Steelix"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -2360,6 +2651,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Steelix",
+      "pkmn": findDexEntry("Steelix"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -2369,6 +2661,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Onix",
+      "pkmn": findDexEntry("Onix"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -2378,6 +2671,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Steelix",
+      "pkmn": findDexEntry("Steelix"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -2387,6 +2681,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Lickitung",
+      "pkmn": findDexEntry("Lickitung"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -2394,6 +2689,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Lickitung",
+      "pkmn": findDexEntry("Lickitung"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -2401,6 +2697,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Lickilicky",
+      "pkmn": findDexEntry("Lickilicky"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -2408,6 +2705,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Lickilicky",
+      "pkmn": findDexEntry("Lickilicky"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -2417,6 +2715,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Lickilicky",
+      "pkmn": findDexEntry("Lickilicky"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -2424,6 +2723,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Lickilicky",
+      "pkmn": findDexEntry("Lickilicky"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -2433,6 +2733,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Lickitung",
+      "pkmn": findDexEntry("Lickitung"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -2442,6 +2743,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Lickilicky",
+      "pkmn": findDexEntry("Lickilicky"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -2451,6 +2753,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Rhyhorn",
+      "pkmn": findDexEntry("Rhyhorn"),
       "alpha": false,
       "level": [39, 41],
       "ivs": 0
@@ -2458,6 +2761,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Rhyhorn",
+      "pkmn": findDexEntry("Rhyhorn"),
       "alpha": true,
       "level": [54, 56],
       "ivs": 3
@@ -2465,6 +2769,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Rhydon",
+      "pkmn": findDexEntry("Rhydon"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -2472,6 +2777,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Rhydon",
+      "pkmn": findDexEntry("Rhydon"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -2481,6 +2787,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Rhydon",
+      "pkmn": findDexEntry("Rhydon"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 3
@@ -2488,6 +2795,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Rhydon",
+      "pkmn": findDexEntry("Rhydon"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -2497,6 +2805,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Rhyhorn",
+      "pkmn": findDexEntry("Rhyhorn"),
       "alpha": true,
       "level": [54, 56],
       "ivs": 4
@@ -2506,6 +2815,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Rhydon",
+      "pkmn": findDexEntry("Rhydon"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -2515,6 +2825,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Rhydon",
+      "pkmn": findDexEntry("Rhydon"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -2522,6 +2833,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Rhydon",
+      "pkmn": findDexEntry("Rhydon"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -2529,6 +2841,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Rhyperior",
+      "pkmn": findDexEntry("Rhyperior"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -2536,6 +2849,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Rhyperior",
+      "pkmn": findDexEntry("Rhyperior"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 3
@@ -2545,6 +2859,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Rhyperior",
+      "pkmn": findDexEntry("Rhyperior"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -2552,6 +2867,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Rhyperior",
+      "pkmn": findDexEntry("Rhyperior"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -2561,6 +2877,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Rhydon",
+      "pkmn": findDexEntry("Rhydon"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -2570,6 +2887,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Rhyperior",
+      "pkmn": findDexEntry("Rhyperior"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -2579,6 +2897,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Tangela",
+      "pkmn": findDexEntry("Tangela"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -2586,6 +2905,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Tangela",
+      "pkmn": findDexEntry("Tangela"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -2593,6 +2913,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Tangrowth",
+      "pkmn": findDexEntry("Tangrowth"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -2600,6 +2921,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Tangrowth",
+      "pkmn": findDexEntry("Tangrowth"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -2609,6 +2931,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Tangrowth",
+      "pkmn": findDexEntry("Tangrowth"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -2616,6 +2939,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Tangrowth",
+      "pkmn": findDexEntry("Tangrowth"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -2625,6 +2949,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Tangela",
+      "pkmn": findDexEntry("Tangela"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -2634,6 +2959,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Tangrowth",
+      "pkmn": findDexEntry("Tangrowth"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -2643,6 +2969,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Cyndaquil",
+      "pkmn": findDexEntry("Cyndaquil"),
       "alpha": false,
       "level": [14, 16],
       "ivs": 0
@@ -2650,6 +2977,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Cyndaquil",
+      "pkmn": findDexEntry("Cyndaquil"),
       "alpha": true,
       "level": [29, 31],
       "ivs": 3
@@ -2657,6 +2985,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Quilava",
+      "pkmn": findDexEntry("Quilava"),
       "alpha": false,
       "level": [33, 35],
       "ivs": 0
@@ -2664,6 +2993,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Quilava",
+      "pkmn": findDexEntry("Quilava"),
       "alpha": true,
       "level": [48, 50],
       "ivs": 3
@@ -2673,6 +3003,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Quilava",
+      "pkmn": findDexEntry("Quilava"),
       "alpha": false,
       "level": [33, 35],
       "ivs": 3
@@ -2680,6 +3011,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Quilava",
+      "pkmn": findDexEntry("Quilava"),
       "alpha": true,
       "level": [48, 50],
       "ivs": 4
@@ -2689,6 +3021,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Cyndaquil",
+      "pkmn": findDexEntry("Cyndaquil"),
       "alpha": true,
       "level": [29, 31],
       "ivs": 4
@@ -2698,6 +3031,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Quilava",
+      "pkmn": findDexEntry("Quilava"),
       "alpha": true,
       "level": [48, 50],
       "ivs": 4
@@ -2707,6 +3041,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Quilava",
+      "pkmn": findDexEntry("Quilava"),
       "alpha": false,
       "level": [33, 35],
       "ivs": 0
@@ -2714,6 +3049,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Quilava",
+      "pkmn": findDexEntry("Quilava"),
       "alpha": true,
       "level": [48, 50],
       "ivs": 3
@@ -2721,6 +3057,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Typhlosion-1",
+      "pkmn": findDexEntry("Typhlosion"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -2728,6 +3065,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Typhlosion-1",
+      "pkmn": findDexEntry("Typhlosion"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 3
@@ -2737,6 +3075,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Typhlosion-1",
+      "pkmn": findDexEntry("Typhlosion"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -2744,6 +3083,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Typhlosion-1",
+      "pkmn": findDexEntry("Typhlosion"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -2753,6 +3093,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Quilava",
+      "pkmn": findDexEntry("Quilava"),
       "alpha": true,
       "level": [48, 50],
       "ivs": 4
@@ -2762,6 +3103,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Typhlosion-1",
+      "pkmn": findDexEntry("Typhlosion"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -2771,6 +3113,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Yanma",
+      "pkmn": findDexEntry("Yanma"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -2778,6 +3121,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Yanma",
+      "pkmn": findDexEntry("Yanma"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -2785,6 +3129,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Yanmega",
+      "pkmn": findDexEntry("Yanmega"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -2792,6 +3137,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Yanmega",
+      "pkmn": findDexEntry("Yanmega"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -2801,6 +3147,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Yanmega",
+      "pkmn": findDexEntry("Yanmega"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -2808,6 +3155,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Yanmega",
+      "pkmn": findDexEntry("Yanmega"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -2817,6 +3165,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Yanma",
+      "pkmn": findDexEntry("Yanma"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -2826,6 +3175,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Yanmega",
+      "pkmn": findDexEntry("Yanmega"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -2835,6 +3185,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Murkrow",
+      "pkmn": findDexEntry("Murkrow"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -2842,6 +3193,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Murkrow",
+      "pkmn": findDexEntry("Murkrow"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -2849,6 +3201,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Honchkrow",
+      "pkmn": findDexEntry("Honchkrow"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -2856,6 +3209,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Honchkrow",
+      "pkmn": findDexEntry("Honchkrow"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -2865,6 +3219,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Honchkrow",
+      "pkmn": findDexEntry("Honchkrow"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -2872,6 +3227,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Honchkrow",
+      "pkmn": findDexEntry("Honchkrow"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -2881,6 +3237,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Murkrow",
+      "pkmn": findDexEntry("Murkrow"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -2890,6 +3247,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Honchkrow",
+      "pkmn": findDexEntry("Honchkrow"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -2899,6 +3257,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Swinub",
+      "pkmn": findDexEntry("Swinub"),
       "alpha": false,
       "level": [30, 32],
       "ivs": 0
@@ -2906,6 +3265,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Swinub",
+      "pkmn": findDexEntry("Swinub"),
       "alpha": true,
       "level": [45, 47],
       "ivs": 3
@@ -2913,6 +3273,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Piloswine",
+      "pkmn": findDexEntry("Piloswine"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -2920,6 +3281,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Piloswine",
+      "pkmn": findDexEntry("Piloswine"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -2929,6 +3291,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Piloswine",
+      "pkmn": findDexEntry("Piloswine"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 3
@@ -2936,6 +3299,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Piloswine",
+      "pkmn": findDexEntry("Piloswine"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -2945,6 +3309,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Swinub",
+      "pkmn": findDexEntry("Swinub"),
       "alpha": true,
       "level": [45, 47],
       "ivs": 4
@@ -2954,6 +3319,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Piloswine",
+      "pkmn": findDexEntry("Piloswine"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -2963,6 +3329,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Teddiursa",
+      "pkmn": findDexEntry("Teddiursa"),
       "alpha": false,
       "level": [27, 29],
       "ivs": 0
@@ -2970,6 +3337,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Teddiursa",
+      "pkmn": findDexEntry("Teddiursa"),
       "alpha": true,
       "level": [42, 44],
       "ivs": 3
@@ -2977,6 +3345,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Ursaring",
+      "pkmn": findDexEntry("Ursaring"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -2984,6 +3353,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Ursaring",
+      "pkmn": findDexEntry("Ursaring"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -2993,6 +3363,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Ursaring",
+      "pkmn": findDexEntry("Ursaring"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 3
@@ -3000,6 +3371,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Ursaring",
+      "pkmn": findDexEntry("Ursaring"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -3009,6 +3381,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Teddiursa",
+      "pkmn": findDexEntry("Teddiursa"),
       "alpha": true,
       "level": [42, 44],
       "ivs": 4
@@ -3018,6 +3391,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Ursaring",
+      "pkmn": findDexEntry("Ursaring"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -3027,6 +3401,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Ursaring",
+      "pkmn": findDexEntry("Ursaring"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -3034,6 +3409,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Ursaring",
+      "pkmn": findDexEntry("Ursaring"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -3041,6 +3417,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Ursaluna",
+      "pkmn": findDexEntry("Ursaluna"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -3048,6 +3425,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Ursaluna",
+      "pkmn": findDexEntry("Ursaluna"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 3
@@ -3057,6 +3435,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Ursaluna",
+      "pkmn": findDexEntry("Ursaluna"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -3064,6 +3443,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Ursaluna",
+      "pkmn": findDexEntry("Ursaluna"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -3073,6 +3453,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Ursaring",
+      "pkmn": findDexEntry("Ursaring"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -3082,6 +3463,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Ursaluna",
+      "pkmn": findDexEntry("Ursaluna"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -3091,6 +3473,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Roselia",
+      "pkmn": findDexEntry("Roselia"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -3098,6 +3481,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Roselia",
+      "pkmn": findDexEntry("Roselia"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -3105,6 +3489,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Roserade",
+      "pkmn": findDexEntry("Roserade"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -3112,6 +3497,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Roserade",
+      "pkmn": findDexEntry("Roserade"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 3
@@ -3121,6 +3507,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Roserade",
+      "pkmn": findDexEntry("Roserade"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -3128,6 +3515,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Roserade",
+      "pkmn": findDexEntry("Roserade"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -3137,6 +3525,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Roselia",
+      "pkmn": findDexEntry("Roselia"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -3146,6 +3535,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Roserade",
+      "pkmn": findDexEntry("Roserade"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -3155,6 +3545,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Turtwig",
+      "pkmn": findDexEntry("Turtwig"),
       "alpha": false,
       "level": [15, 17],
       "ivs": 0
@@ -3162,6 +3553,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Turtwig",
+      "pkmn": findDexEntry("Turtwig"),
       "alpha": true,
       "level": [30, 32],
       "ivs": 3
@@ -3169,6 +3561,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Grotle",
+      "pkmn": findDexEntry("Grotle"),
       "alpha": false,
       "level": [29, 31],
       "ivs": 0
@@ -3176,6 +3569,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Grotle",
+      "pkmn": findDexEntry("Grotle"),
       "alpha": true,
       "level": [44, 46],
       "ivs": 3
@@ -3185,6 +3579,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Grotle",
+      "pkmn": findDexEntry("Grotle"),
       "alpha": false,
       "level": [29, 31],
       "ivs": 3
@@ -3192,6 +3587,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Grotle",
+      "pkmn": findDexEntry("Grotle"),
       "alpha": true,
       "level": [44, 46],
       "ivs": 4
@@ -3201,6 +3597,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Turtwig",
+      "pkmn": findDexEntry("Turtwig"),
       "alpha": true,
       "level": [30, 32],
       "ivs": 4
@@ -3210,6 +3607,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Grotle",
+      "pkmn": findDexEntry("Grotle"),
       "alpha": true,
       "level": [44, 46],
       "ivs": 4
@@ -3219,6 +3617,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Grotle",
+      "pkmn": findDexEntry("Grotle"),
       "alpha": false,
       "level": [29, 31],
       "ivs": 0
@@ -3226,6 +3625,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Grotle",
+      "pkmn": findDexEntry("Grotle"),
       "alpha": true,
       "level": [44, 46],
       "ivs": 3
@@ -3233,6 +3633,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Torterra",
+      "pkmn": findDexEntry("Torterra"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -3240,6 +3641,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Torterra",
+      "pkmn": findDexEntry("Torterra"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 3
@@ -3249,6 +3651,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Torterra",
+      "pkmn": findDexEntry("Torterra"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -3256,6 +3659,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Torterra",
+      "pkmn": findDexEntry("Torterra"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -3265,6 +3669,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Grotle",
+      "pkmn": findDexEntry("Grotle"),
       "alpha": true,
       "level": [44, 46],
       "ivs": 4
@@ -3274,6 +3679,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Torterra",
+      "pkmn": findDexEntry("Torterra"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -3283,6 +3689,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Budew",
+      "pkmn": findDexEntry("Budew"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -3290,6 +3697,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Budew",
+      "pkmn": findDexEntry("Budew"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -3297,6 +3705,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Roselia",
+      "pkmn": findDexEntry("Roselia"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -3304,6 +3713,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Roselia",
+      "pkmn": findDexEntry("Roselia"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -3313,6 +3723,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Roselia",
+      "pkmn": findDexEntry("Roselia"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -3320,6 +3731,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Roselia",
+      "pkmn": findDexEntry("Roselia"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -3329,6 +3741,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Budew",
+      "pkmn": findDexEntry("Budew"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -3338,6 +3751,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Roselia",
+      "pkmn": findDexEntry("Roselia"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -3347,6 +3761,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Pachirisu",
+      "pkmn": findDexEntry("Pachirisu"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -3354,6 +3769,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Pachirisu",
+      "pkmn": findDexEntry("Pachirisu"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -3363,6 +3779,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Pachirisu",
+      "pkmn": findDexEntry("Pachirisu"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -3372,6 +3789,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Stunky",
+      "pkmn": findDexEntry("Stunky"),
       "alpha": false,
       "level": [31, 33],
       "ivs": 0
@@ -3379,6 +3797,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Stunky",
+      "pkmn": findDexEntry("Stunky"),
       "alpha": true,
       "level": [46, 48],
       "ivs": 3
@@ -3386,6 +3805,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Skuntank",
+      "pkmn": findDexEntry("Skuntank"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -3393,6 +3813,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Skuntank",
+      "pkmn": findDexEntry("Skuntank"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -3402,6 +3823,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Skuntank",
+      "pkmn": findDexEntry("Skuntank"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -3409,6 +3831,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Skuntank",
+      "pkmn": findDexEntry("Skuntank"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -3418,6 +3841,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Stunky",
+      "pkmn": findDexEntry("Stunky"),
       "alpha": true,
       "level": [46, 48],
       "ivs": 4
@@ -3427,6 +3851,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Skuntank",
+      "pkmn": findDexEntry("Skuntank"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -3436,6 +3861,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Bronzor",
+      "pkmn": findDexEntry("Bronzor"),
       "alpha": false,
       "level": [30, 32],
       "ivs": 0
@@ -3443,6 +3869,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Bronzor",
+      "pkmn": findDexEntry("Bronzor"),
       "alpha": true,
       "level": [45, 47],
       "ivs": 3
@@ -3450,6 +3877,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Bronzong",
+      "pkmn": findDexEntry("Bronzong"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -3457,6 +3885,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Bronzong",
+      "pkmn": findDexEntry("Bronzong"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -3466,6 +3895,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Bronzong",
+      "pkmn": findDexEntry("Bronzong"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -3473,6 +3903,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Bronzong",
+      "pkmn": findDexEntry("Bronzong"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -3482,6 +3913,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Bronzor",
+      "pkmn": findDexEntry("Bronzor"),
       "alpha": true,
       "level": [45, 47],
       "ivs": 4
@@ -3491,6 +3923,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Bronzong",
+      "pkmn": findDexEntry("Bronzong"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -3500,6 +3933,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Bonsly",
+      "pkmn": findDexEntry("Bonsly"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -3507,6 +3941,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Bonsly",
+      "pkmn": findDexEntry("Bonsly"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -3514,6 +3949,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Sudowoodo",
+      "pkmn": findDexEntry("Sudowoodo"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -3521,6 +3957,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Sudowoodo",
+      "pkmn": findDexEntry("Sudowoodo"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -3530,6 +3967,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Sudowoodo",
+      "pkmn": findDexEntry("Sudowoodo"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -3537,6 +3975,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Sudowoodo",
+      "pkmn": findDexEntry("Sudowoodo"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -3546,6 +3985,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Bonsly",
+      "pkmn": findDexEntry("Bonsly"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -3555,6 +3995,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Sudowoodo",
+      "pkmn": findDexEntry("Sudowoodo"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -3564,6 +4005,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Spiritomb",
+      "pkmn": findDexEntry("Spiritomb"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -3571,6 +4013,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Spiritomb",
+      "pkmn": findDexEntry("Spiritomb"),
       "alpha": true,
       "level": [80, 82],
       "ivs": 3
@@ -3580,6 +4023,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Spiritomb",
+      "pkmn": findDexEntry("Spiritomb"),
       "alpha": true,
       "level": [80, 82],
       "ivs": 4
@@ -3589,6 +4033,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Hippopotas",
+      "pkmn": findDexEntry("Hippopotas"),
       "alpha": false,
       "level": [31, 33],
       "ivs": 0
@@ -3596,6 +4041,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Hippopotas",
+      "pkmn": findDexEntry("Hippopotas"),
       "alpha": true,
       "level": [46, 48],
       "ivs": 3
@@ -3603,6 +4049,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Hippowdon",
+      "pkmn": findDexEntry("Hippowdon"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -3610,6 +4057,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Hippowdon",
+      "pkmn": findDexEntry("Hippowdon"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -3619,6 +4067,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Hippowdon",
+      "pkmn": findDexEntry("Hippowdon"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -3626,6 +4075,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Hippowdon",
+      "pkmn": findDexEntry("Hippowdon"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -3635,6 +4085,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Hippopotas",
+      "pkmn": findDexEntry("Hippopotas"),
       "alpha": true,
       "level": [46, 48],
       "ivs": 4
@@ -3644,6 +4095,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Hippowdon",
+      "pkmn": findDexEntry("Hippowdon"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -3653,6 +4105,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Skorupi",
+      "pkmn": findDexEntry("Skorupi"),
       "alpha": false,
       "level": [37, 39],
       "ivs": 0
@@ -3660,6 +4113,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Skorupi",
+      "pkmn": findDexEntry("Skorupi"),
       "alpha": true,
       "level": [52, 54],
       "ivs": 3
@@ -3667,6 +4121,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Drapion",
+      "pkmn": findDexEntry("Drapion"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -3674,6 +4129,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Drapion",
+      "pkmn": findDexEntry("Drapion"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -3683,6 +4139,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Drapion",
+      "pkmn": findDexEntry("Drapion"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -3690,6 +4147,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Drapion",
+      "pkmn": findDexEntry("Drapion"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -3699,6 +4157,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Skorupi",
+      "pkmn": findDexEntry("Skorupi"),
       "alpha": true,
       "level": [52, 54],
       "ivs": 4
@@ -3708,6 +4167,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Drapion",
+      "pkmn": findDexEntry("Drapion"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -3717,6 +4177,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Croagunk",
+      "pkmn": findDexEntry("Croagunk"),
       "alpha": false,
       "level": [34, 36],
       "ivs": 0
@@ -3724,6 +4185,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Croagunk",
+      "pkmn": findDexEntry("Croagunk"),
       "alpha": true,
       "level": [49, 51],
       "ivs": 3
@@ -3731,6 +4193,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Toxicroak",
+      "pkmn": findDexEntry("Toxicroak"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -3738,6 +4201,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Toxicroak",
+      "pkmn": findDexEntry("Toxicroak"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -3747,6 +4211,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Toxicroak",
+      "pkmn": findDexEntry("Toxicroak"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -3754,6 +4219,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Toxicroak",
+      "pkmn": findDexEntry("Toxicroak"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -3763,6 +4229,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Croagunk",
+      "pkmn": findDexEntry("Croagunk"),
       "alpha": true,
       "level": [49, 51],
       "ivs": 4
@@ -3772,6 +4239,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Toxicroak",
+      "pkmn": findDexEntry("Toxicroak"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -3781,6 +4249,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Carnivine",
+      "pkmn": findDexEntry("Carnivine"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -3788,6 +4257,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Carnivine",
+      "pkmn": findDexEntry("Carnivine"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -3797,6 +4267,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Carnivine",
+      "pkmn": findDexEntry("Carnivine"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -3806,6 +4277,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Petilil",
+      "pkmn": findDexEntry("Petilil"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -3813,6 +4285,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Petilil",
+      "pkmn": findDexEntry("Petilil"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -3820,6 +4293,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Lilligant-1",
+      "pkmn": findDexEntry("Lilligant"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -3827,6 +4301,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Lilligant-1",
+      "pkmn": findDexEntry("Lilligant"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -3836,6 +4311,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Lilligant-1",
+      "pkmn": findDexEntry("Lilligant"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -3843,6 +4319,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Lilligant-1",
+      "pkmn": findDexEntry("Lilligant"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -3852,6 +4329,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Petilil",
+      "pkmn": findDexEntry("Petilil"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -3861,6 +4339,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Lilligant-1",
+      "pkmn": findDexEntry("Lilligant"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -3870,6 +4349,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Goomy",
+      "pkmn": findDexEntry("Goomy"),
       "alpha": false,
       "level": [37, 39],
       "ivs": 0
@@ -3877,6 +4357,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Goomy",
+      "pkmn": findDexEntry("Goomy"),
       "alpha": true,
       "level": [52, 54],
       "ivs": 3
@@ -3884,6 +4365,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Sliggoo-1",
+      "pkmn": findDexEntry("Sliggoo"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -3891,6 +4373,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Sliggoo-1",
+      "pkmn": findDexEntry("Sliggoo"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -3900,6 +4383,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Sliggoo-1",
+      "pkmn": findDexEntry("Sliggoo"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 3
@@ -3907,6 +4391,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Sliggoo-1",
+      "pkmn": findDexEntry("Sliggoo"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -3916,6 +4401,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Goomy",
+      "pkmn": findDexEntry("Goomy"),
       "alpha": true,
       "level": [52, 54],
       "ivs": 4
@@ -3925,6 +4411,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Sliggoo-1",
+      "pkmn": findDexEntry("Sliggoo"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -3934,6 +4421,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Sliggoo-1",
+      "pkmn": findDexEntry("Sliggoo"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -3941,6 +4429,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Sliggoo-1",
+      "pkmn": findDexEntry("Sliggoo"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -3948,6 +4437,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Goodra-1",
+      "pkmn": findDexEntry("Goodra"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -3955,6 +4445,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Goodra-1",
+      "pkmn": findDexEntry("Goodra"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 3
@@ -3964,6 +4455,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Goodra-1",
+      "pkmn": findDexEntry("Goodra"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -3971,6 +4463,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Goodra-1",
+      "pkmn": findDexEntry("Goodra"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -3980,6 +4473,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Sliggoo-1",
+      "pkmn": findDexEntry("Sliggoo"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -3989,6 +4483,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Goodra-1",
+      "pkmn": findDexEntry("Goodra"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -3998,6 +4493,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "90D65BF8C214FBF".parseBigInt(),
       "name": "Unown",
+      "pkmn": findDexEntry("Unown"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -4005,6 +4501,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "9249249249248BF".parseBigInt(),
       "name": "Unown",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -4012,6 +4509,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "1231F808B0B39880".parseBigInt(),
       "name": "Unown-1",
+      "pkmn": findDexEntry("Unown"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -4019,6 +4517,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "124924924924917F".parseBigInt(),
       "name": "Unown-1",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -4026,6 +4525,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "1B568A51D545E17F".parseBigInt(),
       "name": "Unown-2",
+      "pkmn": findDexEntry("Unown"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -4033,6 +4533,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "1B6DB6DB6DB6DA80".parseBigInt(),
       "name": "Unown-2",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -4040,6 +4541,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "247B1C9AF9D82AFF".parseBigInt(),
       "name": "Unown-3",
+      "pkmn": findDexEntry("Unown"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -4047,6 +4549,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "24924924924922FF".parseBigInt(),
       "name": "Unown-3",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -4054,6 +4557,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "2D9FAEE41E6A72FF".parseBigInt(),
       "name": "Unown-4",
+      "pkmn": findDexEntry("Unown"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -4061,6 +4565,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "2DB6DB6DB6DB6D00".parseBigInt(),
       "name": "Unown-4",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -4068,6 +4573,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "36C4412D42FCBD00".parseBigInt(),
       "name": "Unown-5",
+      "pkmn": findDexEntry("Unown"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -4075,6 +4581,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "36DB6DB6DB6DB500".parseBigInt(),
       "name": "Unown-5",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -4082,6 +4589,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "3FE8D376678F0500".parseBigInt(),
       "name": "Unown-6",
+      "pkmn": findDexEntry("Unown"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -4089,6 +4597,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "3FFFFFFFFFFFFEFF".parseBigInt(),
       "name": "Unown-6",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -4096,6 +4605,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "490D65BF8C214DFF".parseBigInt(),
       "name": "Unown-7",
+      "pkmn": findDexEntry("Unown"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -4103,6 +4613,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "49249249249245FF".parseBigInt(),
       "name": "Unown-7",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -4110,6 +4621,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "5231F808B0B395FF".parseBigInt(),
       "name": "Unown-8",
+      "pkmn": findDexEntry("Unown"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -4117,6 +4629,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "5249249249249200".parseBigInt(),
       "name": "Unown-8",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -4124,6 +4637,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "5B568A51D545E200".parseBigInt(),
       "name": "Unown-9",
+      "pkmn": findDexEntry("Unown"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -4131,6 +4645,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "5B6DB6DB6DB6DA00".parseBigInt(),
       "name": "Unown-9",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -4138,6 +4653,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "647B1C9AF9D82A00".parseBigInt(),
       "name": "Unown-10",
+      "pkmn": findDexEntry("Unown"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -4145,6 +4661,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "6492492492492200".parseBigInt(),
       "name": "Unown-10",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -4152,6 +4669,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "6D9FAEE41E6A7200".parseBigInt(),
       "name": "Unown-11",
+      "pkmn": findDexEntry("Unown"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -4159,6 +4677,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "6DB6DB6DB6DB6A00".parseBigInt(),
       "name": "Unown-11",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -4166,6 +4685,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "76C4412D42FCBA00".parseBigInt(),
       "name": "Unown-12",
+      "pkmn": findDexEntry("Unown"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -4173,6 +4693,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "76DB6DB6DB6DB200".parseBigInt(),
       "name": "Unown-12",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -4180,6 +4701,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "7FE8D376678F0200".parseBigInt(),
       "name": "Unown-13",
+      "pkmn": findDexEntry("Unown"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -4187,6 +4709,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "7FFFFFFFFFFFFDFF".parseBigInt(),
       "name": "Unown-13",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -4194,6 +4717,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "890D65BF8C214BFF".parseBigInt(),
       "name": "Unown-14",
+      "pkmn": findDexEntry("Unown"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -4201,6 +4725,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "8924924924924400".parseBigInt(),
       "name": "Unown-14",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -4208,6 +4733,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "9231F808B0B39400".parseBigInt(),
       "name": "Unown-15",
+      "pkmn": findDexEntry("Unown"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -4215,6 +4741,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "9249249249248BFF".parseBigInt(),
       "name": "Unown-15",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -4222,6 +4749,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "9B568A51D545DBFF".parseBigInt(),
       "name": "Unown-16",
+      "pkmn": findDexEntry("Unown"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -4229,6 +4757,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "9B6DB6DB6DB6DBFF".parseBigInt(),
       "name": "Unown-16",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -4236,6 +4765,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "A47B1C9AF9D82BFF".parseBigInt(),
       "name": "Unown-17",
+      "pkmn": findDexEntry("Unown"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -4243,6 +4773,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "A492492492492400".parseBigInt(),
       "name": "Unown-17",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -4250,6 +4781,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "AD9FAEE41E6A7400".parseBigInt(),
       "name": "Unown-18",
+      "pkmn": findDexEntry("Unown"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -4257,6 +4789,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "ADB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Unown-18",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -4264,6 +4797,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "B6C4412D42FCBBFF".parseBigInt(),
       "name": "Unown-19",
+      "pkmn": findDexEntry("Unown"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -4271,6 +4805,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "B6DB6DB6DB6DB400".parseBigInt(),
       "name": "Unown-19",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -4278,6 +4813,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "BFE8D376678F0400".parseBigInt(),
       "name": "Unown-20",
+      "pkmn": findDexEntry("Unown"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -4285,6 +4821,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "BFFFFFFFFFFFFBFF".parseBigInt(),
       "name": "Unown-20",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -4292,6 +4829,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "C90D65BF8C214BFF".parseBigInt(),
       "name": "Unown-21",
+      "pkmn": findDexEntry("Unown"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -4299,6 +4837,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "C924924924924400".parseBigInt(),
       "name": "Unown-21",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -4306,6 +4845,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "D231F808B0B39400".parseBigInt(),
       "name": "Unown-22",
+      "pkmn": findDexEntry("Unown"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -4313,6 +4853,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "D249249249248BFF".parseBigInt(),
       "name": "Unown-22",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -4320,6 +4861,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "DB568A51D545DBFF".parseBigInt(),
       "name": "Unown-23",
+      "pkmn": findDexEntry("Unown"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -4327,6 +4869,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "DB6DB6DB6DB6D400".parseBigInt(),
       "name": "Unown-23",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -4334,6 +4877,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E47B1C9AF9D82400".parseBigInt(),
       "name": "Unown-24",
+      "pkmn": findDexEntry("Unown"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -4341,6 +4885,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Unown-24",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -4348,6 +4893,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "ED9FAEE41E6A6BFF".parseBigInt(),
       "name": "Unown-25",
+      "pkmn": findDexEntry("Unown"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -4355,6 +4901,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "EDB6DB6DB6DB6400".parseBigInt(),
       "name": "Unown-25",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -4362,6 +4909,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "F6C4412D42FCB400".parseBigInt(),
       "name": "Unown-26",
+      "pkmn": findDexEntry("Unown"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -4369,6 +4917,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "F6DB6DB6DB6DB400".parseBigInt(),
       "name": "Unown-26",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -4376,6 +4925,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFE8D376678F0400".parseBigInt(),
       "name": "Unown-27",
+      "pkmn": findDexEntry("Unown"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -4383,6 +4933,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Unown-27",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -4392,6 +4943,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "9249249249248BF".parseBigInt(),
       "name": "Unown",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -4399,6 +4951,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "124924924924917F".parseBigInt(),
       "name": "Unown-1",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -4406,6 +4959,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "1B6DB6DB6DB6DA80".parseBigInt(),
       "name": "Unown-2",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -4413,6 +4967,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "24924924924922FF".parseBigInt(),
       "name": "Unown-3",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -4420,6 +4975,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "2DB6DB6DB6DB6D00".parseBigInt(),
       "name": "Unown-4",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -4427,6 +4983,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "36DB6DB6DB6DB500".parseBigInt(),
       "name": "Unown-5",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -4434,6 +4991,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "3FFFFFFFFFFFFEFF".parseBigInt(),
       "name": "Unown-6",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -4441,6 +4999,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "49249249249245FF".parseBigInt(),
       "name": "Unown-7",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -4448,6 +5007,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "5249249249249200".parseBigInt(),
       "name": "Unown-8",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -4455,6 +5015,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "5B6DB6DB6DB6DA00".parseBigInt(),
       "name": "Unown-9",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -4462,6 +5023,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "6492492492492200".parseBigInt(),
       "name": "Unown-10",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -4469,6 +5031,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "6DB6DB6DB6DB6A00".parseBigInt(),
       "name": "Unown-11",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -4476,6 +5039,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "76DB6DB6DB6DB200".parseBigInt(),
       "name": "Unown-12",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -4483,6 +5047,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "7FFFFFFFFFFFFDFF".parseBigInt(),
       "name": "Unown-13",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -4490,6 +5055,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "8924924924924400".parseBigInt(),
       "name": "Unown-14",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -4497,6 +5063,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "9249249249248BFF".parseBigInt(),
       "name": "Unown-15",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -4504,6 +5071,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "9B6DB6DB6DB6DBFF".parseBigInt(),
       "name": "Unown-16",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -4511,6 +5079,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "A492492492492400".parseBigInt(),
       "name": "Unown-17",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -4518,6 +5087,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "ADB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Unown-18",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -4525,6 +5095,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "B6DB6DB6DB6DB400".parseBigInt(),
       "name": "Unown-19",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -4532,6 +5103,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "BFFFFFFFFFFFFBFF".parseBigInt(),
       "name": "Unown-20",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -4539,6 +5111,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "C924924924924400".parseBigInt(),
       "name": "Unown-21",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -4546,6 +5119,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "D249249249248BFF".parseBigInt(),
       "name": "Unown-22",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -4553,6 +5127,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "DB6DB6DB6DB6D400".parseBigInt(),
       "name": "Unown-23",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -4560,6 +5135,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Unown-24",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -4567,6 +5143,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "EDB6DB6DB6DB6400".parseBigInt(),
       "name": "Unown-25",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -4574,6 +5151,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "F6DB6DB6DB6DB400".parseBigInt(),
       "name": "Unown-26",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -4581,6 +5159,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Unown-27",
+      "pkmn": findDexEntry("Unown"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -4590,6 +5169,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Vulpix",
+      "pkmn": findDexEntry("Vulpix"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -4597,6 +5177,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Vulpix",
+      "pkmn": findDexEntry("Vulpix"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -4604,6 +5185,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Ninetales",
+      "pkmn": findDexEntry("Ninetales"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -4611,6 +5193,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Ninetales",
+      "pkmn": findDexEntry("Ninetales"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -4620,6 +5203,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Ninetales",
+      "pkmn": findDexEntry("Ninetales"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -4627,6 +5211,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Ninetales",
+      "pkmn": findDexEntry("Ninetales"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -4636,6 +5221,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Vulpix",
+      "pkmn": findDexEntry("Vulpix"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -4645,6 +5231,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Ninetales",
+      "pkmn": findDexEntry("Ninetales"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -4654,6 +5241,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Growlithe-1",
+      "pkmn": findDexEntry("Growlithe"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -4661,6 +5249,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Growlithe-1",
+      "pkmn": findDexEntry("Growlithe"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -4668,6 +5257,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Arcanine-1",
+      "pkmn": findDexEntry("Arcanine"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -4675,6 +5265,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Arcanine-1",
+      "pkmn": findDexEntry("Arcanine"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -4684,6 +5275,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Arcanine-1",
+      "pkmn": findDexEntry("Arcanine"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -4691,6 +5283,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Arcanine-1",
+      "pkmn": findDexEntry("Arcanine"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -4700,6 +5293,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Growlithe-1",
+      "pkmn": findDexEntry("Growlithe"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -4709,6 +5303,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Arcanine-1",
+      "pkmn": findDexEntry("Arcanine"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -4718,6 +5313,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Machop",
+      "pkmn": findDexEntry("Machop"),
       "alpha": false,
       "level": [25, 27],
       "ivs": 0
@@ -4725,6 +5321,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Machop",
+      "pkmn": findDexEntry("Machop"),
       "alpha": true,
       "level": [40, 42],
       "ivs": 3
@@ -4732,6 +5329,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Machoke",
+      "pkmn": findDexEntry("Machoke"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -4739,6 +5337,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Machoke",
+      "pkmn": findDexEntry("Machoke"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -4748,6 +5347,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Machoke",
+      "pkmn": findDexEntry("Machoke"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 3
@@ -4755,6 +5355,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Machoke",
+      "pkmn": findDexEntry("Machoke"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -4764,6 +5365,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Machop",
+      "pkmn": findDexEntry("Machop"),
       "alpha": true,
       "level": [40, 42],
       "ivs": 4
@@ -4773,6 +5375,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Machoke",
+      "pkmn": findDexEntry("Machoke"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -4782,6 +5385,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Machoke",
+      "pkmn": findDexEntry("Machoke"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -4789,6 +5393,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Machoke",
+      "pkmn": findDexEntry("Machoke"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -4796,6 +5401,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Machamp",
+      "pkmn": findDexEntry("Machamp"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -4803,6 +5409,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Machamp",
+      "pkmn": findDexEntry("Machamp"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 3
@@ -4812,6 +5419,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Machamp",
+      "pkmn": findDexEntry("Machamp"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -4819,6 +5427,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Machamp",
+      "pkmn": findDexEntry("Machamp"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -4828,6 +5437,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Machoke",
+      "pkmn": findDexEntry("Machoke"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -4837,6 +5447,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Machamp",
+      "pkmn": findDexEntry("Machamp"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -4846,6 +5457,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Tentacool",
+      "pkmn": findDexEntry("Tentacool"),
       "alpha": false,
       "level": [27, 29],
       "ivs": 0
@@ -4853,6 +5465,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Tentacool",
+      "pkmn": findDexEntry("Tentacool"),
       "alpha": true,
       "level": [42, 44],
       "ivs": 3
@@ -4860,6 +5473,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Tentacruel",
+      "pkmn": findDexEntry("Tentacruel"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -4867,6 +5481,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Tentacruel",
+      "pkmn": findDexEntry("Tentacruel"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -4876,6 +5491,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Tentacruel",
+      "pkmn": findDexEntry("Tentacruel"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -4883,6 +5499,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Tentacruel",
+      "pkmn": findDexEntry("Tentacruel"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -4892,6 +5509,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Tentacool",
+      "pkmn": findDexEntry("Tentacool"),
       "alpha": true,
       "level": [42, 44],
       "ivs": 4
@@ -4901,6 +5519,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Tentacruel",
+      "pkmn": findDexEntry("Tentacruel"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -4910,6 +5529,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Chansey",
+      "pkmn": findDexEntry("Chansey"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -4917,6 +5537,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Chansey",
+      "pkmn": findDexEntry("Chansey"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -4924,6 +5545,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Blissey",
+      "pkmn": findDexEntry("Blissey"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -4931,6 +5553,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Blissey",
+      "pkmn": findDexEntry("Blissey"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 3
@@ -4940,6 +5563,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Blissey",
+      "pkmn": findDexEntry("Blissey"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -4947,6 +5571,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Blissey",
+      "pkmn": findDexEntry("Blissey"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -4956,6 +5581,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Chansey",
+      "pkmn": findDexEntry("Chansey"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -4965,6 +5591,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Blissey",
+      "pkmn": findDexEntry("Blissey"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -4974,6 +5601,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Magmar",
+      "pkmn": findDexEntry("Magmar"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -4981,6 +5609,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Magmar",
+      "pkmn": findDexEntry("Magmar"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -4988,6 +5617,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Magmortar",
+      "pkmn": findDexEntry("Magmortar"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -4995,6 +5625,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Magmortar",
+      "pkmn": findDexEntry("Magmortar"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 3
@@ -5004,6 +5635,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Magmortar",
+      "pkmn": findDexEntry("Magmortar"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -5011,6 +5643,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Magmortar",
+      "pkmn": findDexEntry("Magmortar"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -5020,6 +5653,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Magmar",
+      "pkmn": findDexEntry("Magmar"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -5029,6 +5663,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Magmortar",
+      "pkmn": findDexEntry("Magmortar"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -5038,6 +5673,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Magikarp",
+      "pkmn": findDexEntry("Magikarp"),
       "alpha": false,
       "level": [17, 19],
       "ivs": 0
@@ -5045,6 +5681,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Magikarp",
+      "pkmn": findDexEntry("Magikarp"),
       "alpha": true,
       "level": [32, 34],
       "ivs": 3
@@ -5052,6 +5689,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Gyarados",
+      "pkmn": findDexEntry("Gyarados"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -5059,6 +5697,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Gyarados",
+      "pkmn": findDexEntry("Gyarados"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -5068,6 +5707,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Gyarados",
+      "pkmn": findDexEntry("Gyarados"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -5075,6 +5715,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Gyarados",
+      "pkmn": findDexEntry("Gyarados"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -5084,6 +5725,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Magikarp",
+      "pkmn": findDexEntry("Magikarp"),
       "alpha": true,
       "level": [32, 34],
       "ivs": 4
@@ -5093,6 +5735,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Gyarados",
+      "pkmn": findDexEntry("Gyarados"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -5102,6 +5745,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Cleffa",
+      "pkmn": findDexEntry("Cleffa"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -5109,6 +5753,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Cleffa",
+      "pkmn": findDexEntry("Cleffa"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -5116,6 +5761,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Clefairy",
+      "pkmn": findDexEntry("Clefairy"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -5123,6 +5769,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Clefairy",
+      "pkmn": findDexEntry("Clefairy"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -5132,6 +5779,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Clefairy",
+      "pkmn": findDexEntry("Clefairy"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -5139,6 +5787,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Clefairy",
+      "pkmn": findDexEntry("Clefairy"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -5148,6 +5797,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Cleffa",
+      "pkmn": findDexEntry("Cleffa"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -5157,6 +5807,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Clefairy",
+      "pkmn": findDexEntry("Clefairy"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -5166,6 +5817,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Togepi",
+      "pkmn": findDexEntry("Togepi"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -5173,6 +5825,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Togepi",
+      "pkmn": findDexEntry("Togepi"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -5180,6 +5833,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Togetic",
+      "pkmn": findDexEntry("Togetic"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -5187,6 +5841,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Togetic",
+      "pkmn": findDexEntry("Togetic"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -5196,6 +5851,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Togetic",
+      "pkmn": findDexEntry("Togetic"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -5203,6 +5859,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Togetic",
+      "pkmn": findDexEntry("Togetic"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -5212,6 +5869,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Togepi",
+      "pkmn": findDexEntry("Togepi"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -5221,6 +5879,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Togetic",
+      "pkmn": findDexEntry("Togetic"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -5230,6 +5889,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Togetic",
+      "pkmn": findDexEntry("Togetic"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -5237,6 +5897,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Togetic",
+      "pkmn": findDexEntry("Togetic"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -5244,6 +5905,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Togekiss",
+      "pkmn": findDexEntry("Togekiss"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -5251,6 +5913,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Togekiss",
+      "pkmn": findDexEntry("Togekiss"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -5260,6 +5923,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Togekiss",
+      "pkmn": findDexEntry("Togekiss"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -5267,6 +5931,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Togekiss",
+      "pkmn": findDexEntry("Togekiss"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -5276,6 +5941,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Togetic",
+      "pkmn": findDexEntry("Togetic"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -5285,6 +5951,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Togekiss",
+      "pkmn": findDexEntry("Togekiss"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -5294,6 +5961,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Aipom",
+      "pkmn": findDexEntry("Aipom"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -5301,6 +5969,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Aipom",
+      "pkmn": findDexEntry("Aipom"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -5308,6 +5977,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Ambipom",
+      "pkmn": findDexEntry("Ambipom"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -5315,6 +5985,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Ambipom",
+      "pkmn": findDexEntry("Ambipom"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -5324,6 +5995,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Ambipom",
+      "pkmn": findDexEntry("Ambipom"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -5331,6 +6003,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Ambipom",
+      "pkmn": findDexEntry("Ambipom"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -5340,6 +6013,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Aipom",
+      "pkmn": findDexEntry("Aipom"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -5349,6 +6023,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Ambipom",
+      "pkmn": findDexEntry("Ambipom"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -5358,6 +6033,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Qwilfish-1",
+      "pkmn": findDexEntry("Qwilfish"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -5365,6 +6041,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Qwilfish-1",
+      "pkmn": findDexEntry("Qwilfish"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -5372,6 +6049,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Overqwil",
+      "pkmn": findDexEntry("Overqwil"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -5379,6 +6057,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Overqwil",
+      "pkmn": findDexEntry("Overqwil"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -5388,6 +6067,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Overqwil",
+      "pkmn": findDexEntry("Overqwil"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -5395,6 +6075,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Overqwil",
+      "pkmn": findDexEntry("Overqwil"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -5404,6 +6085,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Qwilfish-1",
+      "pkmn": findDexEntry("Qwilfish"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -5413,6 +6095,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Overqwil",
+      "pkmn": findDexEntry("Overqwil"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -5422,6 +6105,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Magby",
+      "pkmn": findDexEntry("Magby"),
       "alpha": false,
       "level": [27, 29],
       "ivs": 0
@@ -5429,6 +6113,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Magby",
+      "pkmn": findDexEntry("Magby"),
       "alpha": true,
       "level": [42, 44],
       "ivs": 3
@@ -5436,6 +6121,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Magmar",
+      "pkmn": findDexEntry("Magmar"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -5443,6 +6129,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Magmar",
+      "pkmn": findDexEntry("Magmar"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -5452,6 +6139,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Magmar",
+      "pkmn": findDexEntry("Magmar"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 3
@@ -5459,6 +6147,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Magmar",
+      "pkmn": findDexEntry("Magmar"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -5468,6 +6157,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Magby",
+      "pkmn": findDexEntry("Magby"),
       "alpha": true,
       "level": [42, 44],
       "ivs": 4
@@ -5477,6 +6167,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Magmar",
+      "pkmn": findDexEntry("Magmar"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -5486,6 +6177,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Sealeo",
+      "pkmn": findDexEntry("Sealeo"),
       "alpha": false,
       "level": [41, 43],
       "ivs": 0
@@ -5493,6 +6185,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Sealeo",
+      "pkmn": findDexEntry("Sealeo"),
       "alpha": true,
       "level": [56, 58],
       "ivs": 3
@@ -5500,6 +6193,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Walrein",
+      "pkmn": findDexEntry("Walrein"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -5507,6 +6201,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Walrein",
+      "pkmn": findDexEntry("Walrein"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -5516,6 +6211,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Walrein",
+      "pkmn": findDexEntry("Walrein"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -5523,6 +6219,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Walrein",
+      "pkmn": findDexEntry("Walrein"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -5532,6 +6229,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Sealeo",
+      "pkmn": findDexEntry("Sealeo"),
       "alpha": true,
       "level": [56, 58],
       "ivs": 4
@@ -5541,6 +6239,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Walrein",
+      "pkmn": findDexEntry("Walrein"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -5550,6 +6249,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Piplup",
+      "pkmn": findDexEntry("Piplup"),
       "alpha": false,
       "level": [13, 15],
       "ivs": 0
@@ -5557,6 +6257,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Piplup",
+      "pkmn": findDexEntry("Piplup"),
       "alpha": true,
       "level": [28, 30],
       "ivs": 3
@@ -5564,6 +6265,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Prinplup",
+      "pkmn": findDexEntry("Prinplup"),
       "alpha": false,
       "level": [33, 35],
       "ivs": 0
@@ -5571,6 +6273,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Prinplup",
+      "pkmn": findDexEntry("Prinplup"),
       "alpha": true,
       "level": [48, 50],
       "ivs": 3
@@ -5580,6 +6283,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Prinplup",
+      "pkmn": findDexEntry("Prinplup"),
       "alpha": false,
       "level": [33, 35],
       "ivs": 3
@@ -5587,6 +6291,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Prinplup",
+      "pkmn": findDexEntry("Prinplup"),
       "alpha": true,
       "level": [48, 50],
       "ivs": 4
@@ -5596,6 +6301,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Piplup",
+      "pkmn": findDexEntry("Piplup"),
       "alpha": true,
       "level": [28, 30],
       "ivs": 4
@@ -5605,6 +6311,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Prinplup",
+      "pkmn": findDexEntry("Prinplup"),
       "alpha": true,
       "level": [48, 50],
       "ivs": 4
@@ -5614,6 +6321,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Prinplup",
+      "pkmn": findDexEntry("Prinplup"),
       "alpha": false,
       "level": [33, 35],
       "ivs": 0
@@ -5621,6 +6329,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Prinplup",
+      "pkmn": findDexEntry("Prinplup"),
       "alpha": true,
       "level": [48, 50],
       "ivs": 3
@@ -5628,6 +6337,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Empoleon",
+      "pkmn": findDexEntry("Empoleon"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -5635,6 +6345,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Empoleon",
+      "pkmn": findDexEntry("Empoleon"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 3
@@ -5644,6 +6355,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Empoleon",
+      "pkmn": findDexEntry("Empoleon"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -5651,6 +6363,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Empoleon",
+      "pkmn": findDexEntry("Empoleon"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -5660,6 +6373,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Prinplup",
+      "pkmn": findDexEntry("Prinplup"),
       "alpha": true,
       "level": [48, 50],
       "ivs": 4
@@ -5669,6 +6383,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Empoleon",
+      "pkmn": findDexEntry("Empoleon"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -5678,6 +6393,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Glameow",
+      "pkmn": findDexEntry("Glameow"),
       "alpha": false,
       "level": [35, 37],
       "ivs": 0
@@ -5685,6 +6401,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Glameow",
+      "pkmn": findDexEntry("Glameow"),
       "alpha": true,
       "level": [50, 52],
       "ivs": 3
@@ -5692,6 +6409,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Purugly",
+      "pkmn": findDexEntry("Purugly"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -5699,6 +6417,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Purugly",
+      "pkmn": findDexEntry("Purugly"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -5708,6 +6427,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Purugly",
+      "pkmn": findDexEntry("Purugly"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -5715,6 +6435,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Purugly",
+      "pkmn": findDexEntry("Purugly"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -5724,6 +6445,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Glameow",
+      "pkmn": findDexEntry("Glameow"),
       "alpha": true,
       "level": [50, 52],
       "ivs": 4
@@ -5733,6 +6455,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Purugly",
+      "pkmn": findDexEntry("Purugly"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -5742,6 +6465,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Happiny",
+      "pkmn": findDexEntry("Happiny"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -5749,6 +6473,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Happiny",
+      "pkmn": findDexEntry("Happiny"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -5756,6 +6481,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Chansey",
+      "pkmn": findDexEntry("Chansey"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -5763,6 +6489,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Chansey",
+      "pkmn": findDexEntry("Chansey"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -5772,6 +6499,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Chansey",
+      "pkmn": findDexEntry("Chansey"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -5779,6 +6507,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Chansey",
+      "pkmn": findDexEntry("Chansey"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -5788,6 +6517,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Happiny",
+      "pkmn": findDexEntry("Happiny"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -5797,6 +6527,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Chansey",
+      "pkmn": findDexEntry("Chansey"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -5806,6 +6537,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Riolu",
+      "pkmn": findDexEntry("Riolu"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -5813,6 +6545,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Riolu",
+      "pkmn": findDexEntry("Riolu"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -5820,6 +6553,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Lucario",
+      "pkmn": findDexEntry("Lucario"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -5827,6 +6561,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Lucario",
+      "pkmn": findDexEntry("Lucario"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 3
@@ -5836,6 +6571,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Lucario",
+      "pkmn": findDexEntry("Lucario"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -5843,6 +6579,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Lucario",
+      "pkmn": findDexEntry("Lucario"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -5852,6 +6589,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Riolu",
+      "pkmn": findDexEntry("Riolu"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -5861,6 +6599,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Lucario",
+      "pkmn": findDexEntry("Lucario"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -5870,6 +6609,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Finneon",
+      "pkmn": findDexEntry("Finneon"),
       "alpha": false,
       "level": [28, 30],
       "ivs": 0
@@ -5877,6 +6617,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Finneon",
+      "pkmn": findDexEntry("Finneon"),
       "alpha": true,
       "level": [43, 45],
       "ivs": 3
@@ -5884,6 +6625,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Lumineon",
+      "pkmn": findDexEntry("Lumineon"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -5891,6 +6633,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Lumineon",
+      "pkmn": findDexEntry("Lumineon"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -5900,6 +6643,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Lumineon",
+      "pkmn": findDexEntry("Lumineon"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -5907,6 +6651,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Lumineon",
+      "pkmn": findDexEntry("Lumineon"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -5916,6 +6661,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Finneon",
+      "pkmn": findDexEntry("Finneon"),
       "alpha": true,
       "level": [43, 45],
       "ivs": 4
@@ -5925,6 +6671,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Lumineon",
+      "pkmn": findDexEntry("Lumineon"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -5934,6 +6681,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Mantyke",
+      "pkmn": findDexEntry("Mantyke"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -5941,6 +6689,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Mantyke",
+      "pkmn": findDexEntry("Mantyke"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -5948,6 +6697,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Mantine",
+      "pkmn": findDexEntry("Mantine"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -5955,6 +6705,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Mantine",
+      "pkmn": findDexEntry("Mantine"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -5964,6 +6715,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Mantine",
+      "pkmn": findDexEntry("Mantine"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -5971,6 +6723,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Mantine",
+      "pkmn": findDexEntry("Mantine"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -5980,6 +6733,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Mantyke",
+      "pkmn": findDexEntry("Mantyke"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -5989,6 +6743,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Mantine",
+      "pkmn": findDexEntry("Mantine"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -5998,6 +6753,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "D0214D0214D01BFF".parseBigInt(),
       "name": "Basculin-2",
+      "pkmn": findDexEntry("Basculin"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -6005,6 +6761,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "D2361D2361D23400".parseBigInt(),
       "name": "Basculin-2",
+      "pkmn": findDexEntry("Basculin"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -6012,6 +6769,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E7063E7063E70400".parseBigInt(),
       "name": "Basculegion",
+      "pkmn": findDexEntry("Basculegion"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -6019,6 +6777,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FBD65FBD65FBD400".parseBigInt(),
       "name": "Basculegion-1",
+      "pkmn": findDexEntry("Basculegion"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -6026,6 +6785,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDEB2FDEB2FDE400".parseBigInt(),
       "name": "Basculegion",
+      "pkmn": findDexEntry("Basculegion"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -6033,6 +6793,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Basculegion-1",
+      "pkmn": findDexEntry("Basculegion"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -6042,6 +6803,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "7EBB9079A9D25DFF".parseBigInt(),
       "name": "Basculegion",
+      "pkmn": findDexEntry("Basculegion"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -6049,6 +6811,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Basculegion-1",
+      "pkmn": findDexEntry("Basculegion"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -6056,6 +6819,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FEBB9079A9D25BFF".parseBigInt(),
       "name": "Basculegion",
+      "pkmn": findDexEntry("Basculegion"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -6063,6 +6827,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Basculegion-1",
+      "pkmn": findDexEntry("Basculegion"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -6072,6 +6837,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Basculin-2",
+      "pkmn": findDexEntry("Basculin"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -6081,6 +6847,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "7FFFFFFFFFFFFDFF".parseBigInt(),
       "name": "Basculegion",
+      "pkmn": findDexEntry("Basculegion"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -6088,6 +6855,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Basculegion-1",
+      "pkmn": findDexEntry("Basculegion"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -6097,6 +6865,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Clefairy",
+      "pkmn": findDexEntry("Clefairy"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -6104,6 +6873,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Clefairy",
+      "pkmn": findDexEntry("Clefairy"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -6111,6 +6881,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Clefable",
+      "pkmn": findDexEntry("Clefable"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -6118,6 +6889,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Clefable",
+      "pkmn": findDexEntry("Clefable"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -6127,6 +6899,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Clefable",
+      "pkmn": findDexEntry("Clefable"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -6134,6 +6907,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Clefable",
+      "pkmn": findDexEntry("Clefable"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -6143,6 +6917,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Clefairy",
+      "pkmn": findDexEntry("Clefairy"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -6152,6 +6927,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Clefable",
+      "pkmn": findDexEntry("Clefable"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -6161,6 +6937,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Voltorb-1",
+      "pkmn": findDexEntry("Voltorb"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -6168,6 +6945,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Voltorb-1",
+      "pkmn": findDexEntry("Voltorb"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -6175,6 +6953,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Electrode-1",
+      "pkmn": findDexEntry("Electrode"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -6182,6 +6961,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Electrode-1",
+      "pkmn": findDexEntry("Electrode"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -6191,6 +6971,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Electrode-1",
+      "pkmn": findDexEntry("Electrode"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -6198,6 +6979,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Electrode-1",
+      "pkmn": findDexEntry("Electrode"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -6207,6 +6989,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Voltorb-1",
+      "pkmn": findDexEntry("Voltorb"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -6216,6 +6999,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Electrode-1",
+      "pkmn": findDexEntry("Electrode"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -6225,6 +7009,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Electabuzz",
+      "pkmn": findDexEntry("Electabuzz"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -6232,6 +7017,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Electabuzz",
+      "pkmn": findDexEntry("Electabuzz"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -6239,6 +7025,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Electivire",
+      "pkmn": findDexEntry("Electivire"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -6246,6 +7033,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Electivire",
+      "pkmn": findDexEntry("Electivire"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 3
@@ -6255,6 +7043,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Electivire",
+      "pkmn": findDexEntry("Electivire"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -6262,6 +7051,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Electivire",
+      "pkmn": findDexEntry("Electivire"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -6271,6 +7061,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Electabuzz",
+      "pkmn": findDexEntry("Electabuzz"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -6280,6 +7071,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Electivire",
+      "pkmn": findDexEntry("Electivire"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -6289,6 +7081,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Misdreavus",
+      "pkmn": findDexEntry("Misdreavus"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -6296,6 +7089,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Misdreavus",
+      "pkmn": findDexEntry("Misdreavus"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -6303,6 +7097,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Mismagius",
+      "pkmn": findDexEntry("Mismagius"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -6310,6 +7105,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Mismagius",
+      "pkmn": findDexEntry("Mismagius"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -6319,6 +7115,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Mismagius",
+      "pkmn": findDexEntry("Mismagius"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -6326,6 +7123,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Mismagius",
+      "pkmn": findDexEntry("Mismagius"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -6335,6 +7133,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Misdreavus",
+      "pkmn": findDexEntry("Misdreavus"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -6344,6 +7143,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Mismagius",
+      "pkmn": findDexEntry("Mismagius"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -6353,6 +7153,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Gligar",
+      "pkmn": findDexEntry("Gligar"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -6360,6 +7161,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Gligar",
+      "pkmn": findDexEntry("Gligar"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -6367,6 +7169,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Gliscor",
+      "pkmn": findDexEntry("Gliscor"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -6374,6 +7177,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Gliscor",
+      "pkmn": findDexEntry("Gliscor"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 3
@@ -6383,6 +7187,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Gliscor",
+      "pkmn": findDexEntry("Gliscor"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -6390,6 +7195,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Gliscor",
+      "pkmn": findDexEntry("Gliscor"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -6399,6 +7205,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Gligar",
+      "pkmn": findDexEntry("Gligar"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -6408,6 +7215,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Gliscor",
+      "pkmn": findDexEntry("Gliscor"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -6417,6 +7225,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Heracross",
+      "pkmn": findDexEntry("Heracross"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -6424,6 +7233,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Heracross",
+      "pkmn": findDexEntry("Heracross"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -6433,6 +7243,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Heracross",
+      "pkmn": findDexEntry("Heracross"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -6442,6 +7253,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Sneasel-1",
+      "pkmn": findDexEntry("Sneasel"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -6449,6 +7261,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Sneasel-1",
+      "pkmn": findDexEntry("Sneasel"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -6456,6 +7269,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Sneasler",
+      "pkmn": findDexEntry("Sneasler"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -6463,6 +7277,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Sneasler",
+      "pkmn": findDexEntry("Sneasler"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -6472,6 +7287,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Sneasler",
+      "pkmn": findDexEntry("Sneasler"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -6479,6 +7295,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Sneasler",
+      "pkmn": findDexEntry("Sneasler"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -6488,6 +7305,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Sneasel-1",
+      "pkmn": findDexEntry("Sneasel"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -6497,6 +7315,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Sneasler",
+      "pkmn": findDexEntry("Sneasler"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -6506,6 +7325,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Elekid",
+      "pkmn": findDexEntry("Elekid"),
       "alpha": false,
       "level": [27, 29],
       "ivs": 0
@@ -6513,6 +7333,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Elekid",
+      "pkmn": findDexEntry("Elekid"),
       "alpha": true,
       "level": [42, 44],
       "ivs": 3
@@ -6520,6 +7341,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Electabuzz",
+      "pkmn": findDexEntry("Electabuzz"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -6527,6 +7349,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Electabuzz",
+      "pkmn": findDexEntry("Electabuzz"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -6536,6 +7359,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Electabuzz",
+      "pkmn": findDexEntry("Electabuzz"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 3
@@ -6543,6 +7367,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Electabuzz",
+      "pkmn": findDexEntry("Electabuzz"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -6552,6 +7377,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Elekid",
+      "pkmn": findDexEntry("Elekid"),
       "alpha": true,
       "level": [42, 44],
       "ivs": 4
@@ -6561,6 +7387,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Electabuzz",
+      "pkmn": findDexEntry("Electabuzz"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -6570,6 +7397,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Nosepass",
+      "pkmn": findDexEntry("Nosepass"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -6577,6 +7405,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Nosepass",
+      "pkmn": findDexEntry("Nosepass"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -6584,6 +7413,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Probopass",
+      "pkmn": findDexEntry("Probopass"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -6591,6 +7421,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Probopass",
+      "pkmn": findDexEntry("Probopass"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -6600,6 +7431,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Probopass",
+      "pkmn": findDexEntry("Probopass"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -6607,6 +7439,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Probopass",
+      "pkmn": findDexEntry("Probopass"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -6616,6 +7449,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Nosepass",
+      "pkmn": findDexEntry("Nosepass"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -6625,6 +7459,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Probopass",
+      "pkmn": findDexEntry("Probopass"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -6634,6 +7469,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Duskull",
+      "pkmn": findDexEntry("Duskull"),
       "alpha": false,
       "level": [34, 36],
       "ivs": 0
@@ -6641,6 +7477,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Duskull",
+      "pkmn": findDexEntry("Duskull"),
       "alpha": true,
       "level": [49, 51],
       "ivs": 3
@@ -6648,6 +7485,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Dusclops",
+      "pkmn": findDexEntry("Dusclops"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -6655,6 +7493,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Dusclops",
+      "pkmn": findDexEntry("Dusclops"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -6664,6 +7503,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Dusclops",
+      "pkmn": findDexEntry("Dusclops"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 3
@@ -6671,6 +7511,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Dusclops",
+      "pkmn": findDexEntry("Dusclops"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -6680,6 +7521,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Duskull",
+      "pkmn": findDexEntry("Duskull"),
       "alpha": true,
       "level": [49, 51],
       "ivs": 4
@@ -6689,6 +7531,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Dusclops",
+      "pkmn": findDexEntry("Dusclops"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -6698,6 +7541,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Dusclops",
+      "pkmn": findDexEntry("Dusclops"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -6705,6 +7549,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Dusclops",
+      "pkmn": findDexEntry("Dusclops"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -6712,6 +7557,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Dusknoir",
+      "pkmn": findDexEntry("Dusknoir"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -6719,6 +7565,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Dusknoir",
+      "pkmn": findDexEntry("Dusknoir"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 3
@@ -6728,6 +7575,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Dusknoir",
+      "pkmn": findDexEntry("Dusknoir"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -6735,6 +7583,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Dusknoir",
+      "pkmn": findDexEntry("Dusknoir"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -6744,6 +7593,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Dusclops",
+      "pkmn": findDexEntry("Dusclops"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -6753,6 +7603,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Dusknoir",
+      "pkmn": findDexEntry("Dusknoir"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -6762,6 +7613,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Chingling",
+      "pkmn": findDexEntry("Chingling"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -6769,6 +7621,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Chingling",
+      "pkmn": findDexEntry("Chingling"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -6776,6 +7629,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Chimecho",
+      "pkmn": findDexEntry("Chimecho"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -6783,6 +7637,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Chimecho",
+      "pkmn": findDexEntry("Chimecho"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -6792,6 +7647,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Chimecho",
+      "pkmn": findDexEntry("Chimecho"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -6799,6 +7655,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Chimecho",
+      "pkmn": findDexEntry("Chimecho"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -6808,6 +7665,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Chingling",
+      "pkmn": findDexEntry("Chingling"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -6817,6 +7675,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Chimecho",
+      "pkmn": findDexEntry("Chimecho"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -6826,6 +7685,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Gible",
+      "pkmn": findDexEntry("Gible"),
       "alpha": false,
       "level": [21, 23],
       "ivs": 0
@@ -6833,6 +7693,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Gible",
+      "pkmn": findDexEntry("Gible"),
       "alpha": true,
       "level": [36, 38],
       "ivs": 3
@@ -6840,6 +7701,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Gabite",
+      "pkmn": findDexEntry("Gabite"),
       "alpha": false,
       "level": [45, 47],
       "ivs": 0
@@ -6847,6 +7709,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Gabite",
+      "pkmn": findDexEntry("Gabite"),
       "alpha": true,
       "level": [60, 62],
       "ivs": 3
@@ -6856,6 +7719,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Gabite",
+      "pkmn": findDexEntry("Gabite"),
       "alpha": false,
       "level": [45, 47],
       "ivs": 3
@@ -6863,6 +7727,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Gabite",
+      "pkmn": findDexEntry("Gabite"),
       "alpha": true,
       "level": [60, 62],
       "ivs": 4
@@ -6872,6 +7737,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Gible",
+      "pkmn": findDexEntry("Gible"),
       "alpha": true,
       "level": [36, 38],
       "ivs": 4
@@ -6881,6 +7747,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Gabite",
+      "pkmn": findDexEntry("Gabite"),
       "alpha": true,
       "level": [60, 62],
       "ivs": 4
@@ -6890,6 +7757,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Gabite",
+      "pkmn": findDexEntry("Gabite"),
       "alpha": false,
       "level": [45, 47],
       "ivs": 0
@@ -6897,6 +7765,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Gabite",
+      "pkmn": findDexEntry("Gabite"),
       "alpha": true,
       "level": [60, 62],
       "ivs": 3
@@ -6904,6 +7773,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Garchomp",
+      "pkmn": findDexEntry("Garchomp"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -6911,6 +7781,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Garchomp",
+      "pkmn": findDexEntry("Garchomp"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 3
@@ -6920,6 +7791,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Garchomp",
+      "pkmn": findDexEntry("Garchomp"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -6927,6 +7799,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Garchomp",
+      "pkmn": findDexEntry("Garchomp"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -6936,6 +7809,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Gabite",
+      "pkmn": findDexEntry("Gabite"),
       "alpha": true,
       "level": [60, 62],
       "ivs": 4
@@ -6945,6 +7819,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Garchomp",
+      "pkmn": findDexEntry("Garchomp"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -6954,6 +7829,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Snover",
+      "pkmn": findDexEntry("Snover"),
       "alpha": false,
       "level": [37, 39],
       "ivs": 0
@@ -6961,6 +7837,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Snover",
+      "pkmn": findDexEntry("Snover"),
       "alpha": true,
       "level": [52, 54],
       "ivs": 3
@@ -6968,6 +7845,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Abomasnow",
+      "pkmn": findDexEntry("Abomasnow"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -6975,6 +7853,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Abomasnow",
+      "pkmn": findDexEntry("Abomasnow"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -6984,6 +7863,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Abomasnow",
+      "pkmn": findDexEntry("Abomasnow"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -6991,6 +7871,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Abomasnow",
+      "pkmn": findDexEntry("Abomasnow"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -7000,6 +7881,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Snover",
+      "pkmn": findDexEntry("Snover"),
       "alpha": true,
       "level": [52, 54],
       "ivs": 4
@@ -7009,6 +7891,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Abomasnow",
+      "pkmn": findDexEntry("Abomasnow"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -7018,6 +7901,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Rotom",
+      "pkmn": findDexEntry("Rotom"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -7025,6 +7909,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Rotom",
+      "pkmn": findDexEntry("Rotom"),
       "alpha": true,
       "level": [80, 82],
       "ivs": 3
@@ -7034,6 +7919,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Rotom",
+      "pkmn": findDexEntry("Rotom"),
       "alpha": true,
       "level": [80, 82],
       "ivs": 4
@@ -7043,6 +7929,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Rowlet",
+      "pkmn": findDexEntry("Rowlet"),
       "alpha": false,
       "level": [14, 16],
       "ivs": 0
@@ -7050,6 +7937,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Rowlet",
+      "pkmn": findDexEntry("Rowlet"),
       "alpha": true,
       "level": [29, 31],
       "ivs": 3
@@ -7057,6 +7945,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Dartrix",
+      "pkmn": findDexEntry("Dartrix"),
       "alpha": false,
       "level": [33, 35],
       "ivs": 0
@@ -7064,6 +7953,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Dartrix",
+      "pkmn": findDexEntry("Dartrix"),
       "alpha": true,
       "level": [48, 50],
       "ivs": 3
@@ -7073,6 +7963,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Dartrix",
+      "pkmn": findDexEntry("Dartrix"),
       "alpha": false,
       "level": [33, 35],
       "ivs": 3
@@ -7080,6 +7971,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Dartrix",
+      "pkmn": findDexEntry("Dartrix"),
       "alpha": true,
       "level": [48, 50],
       "ivs": 4
@@ -7089,6 +7981,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Rowlet",
+      "pkmn": findDexEntry("Rowlet"),
       "alpha": true,
       "level": [29, 31],
       "ivs": 4
@@ -7098,6 +7991,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Dartrix",
+      "pkmn": findDexEntry("Dartrix"),
       "alpha": true,
       "level": [48, 50],
       "ivs": 4
@@ -7107,6 +8001,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Dartrix",
+      "pkmn": findDexEntry("Dartrix"),
       "alpha": false,
       "level": [33, 35],
       "ivs": 0
@@ -7114,6 +8009,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Dartrix",
+      "pkmn": findDexEntry("Dartrix"),
       "alpha": true,
       "level": [48, 50],
       "ivs": 3
@@ -7121,6 +8017,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Decidueye-1",
+      "pkmn": findDexEntry("Decidueye"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -7128,6 +8025,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Decidueye-1",
+      "pkmn": findDexEntry("Decidueye"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 3
@@ -7137,6 +8035,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Decidueye-1",
+      "pkmn": findDexEntry("Decidueye"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -7144,6 +8043,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Decidueye-1",
+      "pkmn": findDexEntry("Decidueye"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -7153,6 +8053,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Dartrix",
+      "pkmn": findDexEntry("Dartrix"),
       "alpha": true,
       "level": [48, 50],
       "ivs": 4
@@ -7162,6 +8063,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Decidueye-1",
+      "pkmn": findDexEntry("Decidueye"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -7171,6 +8073,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Piloswine",
+      "pkmn": findDexEntry("Piloswine"),
       "alpha": false,
       "level": [60, 62],
       "ivs": 0
@@ -7178,6 +8081,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Piloswine",
+      "pkmn": findDexEntry("Piloswine"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 3
@@ -7185,6 +8089,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Mamoswine",
+      "pkmn": findDexEntry("Mamoswine"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -7192,6 +8097,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Mamoswine",
+      "pkmn": findDexEntry("Mamoswine"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -7201,6 +8107,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Mamoswine",
+      "pkmn": findDexEntry("Mamoswine"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -7208,6 +8115,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Mamoswine",
+      "pkmn": findDexEntry("Mamoswine"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -7217,6 +8125,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Piloswine",
+      "pkmn": findDexEntry("Piloswine"),
       "alpha": true,
       "level": [75, 77],
       "ivs": 4
@@ -7226,6 +8135,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Mamoswine",
+      "pkmn": findDexEntry("Mamoswine"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -7235,6 +8145,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Ralts",
+      "pkmn": findDexEntry("Ralts"),
       "alpha": false,
       "level": [17, 19],
       "ivs": 0
@@ -7242,6 +8153,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Ralts",
+      "pkmn": findDexEntry("Ralts"),
       "alpha": true,
       "level": [32, 34],
       "ivs": 3
@@ -7249,6 +8161,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Kirlia",
+      "pkmn": findDexEntry("Kirlia"),
       "alpha": false,
       "level": [27, 29],
       "ivs": 0
@@ -7256,6 +8169,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Kirlia",
+      "pkmn": findDexEntry("Kirlia"),
       "alpha": true,
       "level": [42, 44],
       "ivs": 3
@@ -7265,6 +8179,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Kirlia",
+      "pkmn": findDexEntry("Kirlia"),
       "alpha": false,
       "level": [27, 29],
       "ivs": 3
@@ -7272,6 +8187,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Kirlia",
+      "pkmn": findDexEntry("Kirlia"),
       "alpha": true,
       "level": [42, 44],
       "ivs": 4
@@ -7281,6 +8197,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Ralts",
+      "pkmn": findDexEntry("Ralts"),
       "alpha": true,
       "level": [32, 34],
       "ivs": 4
@@ -7290,6 +8207,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Kirlia",
+      "pkmn": findDexEntry("Kirlia"),
       "alpha": true,
       "level": [42, 44],
       "ivs": 4
@@ -7299,6 +8217,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Kirlia",
+      "pkmn": findDexEntry("Kirlia"),
       "alpha": false,
       "level": [27, 29],
       "ivs": 0
@@ -7306,6 +8225,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Kirlia",
+      "pkmn": findDexEntry("Kirlia"),
       "alpha": true,
       "level": [42, 44],
       "ivs": 3
@@ -7313,6 +8233,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Gardevoir",
+      "pkmn": findDexEntry("Gardevoir"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -7320,6 +8241,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Gardevoir",
+      "pkmn": findDexEntry("Gardevoir"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -7329,6 +8251,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Gardevoir",
+      "pkmn": findDexEntry("Gardevoir"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -7336,6 +8259,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Gardevoir",
+      "pkmn": findDexEntry("Gardevoir"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -7345,6 +8269,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Kirlia",
+      "pkmn": findDexEntry("Kirlia"),
       "alpha": true,
       "level": [42, 44],
       "ivs": 4
@@ -7354,6 +8279,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Gardevoir",
+      "pkmn": findDexEntry("Gardevoir"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -7363,6 +8289,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Kirlia",
+      "pkmn": findDexEntry("Kirlia"),
       "alpha": false,
       "level": [27, 29],
       "ivs": 0
@@ -7370,6 +8297,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Kirlia",
+      "pkmn": findDexEntry("Kirlia"),
       "alpha": true,
       "level": [42, 44],
       "ivs": 3
@@ -7377,6 +8305,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Gallade",
+      "pkmn": findDexEntry("Gallade"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -7384,6 +8313,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Gallade",
+      "pkmn": findDexEntry("Gallade"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 3
@@ -7393,6 +8323,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Gallade",
+      "pkmn": findDexEntry("Gallade"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -7400,6 +8331,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Gallade",
+      "pkmn": findDexEntry("Gallade"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -7409,6 +8341,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Kirlia",
+      "pkmn": findDexEntry("Kirlia"),
       "alpha": true,
       "level": [42, 44],
       "ivs": 4
@@ -7418,6 +8351,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Gallade",
+      "pkmn": findDexEntry("Gallade"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -7427,6 +8361,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Snorunt",
+      "pkmn": findDexEntry("Snorunt"),
       "alpha": false,
       "level": [39, 41],
       "ivs": 0
@@ -7434,6 +8369,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Snorunt",
+      "pkmn": findDexEntry("Snorunt"),
       "alpha": true,
       "level": [54, 56],
       "ivs": 3
@@ -7441,6 +8377,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Glalie",
+      "pkmn": findDexEntry("Glalie"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -7448,6 +8385,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Glalie",
+      "pkmn": findDexEntry("Glalie"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -7457,6 +8395,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Glalie",
+      "pkmn": findDexEntry("Glalie"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -7464,6 +8403,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Glalie",
+      "pkmn": findDexEntry("Glalie"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -7473,6 +8413,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Snorunt",
+      "pkmn": findDexEntry("Snorunt"),
       "alpha": true,
       "level": [54, 56],
       "ivs": 4
@@ -7482,6 +8423,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Glalie",
+      "pkmn": findDexEntry("Glalie"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -7491,6 +8433,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Snorunt",
+      "pkmn": findDexEntry("Snorunt"),
       "alpha": false,
       "level": [39, 41],
       "ivs": 0
@@ -7498,6 +8441,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Snorunt",
+      "pkmn": findDexEntry("Snorunt"),
       "alpha": true,
       "level": [54, 56],
       "ivs": 3
@@ -7505,6 +8449,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Froslass",
+      "pkmn": findDexEntry("Froslass"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -7512,6 +8457,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Froslass",
+      "pkmn": findDexEntry("Froslass"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -7521,6 +8467,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Froslass",
+      "pkmn": findDexEntry("Froslass"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -7528,6 +8475,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Froslass",
+      "pkmn": findDexEntry("Froslass"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -7537,6 +8485,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Snorunt",
+      "pkmn": findDexEntry("Snorunt"),
       "alpha": true,
       "level": [54, 56],
       "ivs": 4
@@ -7546,6 +8495,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Froslass",
+      "pkmn": findDexEntry("Froslass"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -7555,6 +8505,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Oshawott",
+      "pkmn": findDexEntry("Oshawott"),
       "alpha": false,
       "level": [14, 16],
       "ivs": 0
@@ -7562,6 +8513,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Oshawott",
+      "pkmn": findDexEntry("Oshawott"),
       "alpha": true,
       "level": [29, 31],
       "ivs": 3
@@ -7569,6 +8521,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Dewott",
+      "pkmn": findDexEntry("Dewott"),
       "alpha": false,
       "level": [33, 35],
       "ivs": 0
@@ -7576,6 +8529,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Dewott",
+      "pkmn": findDexEntry("Dewott"),
       "alpha": true,
       "level": [48, 50],
       "ivs": 3
@@ -7585,6 +8539,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Dewott",
+      "pkmn": findDexEntry("Dewott"),
       "alpha": false,
       "level": [33, 35],
       "ivs": 3
@@ -7592,6 +8547,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Dewott",
+      "pkmn": findDexEntry("Dewott"),
       "alpha": true,
       "level": [48, 50],
       "ivs": 4
@@ -7601,6 +8557,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Oshawott",
+      "pkmn": findDexEntry("Oshawott"),
       "alpha": true,
       "level": [29, 31],
       "ivs": 4
@@ -7610,6 +8567,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Dewott",
+      "pkmn": findDexEntry("Dewott"),
       "alpha": true,
       "level": [48, 50],
       "ivs": 4
@@ -7619,6 +8577,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Dewott",
+      "pkmn": findDexEntry("Dewott"),
       "alpha": false,
       "level": [33, 35],
       "ivs": 0
@@ -7626,6 +8585,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Dewott",
+      "pkmn": findDexEntry("Dewott"),
       "alpha": true,
       "level": [48, 50],
       "ivs": 3
@@ -7633,6 +8593,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Samurott-1",
+      "pkmn": findDexEntry("Samurott"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -7640,6 +8601,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Samurott-1",
+      "pkmn": findDexEntry("Samurott"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 3
@@ -7649,6 +8611,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Samurott-1",
+      "pkmn": findDexEntry("Samurott"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -7656,6 +8619,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Samurott-1",
+      "pkmn": findDexEntry("Samurott"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -7665,6 +8629,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Dewott",
+      "pkmn": findDexEntry("Dewott"),
       "alpha": true,
       "level": [48, 50],
       "ivs": 4
@@ -7674,6 +8639,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Samurott-1",
+      "pkmn": findDexEntry("Samurott"),
       "alpha": true,
       "level": [82, 84],
       "ivs": 4
@@ -7683,6 +8649,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Rufflet",
+      "pkmn": findDexEntry("Rufflet"),
       "alpha": false,
       "level": [51, 53],
       "ivs": 0
@@ -7690,6 +8657,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Rufflet",
+      "pkmn": findDexEntry("Rufflet"),
       "alpha": true,
       "level": [66, 68],
       "ivs": 3
@@ -7697,6 +8665,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Braviary-1",
+      "pkmn": findDexEntry("Braviary"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -7704,6 +8673,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Braviary-1",
+      "pkmn": findDexEntry("Braviary"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -7713,6 +8683,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Braviary-1",
+      "pkmn": findDexEntry("Braviary"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -7720,6 +8691,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Braviary-1",
+      "pkmn": findDexEntry("Braviary"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -7729,6 +8701,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Rufflet",
+      "pkmn": findDexEntry("Rufflet"),
       "alpha": true,
       "level": [66, 68],
       "ivs": 4
@@ -7738,6 +8711,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Braviary-1",
+      "pkmn": findDexEntry("Braviary"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -7747,6 +8721,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E492492492491BFF".parseBigInt(),
       "name": "Bergmite",
+      "pkmn": findDexEntry("Bergmite"),
       "alpha": false,
       "level": [34, 36],
       "ivs": 0
@@ -7754,6 +8729,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "E6DB6DB6DB6DB400".parseBigInt(),
       "name": "Bergmite",
+      "pkmn": findDexEntry("Bergmite"),
       "alpha": true,
       "level": [49, 51],
       "ivs": 3
@@ -7761,6 +8737,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FDB6DB6DB6DB6BFF".parseBigInt(),
       "name": "Avalugg-1",
+      "pkmn": findDexEntry("Avalugg"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 0
@@ -7768,6 +8745,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Avalugg-1",
+      "pkmn": findDexEntry("Avalugg"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 3
@@ -7777,6 +8755,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Avalugg-1",
+      "pkmn": findDexEntry("Avalugg"),
       "alpha": false,
       "level": [62, 64],
       "ivs": 3
@@ -7784,6 +8763,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Avalugg-1",
+      "pkmn": findDexEntry("Avalugg"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -7793,6 +8773,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Bergmite",
+      "pkmn": findDexEntry("Bergmite"),
       "alpha": true,
       "level": [49, 51],
       "ivs": 4
@@ -7802,6 +8783,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Avalugg-1",
+      "pkmn": findDexEntry("Avalugg"),
       "alpha": true,
       "level": [77, 79],
       "ivs": 4
@@ -7811,6 +8793,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FD7720F353A4BBFF".parseBigInt(),
       "name": "Eevee",
+      "pkmn": findDexEntry("Eevee"),
       "alpha": false,
       "level": [15, 16],
       "ivs": 0
@@ -7818,6 +8801,7 @@ Map<String, EncounterTable> encounterSlotsMap = {
     EncounterSlot.fromMap({
       "slot": "FFFFFFFFFFFFFFFF".parseBigInt(),
       "name": "Eevee",
+      "pkmn": findDexEntry("Eevee"),
       "alpha": true,
       "level": [30, 31],
       "ivs": 3
@@ -7850,3 +8834,17 @@ Map<String, EncounterTable> encounterSlotsMap = {
 
 //   print(pEncounterSlotsMap);
 // }
+
+PokedexEntry findDexEntry(String name) {
+  return pokedex.values.firstWhere((element) => element.pokemon == name, orElse: () => PokedexEntry('NULL($name)', -1, 0));
+}
+
+void main(List<String> args) {
+  var enc = encounterSlotsMap["64064A0B10810230"]!;
+  var rng = XOROSHIROLite();
+
+  for (var i = 0; i < 10; i++) {
+    var num = rng.next();
+    enc.findSlot(num);
+  }
+}

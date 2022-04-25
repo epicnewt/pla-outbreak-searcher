@@ -2,8 +2,6 @@ import 'dart:math';
 import 'dart:core';
 
 import 'package:collection/collection.dart';
-import 'package:decimal/decimal.dart';
-import 'package:mmo_searcher/massive_mass_outbreak/meta_data/encounter_slots.dart';
 
 
 class MutableMMOPath {
@@ -41,7 +39,7 @@ class MMOPath {
   }
 }
 
-Iterable<List<int>> _aggressivePaths(int spawns, {int length = 1, bool includeInitial = true, bool includeEmpty = true}) sync* {
+Iterable<List<int>> _aggressivePaths(int spawns, {int length = 1, bool includeInitial = true, bool includeEmpty = true, int maxDespawnsPerStep = 4}) sync* {
   if (length == 1) {
     if (includeEmpty) {
       yield [];
@@ -52,7 +50,7 @@ Iterable<List<int>> _aggressivePaths(int spawns, {int length = 1, bool includeIn
   }
 
   var maxDespawns = spawns - 4;
-  var maxPathAction = min(maxDespawns - length + 1, 4);
+  var maxPathAction = min(maxDespawns - length + 1, maxDespawnsPerStep);
   List<int> path = List.filled(length, 1, growable: false);
 
   var step = length - 1;

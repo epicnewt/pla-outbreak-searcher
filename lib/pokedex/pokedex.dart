@@ -24,9 +24,11 @@ class PokedexEntry {
 }
 
 Map<int, PokedexEntry> pokedex = {
-    722: PokedexEntry('Rowlet', 722, 127), 723: PokedexEntry('Dartrix', 723, 127),
-    155: PokedexEntry('Cyndaquil', 155, 127), 156: PokedexEntry('Quilava', 156, 127),
-    501: PokedexEntry('Oshawott', 501, 127), 502: PokedexEntry('Dewott', 502, 127),
+    -1: PokedexEntry('Missingno', -1, GENDERLESS),
+    201: PokedexEntry('Unown', 201, GENDERLESS), 442: PokedexEntry('Spiritomb', 442, 127),
+    722: PokedexEntry('Rowlet', 722, 127), 723: PokedexEntry('Dartrix', 723, 127), 724: PokedexEntry('Decidueye', 724, 127),
+    155: PokedexEntry('Cyndaquil', 155, 127), 156: PokedexEntry('Quilava', 156, 127), 157: PokedexEntry('Typhlosion', 157, 127),
+    501: PokedexEntry('Oshawott', 501, 127), 502: PokedexEntry('Dewott', 502, 127), 503: PokedexEntry('Samurott', 503, 127),
     399: PokedexEntry('Bidoof', 399, 127), 400: PokedexEntry('Bibarel', 400, 127),
     396: PokedexEntry('Starly', 396, 127), 397: PokedexEntry('Staravia', 397, 127), 398: PokedexEntry('Staraptor', 398, 127),
     403: PokedexEntry('Shinx', 403, 127), 404: PokedexEntry('Luxio', 404, 127), 405: PokedexEntry('Luxray', 405, 127),

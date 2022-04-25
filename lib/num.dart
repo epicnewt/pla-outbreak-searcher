@@ -1,5 +1,5 @@
 extension BigIntHex on BigInt {
-  String  toHex() {
+  String toHex() {
     return toRadixString(16).toUpperCase();
   }
   int toUInt() {

@@ -1,9 +1,10 @@
-
 import 'package:mmo_searcher/mass_outbreak/search/rng/spawn.dart';
 import 'package:mmo_searcher/mass_outbreak/search/rng/xoroshiro.dart';
+import 'package:mmo_searcher/massive_mass_outbreak/meta_data/encounter_slots.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/mmo_path_generator.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_info.dart';
-import 'package:mmo_searcher/pokedex/pokedex.dart';
+import 'package:collection/collection.dart';
+import 'package:mmo_searcher/num.dart';
 
 final XOROSHIROLite _mainRng = XOROSHIROLite();
 final XOROSHIROLite _spawnerRng = XOROSHIROLite();
@@ -20,34 +21,132 @@ int determineBonusSeed(int groupSeed, MMOPath path) {
   return _mainRng.current;
 }
 
+class PathSpawnInfo {
+  List<List<List<int>>> seedsOfSpawnGroups;
+  int rolls;
+  int revisitsPathStart;
+  int bonusPathStart;
+  EncounterTable initialTable;
+  EncounterTable? bonusTable;
+  int finalStep;
+  late final List<List<Spawn>> _pokemon = _generatePokemon();
+
+  PathSpawnInfo(
+    this.seedsOfSpawnGroups,
+    this.rolls,
+    this.revisitsPathStart,
+    this.bonusPathStart,
+    this.initialTable,
+    this.bonusTable,
+    this.finalStep,
+  );
+
+  List<List<Spawn>> _generatePokemon() {
+    return seedsOfSpawnGroups.mapIndexed((i, group) => group.map((seed) => _fromSeed(seed, i > bonusPathStart)).toList()).toList();
+  }
+
+  Spawn _fromSeed(List<int> seed, bool isBonusSpawn) {
+    _mainRng.reseed(seed.first, s1: seed.last);
+    var encounterTable = isBonusSpawn ? bonusTable ?? initialTable : initialTable;
+    return generateSpawnLite(_mainRng, _spawnerRng, false, null, rolls, encounterTable: encounterTable)!;
+  }
+
+  List<List<Spawn>> get pokemon => _pokemon;
+}
+
 /// Generate the final spawns of a path that can be used to filter for a matching path.
 /// Non alpha and non shiny spawns are not returned if they are required. This makes the
 /// filtering more efficient by greatly reducing the RNG rolls, esspecially when an alpha
-/// is required. 
-List<Spawn> generateSpawnsOfPath(MMOPath mmoPath, MMOInfo info, int rolls, {required bool alphaRequired, required bool shinyRequired}) {
-  var groupSeed = mmoPath.bonusPath.isEmpty ? info.groupSeed : determineBonusSeed(info.groupSeed, mmoPath);
+/// is required.
+PathSpawnInfo? generateSpawnsOfPath(MMOPath mmoPath, MMOInfo info, int rolls, {required bool alphaRequired, required bool shinyRequired}) {
+  // var groupSeed = mmoPath.bonusPath.isEmpty ? info.groupSeed : determineBonusSeed(info.groupSeed, mmoPath);
+  var groupSeed = info.groupSeed;
   var encounterTable = mmoPath.bonusPath.isEmpty ? info.initialRoundEncouterTable : info.bonusRoundEncouterTable!;
   _mainRng.reseed(groupSeed);
 
-  List<int> path = mmoPath.bonusPath.isEmpty ? (mmoPath.initialPath + mmoPath.revisit.map((remaining) => 4 - remaining).toList()) : mmoPath.bonusPath;
+  List<List<List<int>>> seedGroups = [];
 
-  _mainRng.advanceAndReseed(4); // initial spawns
+  // List<int> path = mmoPath.bonusPath.isEmpty ? (mmoPath.initialPath + mmoPath.revisit.map((remaining) => 4 - remaining).toList()) : mmoPath.bonusPath;
+  List<int> path = (mmoPath.initialPath + mmoPath.revisit.map((remaining) => 4 - remaining).toList());
 
+  if (mmoPath.bonusPath.isNotEmpty) {
+    path += [4] + mmoPath.bonusPath;
+  }
+
+  if (path.isNotEmpty) {
+    List<List<int>> seeds = [];
+    for (var i = 0; i < 4; i++) {
+      seeds.add([_mainRng.s0, _mainRng.s1]);
+      _mainRng.next();
+      _mainRng.next();
+    }
+    _mainRng.reseedWithNext();
+    seedGroups.add(seeds);
+  }
   for (var i = 0; i < path.length - 1; i++) {
-    _mainRng.advanceAndReseed(path[i]);
+    List<List<int>> seeds = [];
+    for (var p = 0; p < path[i]; p++) {
+      seeds.add([_mainRng.s0, _mainRng.s1]);
+      _mainRng.next();
+      _mainRng.next();
+    }
+    _mainRng.reseedWithNext();
+    seedGroups.add(seeds);
   }
 
   List<Spawn> list = [];
 
   var count = path.isEmpty ? 4 : path.last;
+  List<List<int>> seeds = [];
   for (var i = 0; i < count; i++) {
-    //TODO used encounter slot to determine PkMn
+    seeds.add([_mainRng.s0, _mainRng.s1]);
+   
     //alphaSpawn is always false as multiple alphas can spawn at once in MMOs
-    Spawn? spawn = generateSpawnLite(_mainRng, _spawnerRng, false, null, rolls, alphaRequired: alphaRequired, shinyRequired: shinyRequired, encounterTable: encounterTable);
+    Spawn? spawn = generateSpawnLite(
+      _mainRng,
+      _spawnerRng,
+      false,
+      null,
+      rolls,
+      alphaRequired: alphaRequired,
+      shinyRequired: shinyRequired,
+      encounterTable: encounterTable,
+    );
     if (spawn != null && spawn != Spawn.DUMMY_ALPHA) {
       list.add(spawn);
     }
   }
+  seedGroups.add(seeds);
 
-  return list;
+  if (list.isEmpty) {
+    return null;
+  }
+
+  print("final Spawns: $list");
+
+  //fill in final step for seeds
+  if (path.isEmpty) {
+    _mainRng.reseed(groupSeed);
+  } else {
+    var lastSeed = seedGroups.last.first.first;
+    _mainRng.reseed(lastSeed);
+    _mainRng.advanceAndReseed(path.last);
+  }
+
+  return PathSpawnInfo(
+    seedGroups,
+    rolls,
+    mmoPath.initialPath.length,
+    mmoPath.initialPath.length + mmoPath.revisit.length,
+    info.initialRoundEncouterTable,
+    info.bonusRoundEncouterTable,
+    0,
+  );
 }
+
+/**
+ * M 100000 Careful []
+ * F 002101 Bashful []
+ * M 233030 Impish Alpha X
+ * M 000210 Docile []
+ */

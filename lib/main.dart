@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:mmo_searcher/mass_outbreak/search/pages/mass_outbreak_search.dart';
 import 'package:mmo_searcher/mass_outbreak/search/pages/mass_outbreak_search_result.dart';
+import 'package:mmo_searcher/massive_mass_outbreak/components/massive_mass_outbreak_pointer_debug_screen.dart';
 
 bool demo = true;
 
 void main() {
   runApp(MaterialApp(
     title: "Pokémon Arceus Legends RNG Tools",
-    initialRoute: 'mo-search',
-    routes: {'mo-search': (context) => dummyMassOutbreakSearch, 'mo-search-results': (context) => const MassOutbreakSearchResult()},
+    initialRoute: 'mmo-pointer-debug',
+    // initialRoute: 'mo-search',
+    routes: {
+      'mo-search': (context) => dummyMassOutbreakSearch, 
+      'mo-search-results': (context) => const MassOutbreakSearchResult(),
+      'mmo-pointer-debug': (context) => const MassiveMassOutbreakPointerDebugScreen()
+      },
   ));
 }
 

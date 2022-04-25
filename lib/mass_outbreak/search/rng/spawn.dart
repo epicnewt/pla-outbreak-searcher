@@ -1,15 +1,37 @@
 import 'package:mmo_searcher/mass_outbreak/search/rng/xoroshiro.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/meta_data/encounter_slots.dart';
+import 'package:mmo_searcher/num.dart';
 import 'package:mmo_searcher/pokedex/pokedex.dart';
+import 'dart:collection';
 
 final ALPHA_LIMIT_ULITE = 0xFD7720F353A4BBFF >>> 1;
 
 const _natures = [
-  "Hardy", "Lonely", "Brave", "Adamant", "Naughty",
-  "Bold", "Docile", "Relaxed", "Impish", "Lax",
-  "Timid", "Hasty", "Serious", "Jolly", "Naive",
-  "Modest", "Mild", "Quiet", "Bashful", "Rash",
-  "Calm", "Gentle", "Sassy", "Careful", "Quirky"
+  "Hardy",
+  "Lonely",
+  "Brave",
+  "Adamant",
+  "Naughty",
+  "Bold",
+  "Docile",
+  "Relaxed",
+  "Impish",
+  "Lax",
+  "Timid",
+  "Hasty",
+  "Serious",
+  "Jolly",
+  "Naive",
+  "Modest",
+  "Mild",
+  "Quiet",
+  "Bashful",
+  "Rash",
+  "Calm",
+  "Gentle",
+  "Sassy",
+  "Careful",
+  "Quirky"
 ];
 
 final List<int> _evs = [
@@ -35,11 +57,9 @@ class Spawn {
   final String evs;
   final String gender;
   final String nature;
+  final String? pkmn;
 
-  Spawn(this.shiny, this.alpha, this.ivs, this.gender, this.nature):
-      evs = ivs.map((e) => _evs[e]).join("");
-
-
+  Spawn(this.shiny, this.alpha, this.ivs, this.gender, this.nature, {this.pkmn}) : evs = ivs.map((e) => _evs[e]).join("");
 
   static Spawn fromSeed(BigInt seed, PokedexEntry pkmn, bool alpha, int rolls) {
     _mainRng.reseed(seed);
@@ -143,27 +163,37 @@ class Spawn {
 
     var nature = _natures[_mainRngLite.rand(25).toInt()];
 
-    return Spawn(shiny, alpha, ivs, gender, nature);
+    return Spawn(shiny, alpha, ivs, gender, nature, pkmn: pkmn.pokemon);
+  }
+
+  @override
+  String toString() {
+    return "$gender $evs $nature ${shiny ? '*' : ''} ${alpha ? 'Alpha' : ''} ${pkmn ?? ''}".replaceAll(RegExp("\\s+"), " ").trim();
   }
 }
 
 Spawn? generateSpawnLite(XOROSHIROLite mainRng, XOROSHIROLite spawnerRng, bool spawnedAlpha, PokedexEntry? pkmn, int rolls,
-    {EncounterTable? encounterTable, bool isBonusSpawn = false, bool forceAlpha = false, bool alphaRequired = false, bool shinyRequired = false}) {
+    {EncounterTable? encounterTable, bool alphaRequired = false, bool shinyRequired = false, bool debug = false}) {
+      if (debug) {
+        print("generateSpawnLite($mainRng)");
+      }
   spawnerRng.reseed(mainRng.next());
   mainRng.next();
 
   //we know ALPHA limit is odd so first bit can be ignored
-  var encounterSlot = (encounterTable ?? EncounterTable.massoutbreak).findSlot(spawnerRng.next());
+  var encounterSlotSeed = spawnerRng.next();
+  var encounterSlot = (encounterTable ?? EncounterTable.massoutbreak).findSlot(encounterSlotSeed);
   var alpha = encounterSlot.alpha;
 
   if (alphaRequired && !alpha) {
     return null;
   }
 
-  var guarateedIVs = (alpha && isBonusSpawn) ? 4 : ((alpha || isBonusSpawn) ? 3 : 0);
+  var guarateedIVs = encounterSlot.ivs;
 
-  Spawn? _default = alpha ? Spawn.DUMMY_ALPHA : null;
+  late Spawn? _default = alpha ? Spawn.DUMMY_ALPHA : null;
 
   PokedexEntry pokedexEntry = pkmn ?? encounterSlot.pkmn;
-  return Spawn.fromSeedLite(spawnerRng.next(), pokedexEntry, alpha, rolls, shinyRequired: shinyRequired, guranteedIVs: guarateedIVs) ?? _default;
+  var fromSeedLite = Spawn.fromSeedLite(spawnerRng.next(), pokedexEntry, alpha, rolls, shinyRequired: shinyRequired, guranteedIVs: guarateedIVs);
+  return fromSeedLite ?? _default;
 }
