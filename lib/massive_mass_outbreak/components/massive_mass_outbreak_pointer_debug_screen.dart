@@ -109,9 +109,6 @@ class MassiveMassOutbreakPointerDebugScreen extends StatelessWidget {
                             }
                             update += "\n";
                           }
-                          for (var i = 0; i < spawnInfo.finalStep; i++) {
-                            
-                          }
                         }
                       }
 

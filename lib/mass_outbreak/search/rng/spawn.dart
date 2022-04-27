@@ -45,7 +45,7 @@ var _mainRng = XOROSHIRO();
 var _mainRngLite = XOROSHIROLite();
 
 class Spawn {
-  static final Spawn DUMMY_ALPHA = Spawn(false, true, [], "", "");
+  static final Spawn DUMMY_ALPHA = Spawn(false, true, [], "", "", pkmn: pokedex[-1]!);
   static final UINT = BigInt.from(0xFFFFFFFF);
   static final USHORT = BigInt.from(0xFFFF);
   static final UINT_Lite = 0xFFFFFFFF;
@@ -57,9 +57,9 @@ class Spawn {
   final String evs;
   final String gender;
   final String nature;
-  final String? pkmn;
+  final PokedexEntry pkmn;
 
-  Spawn(this.shiny, this.alpha, this.ivs, this.gender, this.nature, {this.pkmn}) : evs = ivs.map((e) => _evs[e]).join("");
+  Spawn(this.shiny, this.alpha, this.ivs, this.gender, this.nature, {required this.pkmn}) : evs = ivs.map((e) => _evs[e]).join("");
 
   static Spawn fromSeed(BigInt seed, PokedexEntry pkmn, bool alpha, int rolls) {
     _mainRng.reseed(seed);
@@ -108,7 +108,7 @@ class Spawn {
 
     var nature = _natures[_mainRng.rand(BigInt.from(25)).toInt()];
 
-    return Spawn(shiny, alpha, ivs, gender, nature);
+    return Spawn(shiny, alpha, ivs, gender, nature, pkmn: pkmn);
   }
 
   static Spawn? fromSeedLite(int seed, PokedexEntry pkmn, bool alpha, int rolls, {int guranteedIVs = -1, bool shinyRequired = false}) {
@@ -163,24 +163,23 @@ class Spawn {
 
     var nature = _natures[_mainRngLite.rand(25).toInt()];
 
-    return Spawn(shiny, alpha, ivs, gender, nature, pkmn: pkmn.pokemon);
+    return Spawn(shiny, alpha, ivs, gender, nature, pkmn: pkmn);
   }
 
   @override
   String toString() {
-    return "$gender $evs $nature ${shiny ? '*' : ''} ${alpha ? 'Alpha' : ''} ${pkmn ?? ''}".replaceAll(RegExp("\\s+"), " ").trim();
+    return "$gender $evs $nature ${shiny ? '*' : ''} ${alpha ? 'Alpha' : ''} $pkmn".replaceAll(RegExp("\\s+"), " ").trim();
   }
 }
 
 Spawn? generateSpawnLite(XOROSHIROLite mainRng, XOROSHIROLite spawnerRng, bool spawnedAlpha, PokedexEntry? pkmn, int rolls,
     {EncounterTable? encounterTable, bool alphaRequired = false, bool shinyRequired = false, bool debug = false}) {
-      if (debug) {
-        print("generateSpawnLite($mainRng)");
-      }
+  if (debug) {
+    print("generateSpawnLite($mainRng)");
+  }
   spawnerRng.reseed(mainRng.next());
   mainRng.next();
 
-  //we know ALPHA limit is odd so first bit can be ignored
   var encounterSlotSeed = spawnerRng.next();
   var encounterSlot = (encounterTable ?? EncounterTable.massoutbreak).findSlot(encounterSlotSeed);
   var alpha = encounterSlot.alpha;

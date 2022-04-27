@@ -4,6 +4,7 @@ import 'package:mmo_searcher/massive_mass_outbreak/meta_data/encounter_slots.dar
 import 'package:mmo_searcher/massive_mass_outbreak/search/mmo_path_generator.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_info.dart';
 import 'package:collection/collection.dart';
+import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_path_spawn_info.dart';
 import 'package:mmo_searcher/num.dart';
 
 final XOROSHIROLite _mainRng = XOROSHIROLite();
@@ -21,38 +22,7 @@ int determineBonusSeed(int groupSeed, MMOPath path) {
   return _mainRng.current;
 }
 
-class PathSpawnInfo {
-  List<List<List<int>>> seedsOfSpawnGroups;
-  int rolls;
-  int revisitsPathStart;
-  int bonusPathStart;
-  EncounterTable initialTable;
-  EncounterTable? bonusTable;
-  int finalStep;
-  late final List<List<Spawn>> _pokemon = _generatePokemon();
 
-  PathSpawnInfo(
-    this.seedsOfSpawnGroups,
-    this.rolls,
-    this.revisitsPathStart,
-    this.bonusPathStart,
-    this.initialTable,
-    this.bonusTable,
-    this.finalStep,
-  );
-
-  List<List<Spawn>> _generatePokemon() {
-    return seedsOfSpawnGroups.mapIndexed((i, group) => group.map((seed) => _fromSeed(seed, i > bonusPathStart)).toList()).toList();
-  }
-
-  Spawn _fromSeed(List<int> seed, bool isBonusSpawn) {
-    _mainRng.reseed(seed.first, s1: seed.last);
-    var encounterTable = isBonusSpawn ? bonusTable ?? initialTable : initialTable;
-    return generateSpawnLite(_mainRng, _spawnerRng, false, null, rolls, encounterTable: encounterTable)!;
-  }
-
-  List<List<Spawn>> get pokemon => _pokemon;
-}
 
 /// Generate the final spawns of a path that can be used to filter for a matching path.
 /// Non alpha and non shiny spawns are not returned if they are required. This makes the
@@ -140,7 +110,8 @@ PathSpawnInfo? generateSpawnsOfPath(MMOPath mmoPath, MMOInfo info, int rolls, {r
     mmoPath.initialPath.length + mmoPath.revisit.length,
     info.initialRoundEncouterTable,
     info.bonusRoundEncouterTable,
-    0,
+    mmoPath.copy(),
+    (s) => s.alpha == alphaRequired && s.shiny == shinyRequired
   );
 }
 

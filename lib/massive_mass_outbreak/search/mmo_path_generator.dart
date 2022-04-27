@@ -8,7 +8,11 @@ class MutableMMOPath {
   List<int> initialPath = [];
   List<int> revisit = [];
   List<int> bonusPath = [];
-  MMOPath? _readonly;
+  late final MMOPath _readonly = MMOPath(this);
+
+  MutableMMOPath();
+  MutableMMOPath.withPaths(this.initialPath, this.revisit, this.bonusPath);
+  MutableMMOPath.clone(MutableMMOPath src) : this.withPaths([...src.initialPath], [...src.revisit], [...src.bonusPath]);
 
   @override
   String toString() {
@@ -17,9 +21,7 @@ class MutableMMOPath {
         (bonusPath.isNotEmpty ? " + $bonusPath" : "");
   }
 
-  MMOPath get readonly {
-    return _readonly ??= MMOPath(this);
-  }
+  MMOPath get readonly  => _readonly;
 }
 
 class MMOPath {
@@ -32,6 +34,8 @@ class MMOPath {
   List<int> get revisit => _mmoPath.revisit;
 
   List<int> get bonusPath => _mmoPath.bonusPath;
+
+  MMOPath copy() => MutableMMOPath.clone(_mmoPath).readonly;
 
   @override
   String toString() {
