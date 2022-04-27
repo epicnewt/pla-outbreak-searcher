@@ -10,6 +10,7 @@ import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_info.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_path_spawn_info.dart';
 import 'package:mmo_searcher/num.dart';
 import 'package:mmo_searcher/pokedex/pokedex.dart';
+import 'package:mmo_searcher/pokedex/pokedex_page.dart';
 import 'package:mmo_searcher/pokedex/widgets/pokedex_entry_summary.dart';
 import 'package:storybook_flutter/storybook_flutter.dart';
 
@@ -129,6 +130,7 @@ class StorybookApp extends StatelessWidget {
               ],
             ),
           ),
+          Story(name: "Pokedex/Page", builder: (context) => const PokedexPage())
         ],
       );
 

@@ -27,9 +27,12 @@ class PokedexEntrySummary extends StatelessWidget {
         mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          PokemonSprite(
-            dexNumber: pokedexEntry.nationalDexNumber,
-            checked: caught,
+          GestureDetector(
+            onTap: () => onChange?.call(3),
+            child: PokemonSprite(
+              dexNumber: pokedexEntry.nationalDexNumber,
+              checked: caught,
+            ),
           ),
           Flexible(
             child: Padding(
@@ -45,29 +48,28 @@ class PokedexEntrySummary extends StatelessWidget {
                       style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24 - 8),
                     ),
                   ),
-                  Flexible(
+                  SizedBox(
+                    height: 24 + 4,
                     child: Padding(
-                      padding: const EdgeInsets.only(right: 10),
-                      child: LayoutBuilder(
-                        builder: (context, constraints) {
-                          return ToggleButtons(
-                            constraints: BoxConstraints.expand(
-                              width: constraints.maxWidth / 3 - (3 + 1.0) / 3,
-                              height: 35,
-                            ),
-                            children: const [
-                              Text("Complete"),
-                              Text("Perfect"),
-                              Text("Shiny Charm"),
-                            ],
-                            onPressed: (index) {
-                              onChange?.call(index);
-                            },
-                            isSelected: [shinyCharm || complete, perfect, shinyCharm],
-                          );
-                        },
+                        padding: const EdgeInsets.only(right: 12, bottom: 4),
+                        child: LayoutBuilder(
+                          builder: (context, constraints) {
+                            return ToggleButtons(
+                              constraints: BoxConstraints.expand(
+                                width: constraints.maxWidth / 3 - (3 + 1.0) / 3,
+                                height: 24,
+                              ),
+                              children: const [
+                                Text("Complete"),
+                                Text("Perfect"),
+                                Text("Shiny Charm"),
+                              ],
+                              onPressed: (index) => onChange?.call(index),
+                              isSelected: [shinyCharm || complete, perfect, shinyCharm],
+                            );
+                          },
+                        ),
                       ),
-                    ),
                   ),
                 ],
               ),
