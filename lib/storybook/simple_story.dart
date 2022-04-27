@@ -10,6 +10,7 @@ import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_info.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_path_spawn_info.dart';
 import 'package:mmo_searcher/num.dart';
 import 'package:mmo_searcher/pokedex/pokedex.dart';
+import 'package:mmo_searcher/pokedex/widgets/pokedex_entry_summary.dart';
 import 'package:storybook_flutter/storybook_flutter.dart';
 
 void main() => runApp(const StorybookApp());
@@ -45,13 +46,13 @@ class StorybookApp extends StatelessWidget {
               shrinkWrap: true,
               children: [
                 SearchResultSummary(
-                  pkmn: pokedex.values.toList()[Random().nextInt(pokedex.values.length)],
+                  pkmn: randomPokedexEntry(),
                   paths: [
                     asSpawnInfo(MutableMMOPath.withPaths([1, 4, 3], [], []).readonly)
                   ],
                 ),
                 SearchResultSummary(
-                  pkmn: pokedex.values.toList()[Random().nextInt(pokedex.values.length)],
+                  pkmn: randomPokedexEntry(),
                   paths: [
                     asSpawnInfo(MutableMMOPath.withPaths([1, 4, 3], [], []).readonly),
                     asSpawnInfo(MutableMMOPath.withPaths([1, 4, 3], [2], []).readonly),
@@ -99,6 +100,39 @@ class StorybookApp extends StatelessWidget {
               ],
             ),
           ),
+          Story(
+            name: "Pokedex/Pokemon",
+            builder: (context) => ListView(
+              shrinkWrap: true,
+              children: [
+                PokedexEntrySummary(
+                  pokedexEntry: randomPokedexEntry(),
+                  caught: true,
+                  complete: true,
+                  perfect: true,
+                  shinyCharm: true,
+                ),
+                PokedexEntrySummary(
+                  pokedexEntry: randomPokedexEntry(),
+                  caught: true,
+                  complete: true,
+                  perfect: true,
+                  shinyCharm: true,
+                ),
+                PokedexEntrySummary(
+                  pokedexEntry: randomPokedexEntry(),
+                  caught: false,
+                  complete: true,
+                  perfect: true,
+                  shinyCharm: true,
+                ),
+              ],
+            ),
+          ),
         ],
       );
+
+  randomPokedexEntry() {
+    return pokedex.values.toList()[Random().nextInt(pokedex.values.length - 1) + 1];
+  }
 }

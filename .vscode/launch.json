@@ -5,6 +5,12 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Storybooks",
+            "type": "dart",
+            "request": "launch",
+            "program": "lib/storybook/simple_story.dart"
+        },
+        {
             "name": "mmo_searcher",
             "request": "launch",
             "type": "dart"
