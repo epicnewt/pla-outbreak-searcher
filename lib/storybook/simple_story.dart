@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/components/search_result_details.dart';
+import 'package:mmo_searcher/massive_mass_outbreak/components/search_result_spawns.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/components/search_result_summary.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/meta_data/encounter_slots.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/mmo_path_advancer.dart';
@@ -80,7 +81,7 @@ class StorybookApp extends StatelessWidget {
                         encounterSlotsMap["41E4947058A65FD8"]!,
                         encounterSlotsMap["702EDC94E9044B34"]!,
                       ),
-                      14,
+                      1400,
                       alphaRequired: false,
                       shinyRequired: true)!,
                 ),
@@ -91,14 +92,31 @@ class StorybookApp extends StatelessWidget {
                         BigInt.parse("895610BECE218FD3", radix: 16).toUInt(),
                         9,
                         7,
-                        encounterSlotsMap["41E4947058A65FD8"]!,
-                        encounterSlotsMap["702EDC94E9044B34"]!,
+                        encounterSlotsMap["D3FB11A4B88400FC"]!,
+                        encounterSlotsMap["64064A0B10810230"]!,
                       ),
-                      14,
+                      4000,
                       alphaRequired: false,
                       shinyRequired: true)!,
                 ),
               ],
+            ),
+          ),
+          Story(
+            name: "MMO/Path Details",
+            builder: (context) => SearchResultsSpawnsPage(
+              match: generateSpawnsOfPath(
+                      MMOPath(MutableMMOPath.withPaths([1, 2, 1, 1], [2, 1], [3])),
+                      MMOInfo(
+                        BigInt.parse("895610BECE218FD3", radix: 16).toUInt(),
+                        9,
+                        7,
+                        encounterSlotsMap["D3FB11A4B88400FC"]!,
+                        encounterSlotsMap["64064A0B10810230"]!,
+                      ),
+                      4000,
+                      alphaRequired: false,
+                      shinyRequired: true)!
             ),
           ),
           Story(

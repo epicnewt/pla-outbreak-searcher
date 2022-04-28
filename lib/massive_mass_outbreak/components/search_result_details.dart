@@ -25,11 +25,15 @@ class SearchResultDetails extends StatelessWidget {
             ),
           ),
           ...match.matches
-              .map((e) => Row(
+              .map((spawn) => Row(
                     mainAxisSize: MainAxisSize.max,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      PokemonSprite(dexNumber: e.pkmn.nationalDexNumber),
+                      PokemonSprite(
+                        dexNumber: spawn.pkmn.nationalDexNumber,
+                        form: spawn.form,
+                        shiny: spawn.shiny,
+                      ),
                       Padding(
                         padding: const EdgeInsets.only(top: 8, bottom: 8, left: 4),
                         child: Column(
@@ -39,11 +43,11 @@ class SearchResultDetails extends StatelessWidget {
                             Padding(
                               padding: const EdgeInsets.only(bottom: 8.0),
                               child: Text(
-                                e.pkmn.pokemon,
+                                spawn.pkmn.pokemon,
                                 style: const TextStyle(fontWeight: FontWeight.normal, fontSize: 24 - 8),
                               ),
                             ),
-                            Text('${e.gender} ${e.evs} ${e.nature}')
+                            Text('${spawn.gender} ${spawn.evs} ${spawn.nature}')
                             // ...matches.map((path) => Text(path.toString())),
                           ],
                         ),

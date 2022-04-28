@@ -58,8 +58,9 @@ class Spawn {
   final String gender;
   final String nature;
   final PokedexEntry pkmn;
+  final String? form;
 
-  Spawn(this.shiny, this.alpha, this.ivs, this.gender, this.nature, {required this.pkmn}) : evs = ivs.map((e) => _evs[e]).join("");
+  Spawn(this.shiny, this.alpha, this.ivs, this.gender, this.nature, {required this.pkmn, String? this.form}) : evs = ivs.map((e) => _evs[e]).join("");
 
   static Spawn fromSeed(BigInt seed, PokedexEntry pkmn, bool alpha, int rolls) {
     _mainRng.reseed(seed);
@@ -111,7 +112,7 @@ class Spawn {
     return Spawn(shiny, alpha, ivs, gender, nature, pkmn: pkmn);
   }
 
-  static Spawn? fromSeedLite(int seed, PokedexEntry pkmn, bool alpha, int rolls, {int guranteedIVs = -1, bool shinyRequired = false}) {
+  static Spawn? fromSeedLite(int seed, PokedexEntry pkmn, bool alpha, int rolls, {int guranteedIVs = -1, bool shinyRequired = false, String? form}) {
     _mainRngLite.reseed(seed);
 
     var ec = _mainRngLite.rand(UINT_Lite);
@@ -163,7 +164,7 @@ class Spawn {
 
     var nature = _natures[_mainRngLite.rand(25).toInt()];
 
-    return Spawn(shiny, alpha, ivs, gender, nature, pkmn: pkmn);
+    return Spawn(shiny, alpha, ivs, gender, nature, pkmn: pkmn, form: form);
   }
 
   @override
@@ -193,6 +194,6 @@ Spawn? generateSpawnLite(XOROSHIROLite mainRng, XOROSHIROLite spawnerRng, bool s
   late Spawn? _default = alpha ? Spawn.DUMMY_ALPHA : null;
 
   PokedexEntry pokedexEntry = pkmn ?? encounterSlot.pkmn;
-  var fromSeedLite = Spawn.fromSeedLite(spawnerRng.next(), pokedexEntry, alpha, rolls, shinyRequired: shinyRequired, guranteedIVs: guarateedIVs);
+  var fromSeedLite = Spawn.fromSeedLite(spawnerRng.next(), pokedexEntry, alpha, rolls, shinyRequired: shinyRequired, guranteedIVs: guarateedIVs, form: encounterSlot.form);
   return fromSeedLite ?? _default;
 }
