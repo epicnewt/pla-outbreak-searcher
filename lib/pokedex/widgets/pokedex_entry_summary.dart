@@ -65,7 +65,7 @@ class PokedexEntrySummary extends StatelessWidget {
                                 Text("Shiny Charm"),
                               ],
                               onPressed: (index) => onChange?.call(index),
-                              isSelected: [shinyCharm || complete, perfect, shinyCharm],
+                              isSelected: [shinyCharm || perfect || complete, perfect, shinyCharm],
                             );
                           },
                         ),

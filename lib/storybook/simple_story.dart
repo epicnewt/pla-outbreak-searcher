@@ -5,14 +5,17 @@ import 'package:mmo_searcher/massive_mass_outbreak/components/search_result_deta
 import 'package:mmo_searcher/massive_mass_outbreak/components/search_result_spawns.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/components/search_result_summary.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/meta_data/encounter_slots.dart';
+import 'package:mmo_searcher/massive_mass_outbreak/pages/connect_and_search_page.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/mmo_path_advancer.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/mmo_path_generator.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_info.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_path_spawn_info.dart';
+import 'package:mmo_searcher/massive_mass_outbreak/state/massive_mass_outbreak_state.dart';
 import 'package:mmo_searcher/num.dart';
 import 'package:mmo_searcher/pokedex/pokedex.dart';
 import 'package:mmo_searcher/pokedex/pokedex_page.dart';
 import 'package:mmo_searcher/pokedex/widgets/pokedex_entry_summary.dart';
+import 'package:provider/provider.dart';
 import 'package:storybook_flutter/storybook_flutter.dart';
 
 void main() => runApp(const StorybookApp());
@@ -35,10 +38,36 @@ class StorybookApp extends StatelessWidget {
           // Path spawn details
 
           Story(
-            name: 'Button',
-            builder: (context) => ElevatedButton(
-              onPressed: () {},
-              child: const Text('Push m e'),
+            name: 'MMO/Initial Page',
+            builder: (context) => MultiProvider(
+              providers: [
+                ChangeNotifierProvider.value(
+                    value: MassiveMassOutbreakData()
+                      ..mmoInfo = [
+                        MMOInfo(
+                          BigInt.parse("895610BECE218FD3", radix: 16).toUInt(),
+                          9,
+                          7,
+                          encounterSlotsMap["E680740C6BE14EFB"]!,
+                          null,
+                        ),
+                        MMOInfo(
+                          BigInt.parse("895610BECE218FD3", radix: 16).toUInt(),
+                          9,
+                          7,
+                          encounterSlotsMap["D3FB11A4B88400FC"]!,
+                          encounterSlotsMap["64064A0B10810230"]!,
+                        ),
+                        MMOInfo(
+                          BigInt.parse("895610BECE218FD3", radix: 16).toUInt(),
+                          9,
+                          7,
+                          encounterSlotsMap["C213972F6D316665"]!,
+                          encounterSlotsMap["EEFEE"]!,
+                        )
+                      ]),
+              ],
+              child: ConnectAndSearchPage(),
             ),
           ),
 
@@ -105,19 +134,18 @@ class StorybookApp extends StatelessWidget {
           Story(
             name: "MMO/Path Details",
             builder: (context) => SearchResultsSpawnsPage(
-              match: generateSpawnsOfPath(
-                      MMOPath(MutableMMOPath.withPaths([1, 2, 1, 1], [2, 1], [3])),
-                      MMOInfo(
-                        BigInt.parse("895610BECE218FD3", radix: 16).toUInt(),
-                        9,
-                        7,
-                        encounterSlotsMap["D3FB11A4B88400FC"]!,
-                        encounterSlotsMap["64064A0B10810230"]!,
-                      ),
-                      4000,
-                      alphaRequired: false,
-                      shinyRequired: true)!
-            ),
+                match: generateSpawnsOfPath(
+                    MMOPath(MutableMMOPath.withPaths([1, 2, 1, 1], [2, 1], [3])),
+                    MMOInfo(
+                      BigInt.parse("895610BECE218FD3", radix: 16).toUInt(),
+                      9,
+                      7,
+                      encounterSlotsMap["D3FB11A4B88400FC"]!,
+                      encounterSlotsMap["64064A0B10810230"]!,
+                    ),
+                    4000,
+                    alphaRequired: false,
+                    shinyRequired: true)!),
           ),
           Story(
             name: "Pokedex/Pokemon",
