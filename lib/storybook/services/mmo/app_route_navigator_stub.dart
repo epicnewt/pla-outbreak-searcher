@@ -8,11 +8,17 @@ class AppRouteNavigatorStub implements AppRouteNavigator {
   static void register() => GetIt.I.registerSingleton<AppRouteNavigator>(AppRouteNavigatorStub());
 
   @override
-  goToMMOSearchResulDetailsPage(BuildContext context, PathSpawnInfo searchResults) {}
+  toMMOSearchResultSpawns(BuildContext context, PathSpawnInfo param) {
+    print('AppRouteNavigator#toMMOSearchResultSpawns');
+  }
 
   @override
-  goToMMOSearchResultsPage(BuildContext context, List<MMOSearchResults> searchResults) {}
+  toMMOSearchResults(BuildContext context, List<MMOSearchResults> param) {
+    print('AppRouteNavigator#toMMOSearchResults');
+  }
 
   @override
-  goToMMOSearchResultsSummaryPage(BuildContext context, MMOSearchResults searchResults) {}
+  toMMOSearchResultDetails(BuildContext context, MMOSearchResults param) {
+    print('AppRouteNavigator#toMMOSearchResultsDetails');
+  }
 }

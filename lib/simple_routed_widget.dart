@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class SimpleRoutedWidget<T> extends StatelessWidget {
-  final Widget Function(BuildContext, T) builder;
+  final Widget Function(BuildContext context, T argument) builder;
 
   const SimpleRoutedWidget({Key? key, required this.builder}) : super(key: key);
 

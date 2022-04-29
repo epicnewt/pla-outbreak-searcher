@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PokedexStore {
@@ -26,8 +28,8 @@ class PokedexStore {
     shinyCharm = !shinyCharm;
   }
 
-  static Future<PokedexStore> load() async {
-    var sharedPreferences = await SharedPreferences.getInstance();
+  static PokedexStore load() {
+    var sharedPreferences = GetIt.I.get<SharedPreferences>();
     Map<String, dynamic> completion = jsonDecode(sharedPreferences.getString("pokedex_completion") ?? '{}');
     Map<String, dynamic> perfection = jsonDecode(sharedPreferences.getString("pokedex_perfection") ?? '{}');
     Map<String, dynamic> caught = jsonDecode(sharedPreferences.getString("pokedex_caught") ?? '{}');
@@ -41,11 +43,17 @@ class PokedexStore {
     );
   }
 
-  save() async {
-    var sharedPreferences = await SharedPreferences.getInstance();
+  save() {
+    var sharedPreferences = GetIt.I.get<SharedPreferences>();
     sharedPreferences.setString("pokedex_completion", jsonEncode(pokedexCompletion));
     sharedPreferences.setString("pokedex_perfection", jsonEncode(pokedexPerfection));
     sharedPreferences.setString("pokedex_caught", jsonEncode(pokedexCaught));
     sharedPreferences.setBool("pokedex_shiny_charm", shinyCharm);
+  }
+
+  static Future register() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    GetIt.I.registerSingleton(await SharedPreferences.getInstance());
+    GetIt.I.registerSingleton(PokedexStore.load());
   }
 }

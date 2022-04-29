@@ -13,6 +13,7 @@ class MMOSearchServiceStub extends MMOSearchService {
     print("MMOSearchServiceStub#gatherOutbreakInformation()");
     return [
       MMOInfo(
+        "",
         BigInt.parse("895610BECE218FD3", radix: 16).toUInt(),
         9,
         7,
@@ -20,6 +21,7 @@ class MMOSearchServiceStub extends MMOSearchService {
         null,
       ),
       MMOInfo(
+        "",
         BigInt.parse("895610BECE218FD3", radix: 16).toUInt(),
         9,
         7,
@@ -27,6 +29,7 @@ class MMOSearchServiceStub extends MMOSearchService {
         encounterSlotsMap["64064A0B10810230"]!,
       ),
       MMOInfo(
+        "",
         BigInt.parse("895610BECE218FD3", radix: 16).toUInt(),
         9,
         7,
@@ -34,6 +37,7 @@ class MMOSearchServiceStub extends MMOSearchService {
         encounterSlotsMap["EEFEE"]!,
       ),
       MMOInfo(
+        "",
         BigInt.parse("895610BECE218FD3", radix: 16).toUInt(),
         9,
         7,
@@ -41,6 +45,7 @@ class MMOSearchServiceStub extends MMOSearchService {
         encounterSlotsMap["EEFEE"]!,
       ),
       MMOInfo(
+        "",
         BigInt.parse("895610BECE218FD3", radix: 16).toUInt(),
         9,
         7,
@@ -48,6 +53,7 @@ class MMOSearchServiceStub extends MMOSearchService {
         encounterSlotsMap["21C03B7FF717BBAB"]!,
       ),
       MMOInfo(
+        "",
         BigInt.parse("895610BECE218FD3", radix: 16).toUInt(),
         9,
         7,
@@ -65,6 +71,7 @@ class MMOSearchServiceStub extends MMOSearchService {
               generateSpawnsOfPath(
                   MMOPath(MutableMMOPath.withPaths([1, 3, 1], [1], [2, 1])),
                   MMOInfo(
+                    "",
                     BigInt.parse("895610BECE218FD3", radix: 16).toUInt(),
                     9,
                     7,
@@ -77,6 +84,7 @@ class MMOSearchServiceStub extends MMOSearchService {
               generateSpawnsOfPath(
                   MMOPath(MutableMMOPath.withPaths([1, 2, 1, 1], [2, 1], [3])),
                   MMOInfo(
+                    "",
                     BigInt.parse("895610BECE218FD3", radix: 16).toUInt(),
                     9,
                     7,

@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:mmo_searcher/massive_mass_outbreak/components/search_result_details.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/pages/mmo_search_result_spawns_page.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/meta_data/encounter_slots.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/pages/connect_and_search_page.dart';
@@ -40,13 +39,6 @@ class StorybookApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Storybook(
         stories: [
-          // Search results map??
-          // Pokemon for dex and tracker
-          // Maps for pokemon results with summary
-          // Pokemon for search results
-          // Search results path picker
-          // Path spawn details
-
           Story(
             name: 'MMO/Initial Page',
             builder: (context) => MultiProvider(
@@ -103,6 +95,7 @@ class StorybookApp extends StatelessWidget {
                 match: generateSpawnsOfPath(
                     MMOPath(MutableMMOPath.withPaths([1, 2, 1, 1], [2, 1], [3])),
                     MMOInfo(
+                    "",
                       BigInt.parse("895610BECE218FD3", radix: 16).toUInt(),
                       9,
                       7,

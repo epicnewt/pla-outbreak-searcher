@@ -63,21 +63,3 @@ Spawn generateSpawn(XOROSHIRO mainRng, XOROSHIRO spawnerRng, bool spawnedAlpha, 
   var alpha = (spawnerRng.next() > ALPHA_LIMIT) && !spawnedAlpha;
   return Spawn.fromSeed(spawnerRng.next(), pkmn, alpha, rolls);
 }
-
-void main(List<String> args) {
-  print(getFinalReseedOfPath(BigInt.parse("6a45ca26d8347bf0", radix: 16), pokedex[74]!, [0], 14));
-
-  var mutableMMOPath = MutableMMOPath();
-  mutableMMOPath.initialPath = [1,3,2];
-  mutableMMOPath.revisit = [1];
-  mutableMMOPath.bonusPath = [2];
-  var generateSpawnsOfPath2 = generateSpawnsOfPath(MMOPath(mutableMMOPath), MMOInfo(
-    BigInt.parse("6a45ca26d8347bf0", radix: 16).toUInt(),
-    10,
-    6,
-    encounterSlotsMap["E680740C6BE14EFB"]!,
-    encounterSlotsMap["2058ED6587597255"]!,
-    ), 14, alphaRequired: true, shinyRequired: true);
-  print(generateSpawnsOfPath2?.seedsOfSpawnGroups.map((a) => a.map((b) => b.map((c) => c.toHex()))));
-  print(generateSpawnsOfPath2?.pokemon);
-}

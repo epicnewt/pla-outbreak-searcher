@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/components/search_filters.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/mmo_search_service.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/state/massive_mass_outbreak_state.dart';
+import 'package:mmo_searcher/navigator.dart';
 import 'package:mmo_searcher/pokedex/widgets/pokemon_list.dart';
 import 'package:provider/provider.dart';
 
@@ -13,13 +14,16 @@ class ConnectAndSearchPage extends StatelessWidget {
   }
 
   void search(context) async {
-    await MMOSearchService.provide().performSearch(MassiveMassOutbreakData.provide(context).mmoInfo);
+    var results = await MMOSearchService.provide().performSearch(MassiveMassOutbreakData.provide(context).mmoInfo);
+    AppRouteNavigator.provide().toMMOSearchResults(context, results);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("MMO Searcher"),),
+      appBar: AppBar(
+        title: const Text("MMO Searcher"),
+      ),
       body: SingleChildScrollView(
         child: Consumer<MassiveMassOutbreakData>(
           builder: (context, mmoData, child) {
@@ -53,15 +57,16 @@ class ConnectAndSearchPage extends StatelessWidget {
                   )
                 ].where((element) => outbreaks.isEmpty)),
                 PokemonList(
-                    entries: outbreaks
-                        .expand((element) => element.initialRoundEncouterTable.slots + (element.bonusRoundEncouterTable?.slots ?? []))
-                        .map((e) => e.pkmn)
-                        .toSet()
-                        .toList()
-                      ..sort(
-                        (a, b) => a.nationalDexNumber.compareTo(b.nationalDexNumber),
-                      ),
-                    shrinkWrap: true),
+                  shrinkWrap: true,
+                  entries: outbreaks
+                      .expand((element) => element.initialRoundEncouterTable.slots + (element.bonusRoundEncouterTable?.slots ?? []))
+                      .map((e) => e.pkmn)
+                      .toSet()
+                      .toList()
+                    ..sort(
+                      (a, b) => a.nationalDexNumber.compareTo(b.nationalDexNumber),
+                    ),
+                ),
                 ...([
                   Row(
                     children: [

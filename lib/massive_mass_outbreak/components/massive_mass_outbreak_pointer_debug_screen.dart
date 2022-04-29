@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/meta_data/encounter_slots.dart';
-import 'package:mmo_searcher/massive_mass_outbreak/mmo_switch_reader.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/mmo_path_advancer.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/mmo_path_generator.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_info.dart';
@@ -74,6 +73,7 @@ class MassiveMassOutbreakPointerDebugScreen extends StatelessWidget {
                         """.replaceAll(RegExp("\\s+[|]"), "\n"));
 
                         return MMOInfo(
+                          mapNames[name]!,
                           groupSeed.toUInt(),
                           initialSpawns.toInt(),
                           hasBonusRound ? (await bonusSpawns).toInt() : null,

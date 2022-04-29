@@ -25,10 +25,10 @@ class PokemonList extends StatelessWidget {
   Widget build(BuildContext context) {
     return FutureBuilder<PokedexStore>(
         key: const Key("futureBuilder"),
-        future: PokedexStore.load(),
+        future: Future.value(PokedexStore.load()),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return CircularProgressIndicator();
+            return const CircularProgressIndicator();
           }
 
           return StatefulBuilder(
