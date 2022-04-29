@@ -14,9 +14,10 @@ class MMOSearchResultsPage extends StatelessWidget {
         title: const Text("MMO Results"),
       ),
       body: ListView(
-        children: searchResults.map((e) => SearchResultSummary(
-          pkmn: e.mmo.initialRoundEncouterTable.slots[0].pkmn,
-          paths: e.paths,
+        children: searchResults.map((e) => GestureDetector(
+          child: SearchResultSummary(
+            results: e,
+          ),
         )).toList(),
       ),
     );
