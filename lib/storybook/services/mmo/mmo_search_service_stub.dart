@@ -32,6 +32,27 @@ class MMOSearchServiceStub extends MMOSearchService {
         7,
         encounterSlotsMap["C213972F6D316665"]!,
         encounterSlotsMap["EEFEE"]!,
+      ),
+      MMOInfo(
+        BigInt.parse("895610BECE218FD3", radix: 16).toUInt(),
+        9,
+        7,
+        encounterSlotsMap["C213972F6D316665"]!,
+        encounterSlotsMap["EEFEE"]!,
+      ),
+      MMOInfo(
+        BigInt.parse("895610BECE218FD3", radix: 16).toUInt(),
+        9,
+        7,
+        encounterSlotsMap["7FA3A1DE69BD271E"]!,
+        encounterSlotsMap["21C03B7FF717BBAB"]!,
+      ),
+      MMOInfo(
+        BigInt.parse("895610BECE218FD3", radix: 16).toUInt(),
+        9,
+        7,
+        encounterSlotsMap["8E51750B5EB775A0"]!,
+        encounterSlotsMap["EEFEE"]!,
       )
     ];
   }
