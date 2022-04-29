@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/components/search_result_details.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/components/search_result_spawns.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/components/search_result_summary.dart';
@@ -8,17 +9,25 @@ import 'package:mmo_searcher/massive_mass_outbreak/meta_data/encounter_slots.dar
 import 'package:mmo_searcher/massive_mass_outbreak/pages/connect_and_search_page.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/mmo_path_advancer.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/mmo_path_generator.dart';
+import 'package:mmo_searcher/massive_mass_outbreak/search/mmo_search_service.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_info.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_path_spawn_info.dart';
+import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_search_results.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/state/massive_mass_outbreak_state.dart';
 import 'package:mmo_searcher/num.dart';
 import 'package:mmo_searcher/pokedex/pokedex.dart';
 import 'package:mmo_searcher/pokedex/pokedex_page.dart';
 import 'package:mmo_searcher/pokedex/widgets/pokedex_entry_summary.dart';
+import 'package:mmo_searcher/storybook/services/mmo/app_route_navigator.dart';
+import 'package:mmo_searcher/storybook/services/mmo/mmo_search_service_stub.dart';
 import 'package:provider/provider.dart';
 import 'package:storybook_flutter/storybook_flutter.dart';
 
-void main() => runApp(const StorybookApp());
+void main() {
+  AppRouteNavigatorStub.register();
+  MMOSearchServiceStub.register();
+  runApp(const StorybookApp());
+}
 
 PathSpawnInfo asSpawnInfo(MMOPath path) {
   return PathSpawnInfo([], 0, 0, 0, EncounterTable.massoutbreak, null, path, (p) => p.alpha && p.shiny);
@@ -42,35 +51,27 @@ class StorybookApp extends StatelessWidget {
             builder: (context) => MultiProvider(
               providers: [
                 ChangeNotifierProvider.value(
-                    value: MassiveMassOutbreakData()
-                      ..mmoInfo = [
-                        MMOInfo(
-                          BigInt.parse("895610BECE218FD3", radix: 16).toUInt(),
-                          9,
-                          7,
-                          encounterSlotsMap["E680740C6BE14EFB"]!,
-                          null,
-                        ),
-                        MMOInfo(
-                          BigInt.parse("895610BECE218FD3", radix: 16).toUInt(),
-                          9,
-                          7,
-                          encounterSlotsMap["D3FB11A4B88400FC"]!,
-                          encounterSlotsMap["64064A0B10810230"]!,
-                        ),
-                        MMOInfo(
-                          BigInt.parse("895610BECE218FD3", radix: 16).toUInt(),
-                          9,
-                          7,
-                          encounterSlotsMap["C213972F6D316665"]!,
-                          encounterSlotsMap["EEFEE"]!,
-                        )
-                      ]),
+                  value: MassiveMassOutbreakData(),
+                ),
               ],
               child: ConnectAndSearchPage(),
             ),
           ),
-
+          Story(
+            name: 'MMO/Initial Page (connected)',
+            builder: (context) => MultiProvider(
+              providers: [
+                ChangeNotifierProvider(
+                  create: (context) {
+                    var massiveMassOutbreakData = MassiveMassOutbreakData();
+                    GetIt.I.get<MMOSearchService>().gatherOutbreakInformation().then((value) => massiveMassOutbreakData.mmoInfo = value);
+                    return massiveMassOutbreakData;
+                  },
+                ),
+              ],
+              child: ConnectAndSearchPage(),
+            ),
+          ),
           Story(
             name: 'MMO/Outbreak Result Summary',
             builder: (context) => ListView(
@@ -114,19 +115,16 @@ class StorybookApp extends StatelessWidget {
                       alphaRequired: false,
                       shinyRequired: true)!,
                 ),
-                SearchResultDetails(
-                  match: generateSpawnsOfPath(
-                      MMOPath(MutableMMOPath.withPaths([1, 2, 1, 1], [2, 1], [3])),
-                      MMOInfo(
-                        BigInt.parse("895610BECE218FD3", radix: 16).toUInt(),
-                        9,
-                        7,
-                        encounterSlotsMap["D3FB11A4B88400FC"]!,
-                        encounterSlotsMap["64064A0B10810230"]!,
-                      ),
-                      4000,
-                      alphaRequired: false,
-                      shinyRequired: true)!,
+                FutureBuilder<List<MMOSearchResults>>(
+                  future: MMOSearchService.provide().gatherOutbreakInformation().then(MMOSearchService.provide().performSearch),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return Text('loading');
+                    }
+                    return SearchResultDetails(
+                      match: snapshot.data!.first.paths.first,
+                    );
+                  },
                 ),
               ],
             ),

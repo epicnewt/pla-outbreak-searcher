@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:mmo_searcher/mass_outbreak/search/rng/spawn.dart';
 import 'package:mmo_searcher/mass_outbreak/search/rng/xoroshiro.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/meta_data/encounter_slots.dart';

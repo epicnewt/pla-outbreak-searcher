@@ -10,6 +10,7 @@ class SearchResultDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(match.matches);
     return Card(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

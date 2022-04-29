@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_info.dart';
+import 'package:provider/provider.dart';
 
 class MassiveMassOutbreakData extends ChangeNotifier {
 
@@ -35,4 +36,8 @@ class MassiveMassOutbreakData extends ChangeNotifier {
     _mmoInfo = mmoInfo;
     notifyListeners();
   }
+
+  static MassiveMassOutbreakData provide(context) {
+    return Provider.of<MassiveMassOutbreakData>(context, listen: false);
+  } 
 }

@@ -89,8 +89,6 @@ PathSpawnInfo? generateSpawnsOfPath(MMOPath mmoPath, MMOInfo info, int rolls, {r
     return null;
   }
 
-  print("final Spawns: $list");
-
   //fill in final step for seeds
   if (path.isEmpty) {
     _mainRng.reseed(groupSeed);
