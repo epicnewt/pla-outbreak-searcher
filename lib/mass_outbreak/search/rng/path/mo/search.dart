@@ -41,7 +41,7 @@ class MassOutbreakResult {
     int currentSeed = seed;
 
     generatePokemon() {
-      var spawn = generateSpawnLite(rng, spawnRng, alphaSpawned, pokemon, rolls)!;
+      var spawn = generateSpawnLite(rng, spawnRng, alphaSpawned, pokemon)!;
       alphaSpawned = alphaSpawned || spawn.alpha;
       spawns.add(spawn);
     }
@@ -166,7 +166,7 @@ void fastSearch(List<Object> params) {
     var spawnedAlpha = false;
 
     for (var i = 0; i < count; i++) {
-      var spawn = generateSpawnLite(rng, spawnerRng, spawnedAlpha, sp.pkmn, sp.rolls, alphaRequired: sp.alpha, shinyRequired: sp.shiny);
+      var spawn = generateSpawnLite(rng, spawnerRng, spawnedAlpha, sp.pkmn, alphaRequired: sp.alpha, shinyRequired: sp.shiny);
 
       if (spawn == null) {
         // wasn't alpha or shiny
@@ -214,7 +214,7 @@ bool findAdditonalMatchInPath(int seed, List<int> path, int rolls, PokedexEntry 
       _mainRng.advanceAndReseed(4);
     } else {
       for (var i = -3; i < action; i++) {
-        var spawn = generateSpawnLite(_mainRng, _spawnerRng, spawnedAlpha, pkmn, rolls, alphaRequired: alphaRequired, shinyRequired: shinyRequired);
+        var spawn = generateSpawnLite(_mainRng, _spawnerRng, spawnedAlpha, pkmn, alphaRequired: alphaRequired, shinyRequired: shinyRequired);
         if (spawn != null) {
           spawnedAlpha = spawnedAlpha || spawn.alpha;
 

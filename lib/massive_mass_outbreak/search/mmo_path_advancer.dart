@@ -74,7 +74,6 @@ PathSpawnInfo? generateSpawnsOfPath(MMOPath mmoPath, MMOInfo info, int rolls, {r
       _spawnerRng,
       false,
       null,
-      rolls,
       alphaRequired: alphaRequired,
       shinyRequired: shinyRequired,
       encounterTable: encounterTable,

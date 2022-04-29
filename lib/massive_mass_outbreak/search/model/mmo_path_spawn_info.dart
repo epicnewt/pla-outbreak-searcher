@@ -82,6 +82,6 @@ class PathSpawnInfo {
   Spawn _fromSeed(List<int> seed, bool isBonusSpawn) {
     _mainRng.reseed(seed.first, s1: seed.last);
     var encounterTable = isBonusSpawn ? bonusTable ?? initialTable : initialTable;
-    return generateSpawnLite(_mainRng, _spawnerRng, false, null, rolls, encounterTable: encounterTable)!;
+    return generateSpawnLite(_mainRng, _spawnerRng, false, null, encounterTable: encounterTable)!;
   }
 }

@@ -5,6 +5,7 @@ import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_info.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_search_results.dart';
 import 'package:mmo_searcher/num.dart';
 import 'package:mmo_searcher/nxreader.dart';
+import 'package:mmo_searcher/pokedex/pokedex_store.dart';
 
 import '../meta_data/encounter_slots.dart';
 
@@ -86,7 +87,7 @@ class DefaultMMOSearchService implements MMOSearchService {
   Future<List<MMOSearchResults>> performSearch(List<MMOInfo> outbreaks) async {
     // TODO :: Run in an isolate
     return outbreaks
-        .map((info) {
+        .map((info) {          
           return MMOSearchResults(
             info,
             aggressivePaths(spawns: info.spawns, bonusSpawns: info.bonusSpawns ?? 0) //

@@ -1,8 +1,11 @@
+import 'package:get_it/get_it.dart';
 import 'package:mmo_searcher/mass_outbreak/search/rng/xoroshiro.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/meta_data/encounter_slots.dart';
 import 'package:mmo_searcher/num.dart';
 import 'package:mmo_searcher/pokedex/pokedex.dart';
-import 'dart:collection';
+import 'package:collection/collection.dart';
+
+import 'package:mmo_searcher/pokedex/pokedex_store.dart';
 
 final ALPHA_LIMIT_ULITE = 0xFD7720F353A4BBFF >>> 1;
 
@@ -173,7 +176,7 @@ class Spawn {
   }
 }
 
-Spawn? generateSpawnLite(XOROSHIROLite mainRng, XOROSHIROLite spawnerRng, bool spawnedAlpha, PokedexEntry? pkmn, int rolls,
+Spawn? generateSpawnLite(XOROSHIROLite mainRng, XOROSHIROLite spawnerRng, bool spawnedAlpha, PokedexEntry? pkmn,
     {EncounterTable? encounterTable, bool alphaRequired = false, bool shinyRequired = false, bool debug = false}) {
   if (debug) {
     print("generateSpawnLite($mainRng)");
@@ -194,6 +197,23 @@ Spawn? generateSpawnLite(XOROSHIROLite mainRng, XOROSHIROLite spawnerRng, bool s
   late Spawn? _default = alpha ? Spawn.DUMMY_ALPHA : null;
 
   PokedexEntry pokedexEntry = pkmn ?? encounterSlot.pkmn;
-  var fromSeedLite = Spawn.fromSeedLite(spawnerRng.next(), pokedexEntry, alpha, rolls, shinyRequired: shinyRequired, guranteedIVs: guarateedIVs, form: encounterSlot.form);
+  var fromSeedLite = Spawn.fromSeedLite(
+    spawnerRng.next(),
+    pokedexEntry,
+    alpha,
+    getRolls(pokedexEntry.pokemon),
+    shinyRequired: shinyRequired,
+    guranteedIVs: guarateedIVs,
+    form: encounterSlot.form,
+  );
   return fromSeedLite ?? _default;
+}
+
+int getRolls(String pokemon) {
+  var store = GetIt.I.get<PokedexStore>();
+  return [
+    store.pokedexCompletion[pokemon] ?? false,
+    store.pokedexPerfection[pokemon] ?? false,
+    store.shinyCharm,
+  ].mapIndexed((index, element) => (element) ? index + 1 : 0).sum;
 }
