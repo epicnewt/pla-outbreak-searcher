@@ -4,6 +4,7 @@ import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_path_spawn_i
 import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_search_results.dart';
 import 'package:mmo_searcher/navigator.dart';
 import 'package:mmo_searcher/pokedex/pokedex.dart';
+import 'package:mmo_searcher/pokedex/pokedex_store.dart';
 
 class SearchResultSummary extends StatelessWidget {
   final MMOSearchResults results;
@@ -28,7 +29,9 @@ class SearchResultSummary extends StatelessWidget {
               mainAxisSize: MainAxisSize.max,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                PokemonSprite(dexNumber: pkmn.nationalDexNumber),
+                PokemonSprite(dexNumber: pkmn.nationalDexNumber, 
+                          checked: PokedexStore.provide().pokedexCaught[pkmn.pokemon],
+                ),
                 Padding(
                   padding: const EdgeInsets.only(top: 8, bottom: 8, left: 4),
                   child: Column(
@@ -42,7 +45,8 @@ class SearchResultSummary extends StatelessWidget {
                           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24 - 8),
                         ),
                       ),
-                      ...paths.map((e) => Text(e.mmoPath.toString()))
+                      ...paths.map((e) => Text(e.mmoPath.toString())).take(10),
+                      ...[Text('...')].where((element) => paths.length > 10)
                     ],
                   ),
                 ),
