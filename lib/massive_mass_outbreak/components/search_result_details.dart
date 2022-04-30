@@ -12,26 +12,26 @@ class SearchResultDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     print(match.matches);
-    return Card(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0),
-            child: Hero(
-              tag: match.mmoPath.toString(),
-              child: Text(
-                match.mmoPath.toString(),
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24 - 8),
+    return GestureDetector(
+      onTap: () {
+        AppRouteNavigator.provide().toMMOSearchResultSpawns(context, match);
+      },
+      child: Card(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0),
+              child: Hero(
+                tag: match.mmoPath.toString(),
+                child: Text(
+                  match.mmoPath.toString(),
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24 - 8),
+                ),
               ),
             ),
-          ),
-          ...match.matches
-              .map((spawn) => GestureDetector(
-                onTap: () {
-                  AppRouteNavigator.provide().toMMOSearchResultSpawns(context, match);
-                },
-                child: Row(
+            ...match.matches
+                .map((spawn) => Row(
                       mainAxisSize: MainAxisSize.max,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -60,10 +60,10 @@ class SearchResultDetails extends StatelessWidget {
                           ),
                         ),
                       ],
-                    ),
-              ))
-              .toList()
-        ],
+                    ))
+                .toList()
+          ],
+        ),
       ),
     );
   }
