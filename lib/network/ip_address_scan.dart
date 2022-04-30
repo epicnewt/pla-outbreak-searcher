@@ -5,8 +5,11 @@ import 'package:network_info_plus/network_info_plus.dart';
 
 Future<List<String>> findSwitchIpAddress() async {
   List<Future<String>> futures = [];
-  await for (var item in _ipAddresses().map((element) {
-    return Socket.connect(element, 6000, timeout: const Duration(seconds: 2)).then((value) => element).onError((error, stackTrace) => "");
+  await for (var item in _ipAddresses().map((ipAddress) {
+    return Socket.connect(ipAddress, 6000, timeout: const Duration(seconds: 2)).then((socket) {
+      socket.close();
+      return ipAddress;
+    }).onError((error, stackTrace) => "");
   })) {
     futures.add(item);
   }

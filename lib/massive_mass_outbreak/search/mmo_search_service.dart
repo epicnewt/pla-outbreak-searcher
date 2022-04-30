@@ -3,14 +3,20 @@ import 'package:mmo_searcher/massive_mass_outbreak/search/mmo_path_advancer.dart
 import 'package:mmo_searcher/massive_mass_outbreak/search/mmo_path_generator.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_info.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_search_results.dart';
+import 'package:mmo_searcher/network/ip_address_scan.dart';
 import 'package:mmo_searcher/num.dart';
 import 'package:mmo_searcher/network/nxreader.dart';
-import 'package:mmo_searcher/pokedex/pokedex_store.dart';
 
 import '../meta_data/encounter_slots.dart';
 
+class SwitchConnectionException implements Exception {
+  final List<String> availableAddresses;
+
+  SwitchConnectionException(this.availableAddresses);
+}
+
 abstract class MMOSearchService {
-  Future<List<MMOInfo>> gatherOutbreakInformation();
+  Future<List<MMOInfo>> gatherOutbreakInformation({String? switchIpAddress});
   Future<List<MMOSearchResults>> performSearch(List<MMOInfo> outbreaks);
 
   static MMOSearchService provide() {
@@ -20,7 +26,7 @@ abstract class MMOSearchService {
 
 class DefaultMMOSearchService implements MMOSearchService {
   @override
-  Future<List<MMOInfo>> gatherOutbreakInformation() async {
+  Future<List<MMOInfo>> gatherOutbreakInformation({String? switchIpAddress}) async {
     List<Future<MMOInfo?>> outbreaks = [];
 
     var mapNames = {
@@ -33,7 +39,12 @@ class DefaultMMOSearchService implements MMOSearchService {
 
     var mmoPointer = "[[[[[[main+42BA6B0]+2B0]+58]+18]";
 
-    var reader = NxReader("192.168.0.10");
+    String address = switchIpAddress ?? await getSwitchIpAddress();
+
+    print("Connecting to switch on $address:6000");
+
+    var reader = NxReader(address);
+
     reader.connect();
     try {
       for (var map = 0; map < 5; map++) {
@@ -81,6 +92,16 @@ class DefaultMMOSearchService implements MMOSearchService {
         .where((element) => element != null)
         .map((e) => e!)
         .toList();
+  }
+
+  Future<String> getSwitchIpAddress() async {
+    var addresses = await findSwitchIpAddress();
+
+    if (addresses.length == 1) {
+      return addresses.first;
+    } else {
+      return Future.error(SwitchConnectionException(addresses));
+    }
   }
 
   @override

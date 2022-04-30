@@ -9,7 +9,7 @@ import 'package:mmo_searcher/num.dart';
 
 class MMOSearchServiceStub extends MMOSearchService {
   @override
-  Future<List<MMOInfo>> gatherOutbreakInformation() async {
+  Future<List<MMOInfo>> gatherOutbreakInformation({String? switchIpAddress}) async {
     print("MMOSearchServiceStub#gatherOutbreakInformation()");
     return [
       MMOInfo(

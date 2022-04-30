@@ -10,10 +10,36 @@ class ConnectAndSearchPage extends StatelessWidget {
   const ConnectAndSearchPage({Key? key}) : super(key: key);
 
   void connect(context) async {
-    MassiveMassOutbreakData.provide(context).mmoInfo = await MMOSearchService.provide().gatherOutbreakInformation();
+    try {
+      MassiveMassOutbreakData.provide(context).mmoInfo = await MMOSearchService.provide().gatherOutbreakInformation();
+    } on SwitchConnectionException catch (sce) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                margin: EdgeInsets.only(right: 20),
+                width: 10,
+                height: 10,
+                decoration: const BoxDecoration(
+                  color: Colors.red,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              sce.availableAddresses.isEmpty
+                  ? const Text("Switch is not available.")
+                  : const Flexible(child: Text("Connot find Switch. There are multiple hosts with serices running on port 6000.")),
+            ],
+          ),
+        ),
+      );
+    }
+    return;
   }
 
   void search(context) async {
+    print("Searching");
     var results = await MMOSearchService.provide().performSearch(MassiveMassOutbreakData.provide(context).mmoInfo);
     AppRouteNavigator.provide().toMMOSearchResults(context, results);
   }
