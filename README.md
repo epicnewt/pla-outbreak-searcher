@@ -1,6 +1,6 @@
 # MMO Searcher App
 
-A flutter project for v1.0.2 path finding.
+A flutter project for v1.0.2 and v1.1.x path finding.
 
 ## Disclaimer
 
