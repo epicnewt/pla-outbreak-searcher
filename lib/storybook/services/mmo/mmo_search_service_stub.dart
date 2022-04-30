@@ -5,6 +5,7 @@ import 'package:mmo_searcher/massive_mass_outbreak/search/mmo_path_generator.dar
 import 'package:mmo_searcher/massive_mass_outbreak/search/mmo_search_service.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_info.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_search_results.dart';
+import 'package:mmo_searcher/massive_mass_outbreak/state/massive_mass_outbreak_state.dart';
 import 'package:mmo_searcher/num.dart';
 
 class MMOSearchServiceStub extends MMOSearchService {
@@ -64,9 +65,9 @@ class MMOSearchServiceStub extends MMOSearchService {
   }
 
   @override
-  Future<List<MMOSearchResults>> performSearch(List<MMOInfo> outbreaks) async {
+  Future<List<MMOSearchResults>> performSearch(MassiveMassOutbreakData data) async {
     print("MMOSearchServiceStub#performSearch([..])");
-    return outbreaks
+    return data.mmoInfo
         .map((e) => MMOSearchResults(e, [
               generateSpawnsOfPath(
                   MMOPath(MutableMMOPath.withPaths([1, 3, 1], [1], [2, 1])),

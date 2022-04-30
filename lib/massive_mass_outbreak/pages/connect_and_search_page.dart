@@ -40,7 +40,7 @@ class ConnectAndSearchPage extends StatelessWidget {
 
   void search(context) async {
     print("Searching");
-    var results = await MMOSearchService.provide().performSearch(MassiveMassOutbreakData.provide(context).mmoInfo);
+    var results = await MMOSearchService.provide().performSearch(MassiveMassOutbreakData.provide(context));
     AppRouteNavigator.provide().toMMOSearchResults(context, results);
   }
 

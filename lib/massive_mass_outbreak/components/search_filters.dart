@@ -35,17 +35,17 @@ class SearchFilters extends StatelessWidget {
               )
             ],
           ),
-          Row(
-            children: [
-              const Expanded(child: Text("Multimatch")),
-              Switch.adaptive(
-                value: multimatch,
-                onChanged: (v) {
-                  onChange(shiny, alpha, !multimatch);
-                },
-              )
-            ],
-          ),
+          // Row(
+          //   children: [
+          //     const Expanded(child: Text("Multimatch")),
+          //     Switch.adaptive(
+          //       value: multimatch,
+          //       onChanged: (v) {
+          //         onChange(shiny, alpha, !multimatch);
+          //       },
+          //     )
+          //   ],
+          // ),
         ],
       );
     });

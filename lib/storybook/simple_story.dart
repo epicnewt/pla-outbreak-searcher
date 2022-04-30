@@ -56,9 +56,9 @@ class StorybookApp extends StatelessWidget {
               providers: [
                 ChangeNotifierProvider(
                   create: (context) {
-                    var massiveMassOutbreakData = MassiveMassOutbreakData();
-                    GetIt.I.get<MMOSearchService>().gatherOutbreakInformation().then((value) => massiveMassOutbreakData.mmoInfo = value);
-                    return massiveMassOutbreakData;
+                    var data = MassiveMassOutbreakData();
+                    GetIt.I.get<MMOSearchService>().gatherOutbreakInformation().then((value) => data.mmoInfo = value);
+                    return data;
                   },
                 ),
               ],
@@ -68,7 +68,11 @@ class StorybookApp extends StatelessWidget {
           Story(
             name: 'MMO/Result Summary Page',
             builder: (context) => FutureBuilder<List<MMOSearchResults>>(
-              future: MMOSearchService.provide().gatherOutbreakInformation().then(MMOSearchService.provide().performSearch),
+              future: MMOSearchService.provide().gatherOutbreakInformation().then((mmoInfo) {
+                var data = MassiveMassOutbreakData();
+                data.mmoInfo = mmoInfo;
+                return MMOSearchService.provide().performSearch(data);
+              }),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
                   return const Text('loading');
@@ -80,7 +84,11 @@ class StorybookApp extends StatelessWidget {
           Story(
             name: 'MMO/Search Result Details Page',
             builder: (context) => FutureBuilder<MMOSearchResults>(
-              future: MMOSearchService.provide().gatherOutbreakInformation().then(MMOSearchService.provide().performSearch).then((value) => value[0]),
+              future: MMOSearchService.provide().gatherOutbreakInformation().then((mmoInfo) {
+                var data = MassiveMassOutbreakData();
+                data.mmoInfo = mmoInfo;
+                return MMOSearchService.provide().performSearch(data);
+              }).then((value) => value[0]),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
                   return const Text('loading');

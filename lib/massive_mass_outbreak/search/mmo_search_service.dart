@@ -3,6 +3,7 @@ import 'package:mmo_searcher/massive_mass_outbreak/search/mmo_path_advancer.dart
 import 'package:mmo_searcher/massive_mass_outbreak/search/mmo_path_generator.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_info.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_search_results.dart';
+import 'package:mmo_searcher/massive_mass_outbreak/state/massive_mass_outbreak_state.dart';
 import 'package:mmo_searcher/network/ip_address_scan.dart';
 import 'package:mmo_searcher/num.dart';
 import 'package:mmo_searcher/network/nxreader.dart';
@@ -17,7 +18,7 @@ class SwitchConnectionException implements Exception {
 
 abstract class MMOSearchService {
   Future<List<MMOInfo>> gatherOutbreakInformation({String? switchIpAddress});
-  Future<List<MMOSearchResults>> performSearch(List<MMOInfo> outbreaks);
+  Future<List<MMOSearchResults>> performSearch(MassiveMassOutbreakData data);
 
   static MMOSearchService provide() {
     return GetIt.I.get<MMOSearchService>();
@@ -105,14 +106,14 @@ class DefaultMMOSearchService implements MMOSearchService {
   }
 
   @override
-  Future<List<MMOSearchResults>> performSearch(List<MMOInfo> outbreaks) async {
+  Future<List<MMOSearchResults>> performSearch(MassiveMassOutbreakData data) async {
     // TODO :: Run in an isolate
-    return outbreaks
+    return data.mmoInfo
         .map((info) { 
           return MMOSearchResults(
             info,
             aggressivePaths(spawns: info.spawns, bonusSpawns: info.bonusSpawns ?? 0) //
-                .map((path) => generateSpawnsOfPath(path, info, alphaRequired: true, shinyRequired: true))
+                .map((path) => generateSpawnsOfPath(path, info, alphaRequired: data.alpha, shinyRequired: data.shiny))
                 .where((element) => element != null && element.matches.isNotEmpty)
                 .map((e) => e!)
                 .toList(),
