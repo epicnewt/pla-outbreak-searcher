@@ -4,7 +4,7 @@ import 'package:mmo_searcher/massive_mass_outbreak/search/mmo_path_advancer.dart
 import 'package:mmo_searcher/massive_mass_outbreak/search/mmo_path_generator.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_info.dart';
 import 'package:mmo_searcher/num.dart';
-import 'package:mmo_searcher/nxreader.dart';
+import 'package:mmo_searcher/network/nxreader.dart';
 import 'package:mmo_searcher/pokedex/pokedex.dart';
 
 class MassiveMassOutbreakPointerDebugScreen extends StatelessWidget {

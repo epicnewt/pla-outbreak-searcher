@@ -78,7 +78,6 @@ class MMOSearchServiceStub extends MMOSearchService {
                     encounterSlotsMap["41E4947058A65FD8"]!,
                     encounterSlotsMap["702EDC94E9044B34"]!,
                   ),
-                  1400,
                   alphaRequired: false,
                   shinyRequired: true)!,
               generateSpawnsOfPath(
@@ -91,7 +90,6 @@ class MMOSearchServiceStub extends MMOSearchService {
                     encounterSlotsMap["D3FB11A4B88400FC"]!,
                     encounterSlotsMap["64064A0B10810230"]!,
                   ),
-                  4000,
                   alphaRequired: false,
                   shinyRequired: false)!,
             ]))

@@ -30,7 +30,7 @@ void main() {
 }
 
 PathSpawnInfo asSpawnInfo(MMOPath path) {
-  return PathSpawnInfo([], 0, 0, 0, EncounterTable.massoutbreak, null, path, (p) => p.alpha && p.shiny);
+  return PathSpawnInfo([], 0, 0, EncounterTable.massoutbreak, null, path, (p) => p.alpha && p.shiny);
 }
 
 class StorybookApp extends StatelessWidget {
@@ -102,7 +102,6 @@ class StorybookApp extends StatelessWidget {
                       encounterSlotsMap["D3FB11A4B88400FC"]!,
                       encounterSlotsMap["64064A0B10810230"]!,
                     ),
-                    4000,
                     alphaRequired: false,
                     shinyRequired: true)!),
           ),
