@@ -16,17 +16,17 @@ class DefaultAppRouteNavigator implements AppRouteNavigator {
   static void register() => GetIt.I.registerSingleton<AppRouteNavigator>(DefaultAppRouteNavigator());
 
   @override
-  toMMOSearchResultSpawns(BuildContext context, PathSpawnInfo param) {
-    Navigator.pushNamed(context, 'mmo-search-results', arguments: param);
-  }
-
-  @override
   toMMOSearchResults(BuildContext context, List<MMOSearchResults> param) {
     Navigator.pushNamed(context, 'mmo-search-results', arguments: param);
   }
 
   @override
   toMMOSearchResultDetails(BuildContext context, MMOSearchResults param) {
-    Navigator.pushNamed(context, 'mmo-search-results', arguments: param);
+    Navigator.pushNamed(context, 'mmo-search-results-details', arguments: param);
+  }
+
+  @override
+  toMMOSearchResultSpawns(BuildContext context, PathSpawnInfo param) {
+    Navigator.pushNamed(context, 'mmo-search-result-spawns', arguments: param);
   }
 }

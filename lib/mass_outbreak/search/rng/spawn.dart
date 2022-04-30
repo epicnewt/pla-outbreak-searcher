@@ -172,12 +172,16 @@ class Spawn {
 
   @override
   String toString() {
-    return "$gender $evs $nature ${shiny ? '*' : ''} ${alpha ? 'Alpha' : ''} $pkmn".replaceAll(RegExp("\\s+"), " ").trim();
+    return "${pkmn.pokemon} $gender $evs $nature ${shiny ? 'Shiny' : ''} ${alpha ? 'Alpha' : ''}".replaceAll(RegExp("\\s+"), " ").trim();
   }
 }
 
+enum OutbreakType {
+  massiveMassOutbreak, massOutbreak
+}
+
 Spawn? generateSpawnLite(XOROSHIROLite mainRng, XOROSHIROLite spawnerRng, bool spawnedAlpha, PokedexEntry? pkmn,
-    {EncounterTable? encounterTable, bool alphaRequired = false, bool shinyRequired = false, bool debug = false}) {
+    {EncounterTable? encounterTable, bool alphaRequired = false, bool shinyRequired = false, bool debug = false, OutbreakType outbreakType = OutbreakType.massOutbreak}) {
   if (debug) {
     print("generateSpawnLite($mainRng)");
   }
@@ -201,7 +205,7 @@ Spawn? generateSpawnLite(XOROSHIROLite mainRng, XOROSHIROLite spawnerRng, bool s
     spawnerRng.next(),
     pokedexEntry,
     alpha,
-    getRolls(pokedexEntry.pokemon),
+    getRolls(pokedexEntry.pokemon) + (outbreakType == OutbreakType.massOutbreak ? 26 : 13),
     shinyRequired: shinyRequired,
     guranteedIVs: guarateedIVs,
     form: encounterSlot.form,

@@ -44,8 +44,8 @@ class MassiveMassOutbreakPointerDebugScreen extends StatelessWidget {
 
                       update += "Map: ${name.toHex()}:${mapNames[name]}\n";
 
-                      var mmoInfo = (await Future.wait(List.generate(16, (group_id) async {
-                        var pointerRoot = 0x1d4 + group_id * 0x90 + 0xb80 * map;
+                      var mmoInfo = (await Future.wait(List.generate(16, (groupId) async {
+                        var pointerRoot = 0x1d4 + groupId * 0x90 + 0xb80 * map;
                         var numspecies = await reader.readPointerInt("[[[[[[main+42BA6B0]+2B0]+58]+18]+${(pointerRoot).toHex()}", 2);
 
                         if (numspecies == BigInt.zero || numspecies > BigInt.one << 11) {
@@ -98,7 +98,7 @@ class MassiveMassOutbreakPointerDebugScreen extends StatelessWidget {
                         }
 
                         for (var path in aggressivePaths(spawns: info.spawns, bonusSpawns: info.bonusSpawns ?? 0)) {
-                          var spawnInfo = generateSpawnsOfPath(path, info, 14, alphaRequired: true, shinyRequired: true);
+                          var spawnInfo = generateSpawnsOfPath(path, info, alphaRequired: true, shinyRequired: true);
                           if (spawnInfo == null) {
                             continue;
                           }

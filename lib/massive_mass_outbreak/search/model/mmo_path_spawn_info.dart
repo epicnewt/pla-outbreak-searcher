@@ -4,6 +4,7 @@ import 'package:mmo_searcher/massive_mass_outbreak/meta_data/encounter_slots.dar
 
 import 'package:collection/collection.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/mmo_path_generator.dart';
+import 'package:mmo_searcher/num.dart';
 
 var _mainRng = XOROSHIROLite();
 var _spawnerRng = XOROSHIROLite();
@@ -24,7 +25,6 @@ class Tuple3<F, S, T> {
 
 class PathSpawnInfo {
   final List<List<List<int>>> seedsOfSpawnGroups;
-  final int rolls;
   final int revisitsPathStart;
   final int bonusPathStart;
   final EncounterTable initialTable;
@@ -34,7 +34,10 @@ class PathSpawnInfo {
   late final List<List<Spawn>> pokemon = _generatePokemon();
   late final List<Spawn> matches = pokemon // remove ghost pokemon
       .whereIndexed(_isNotGhostSpawnGroup) //
-      .expand((list) => list.where(_filter).toList())
+      .expand((list) => list.where((element) {
+        print("  Filter: $element ${_filter(element)}");
+        return _filter(element);
+      },).toList())
       .toList();
 
   late final List<Tuple3<String, int, List<Spawn>>> summary = (List.generate(
@@ -51,14 +54,13 @@ class PathSpawnInfo {
       List.generate(
         (mmoPath.bonusPath.isEmpty) ? 0 : mmoPath.bonusPath.length + 1,
         (index) => (index == 0 //
-                ? Tuple3("B", 0, pokemon[index]) //
+                ? Tuple3("B", 0, pokemon[index + mmoPath.initialPath.length + mmoPath.revisit.length + 1]) //
                 : Tuple3("B", mmoPath.bonusPath[index - 1], pokemon[index + mmoPath.initialPath.length + mmoPath.revisit.length + 1]) //
             ),
       ));
 
   PathSpawnInfo(
     this.seedsOfSpawnGroups,
-    this.rolls,
     this.revisitsPathStart,
     this.bonusPathStart,
     this.initialTable,
@@ -77,11 +79,20 @@ class PathSpawnInfo {
   }
 
   bool _isNotGhostSpawnGroup(int index, dynamic _) =>
-      index >= (mmoPath.initialPath.length + 1) && index < (mmoPath.initialPath.length + mmoPath.revisit.length + 1);
+      index < (mmoPath.initialPath.length) || index >= (mmoPath.initialPath.length + mmoPath.revisit.length);
 
   Spawn _fromSeed(List<int> seed, bool isBonusSpawn) {
     _mainRng.reseed(seed.first, s1: seed.last);
-    var encounterTable = isBonusSpawn ? bonusTable ?? initialTable : initialTable;
-    return generateSpawnLite(_mainRng, _spawnerRng, false, null, encounterTable: encounterTable)!;
+    var encounterTable = isBonusSpawn ? (bonusTable ?? initialTable) : initialTable;
+    var spawn = generateSpawnLite(
+      _mainRng,
+      _spawnerRng,
+      false,
+      null,
+      encounterTable: encounterTable,
+      outbreakType: OutbreakType.massiveMassOutbreak,
+    );
+    print("PathSpawnInfo: [0x${seed.first.toHex()}, 0x${seed.last.toHex()}], $spawn");
+    return spawn!;
   }
 }

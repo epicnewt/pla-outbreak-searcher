@@ -87,17 +87,22 @@ class DefaultMMOSearchService implements MMOSearchService {
   Future<List<MMOSearchResults>> performSearch(List<MMOInfo> outbreaks) async {
     // TODO :: Run in an isolate
     return outbreaks
-        .map((info) {          
+        .map((info) { 
+          print("Searching: ${info.initialRoundEncouterTable.slots.first.pkmn.pokemon} 0x${info.groupSeed.toHex()}");
           return MMOSearchResults(
             info,
             aggressivePaths(spawns: info.spawns, bonusSpawns: info.bonusSpawns ?? 0) //
-                .map((path) => generateSpawnsOfPath(path, info, 14, alphaRequired: true, shinyRequired: true))
-                .where((element) => element != null)
+                .map((path) => generateSpawnsOfPath(path, info, alphaRequired: true, shinyRequired: true))
+                .where((element) => element != null && element.matches.isNotEmpty)
                 .map((e) => e!)
                 .toList(),
           );
         })
         .where((results) => results.paths.isNotEmpty)
+        .where((element) {
+          print("Search Result: $element");
+          return true;
+        })
         .toList();
   }
 

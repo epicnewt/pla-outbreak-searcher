@@ -1,8 +1,11 @@
+import 'package:get_it/get_it.dart';
 import 'package:mmo_searcher/mass_outbreak/search/rng/spawn.dart';
 import 'package:mmo_searcher/mass_outbreak/search/rng/xoroshiro.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/mmo_path_generator.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_info.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_path_spawn_info.dart';
+import 'package:mmo_searcher/pokedex/pokedex_store.dart';
+import 'package:collection/collection.dart';
 
 final XOROSHIROLite _mainRng = XOROSHIROLite();
 final XOROSHIROLite _spawnerRng = XOROSHIROLite();
@@ -25,7 +28,7 @@ int determineBonusSeed(int groupSeed, MMOPath path) {
 /// Non alpha and non shiny spawns are not returned if they are required. This makes the
 /// filtering more efficient by greatly reducing the RNG rolls, esspecially when an alpha
 /// is required.
-PathSpawnInfo? generateSpawnsOfPath(MMOPath mmoPath, MMOInfo info, int rolls, {required bool alphaRequired, required bool shinyRequired}) {
+PathSpawnInfo? generateSpawnsOfPath(MMOPath mmoPath, MMOInfo info, {required bool alphaRequired, required bool shinyRequired}) {
   // var groupSeed = mmoPath.bonusPath.isEmpty ? info.groupSeed : determineBonusSeed(info.groupSeed, mmoPath);
   var groupSeed = info.groupSeed;
   var encounterTable = mmoPath.bonusPath.isEmpty ? info.initialRoundEncouterTable : info.bonusRoundEncouterTable!;
@@ -77,6 +80,7 @@ PathSpawnInfo? generateSpawnsOfPath(MMOPath mmoPath, MMOInfo info, int rolls, {r
       alphaRequired: alphaRequired,
       shinyRequired: shinyRequired,
       encounterTable: encounterTable,
+      outbreakType: OutbreakType.massiveMassOutbreak,
     );
     if (spawn != null && spawn != Spawn.DUMMY_ALPHA) {
       list.add(spawn);
@@ -97,9 +101,11 @@ PathSpawnInfo? generateSpawnsOfPath(MMOPath mmoPath, MMOInfo info, int rolls, {r
     _mainRng.advanceAndReseed(path.last);
   }
 
+  print("Path: $mmoPath");
+  list.forEach((element) { print("    Advanceer result: $element"); });
+
   return PathSpawnInfo(
     seedGroups,
-    rolls,
     mmoPath.initialPath.length,
     mmoPath.initialPath.length + mmoPath.revisit.length,
     info.initialRoundEncouterTable,

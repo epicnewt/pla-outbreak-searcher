@@ -34,6 +34,7 @@ class SearchResultDetails extends StatelessWidget {
                         dexNumber: spawn.pkmn.nationalDexNumber,
                         form: spawn.form,
                         shiny: spawn.shiny,
+                        alpha: spawn.alpha,
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 8, bottom: 8, left: 4),
