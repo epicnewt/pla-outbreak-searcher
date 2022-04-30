@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/components/pokemon_sprite.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_path_spawn_info.dart';
+import 'package:mmo_searcher/navigator.dart';
 
 class SearchResultDetails extends StatelessWidget {
   final String groupSeed;
@@ -26,36 +27,41 @@ class SearchResultDetails extends StatelessWidget {
             ),
           ),
           ...match.matches
-              .map((spawn) => Row(
-                    mainAxisSize: MainAxisSize.max,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      PokemonSprite(
-                        dexNumber: spawn.pkmn.nationalDexNumber,
-                        form: spawn.form,
-                        shiny: spawn.shiny,
-                        alpha: spawn.alpha,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8, bottom: 8, left: 4),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 8.0),
-                              child: Text(
-                                spawn.pkmn.pokemon,
-                                style: const TextStyle(fontWeight: FontWeight.normal, fontSize: 24 - 8),
-                              ),
-                            ),
-                            Text('${spawn.gender} ${spawn.evs} ${spawn.nature}')
-                            // ...matches.map((path) => Text(path.toString())),
-                          ],
+              .map((spawn) => GestureDetector(
+                onTap: () {
+                  AppRouteNavigator.provide().toMMOSearchResultSpawns(context, match);
+                },
+                child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        PokemonSprite(
+                          dexNumber: spawn.pkmn.nationalDexNumber,
+                          form: spawn.form,
+                          shiny: spawn.shiny,
+                          alpha: spawn.alpha,
                         ),
-                      ),
-                    ],
-                  ))
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8, bottom: 8, left: 4),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 8.0),
+                                child: Text(
+                                  spawn.pkmn.pokemon,
+                                  style: const TextStyle(fontWeight: FontWeight.normal, fontSize: 24 - 8),
+                                ),
+                              ),
+                              Text('${spawn.gender} ${spawn.evs} ${spawn.nature}')
+                              // ...matches.map((path) => Text(path.toString())),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+              ))
               .toList()
         ],
       ),
