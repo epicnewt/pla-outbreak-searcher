@@ -101,9 +101,6 @@ PathSpawnInfo? generateSpawnsOfPath(MMOPath mmoPath, MMOInfo info, {required boo
     _mainRng.advanceAndReseed(path.last);
   }
 
-  print("Path: $mmoPath");
-  list.forEach((element) { print("    Advanceer result: $element"); });
-
   return PathSpawnInfo(
     seedGroups,
     mmoPath.initialPath.length,

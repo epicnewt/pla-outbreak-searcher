@@ -182,9 +182,6 @@ enum OutbreakType {
 
 Spawn? generateSpawnLite(XOROSHIROLite mainRng, XOROSHIROLite spawnerRng, bool spawnedAlpha, PokedexEntry? pkmn,
     {EncounterTable? encounterTable, bool alphaRequired = false, bool shinyRequired = false, bool debug = false, OutbreakType outbreakType = OutbreakType.massOutbreak}) {
-  if (debug) {
-    print("generateSpawnLite($mainRng)");
-  }
   spawnerRng.reseed(mainRng.next());
   mainRng.next();
 

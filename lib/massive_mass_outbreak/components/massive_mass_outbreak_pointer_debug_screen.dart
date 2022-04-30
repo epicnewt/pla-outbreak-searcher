@@ -65,13 +65,6 @@ class MassiveMassOutbreakPointerDebugScreen extends StatelessWidget {
                         var groupSeed = await reader.readPointerInt("[[[[[[main+42BA6B0]+2B0]+58]+18]+${(pointerRoot + 0x44).toHex()}", 8);
                         late var bonusSpawns = reader.readPointerInt("[[[[[[main+42BA6B0]+2B0]+58]+18]+${(pointerRoot + 0x60).toHex()}", 4);
 
-                        print("""
-                        |  ${pokedex[numspecies.toInt()]?.pokemon ?? 'misingno'}
-                        |    GroupSeed: ${groupSeed.toHex()}
-                        |    InitialRoundEncounter($initialSpawns): ${initialRound.toHex()}  ${(!hasBonusRound) ? "" : "  \n    BonusRoundEncounter(${await bonusSpawns}): ${bonusRound.toHex()}"}
-                        |    
-                        """.replaceAll(RegExp("\\s+[|]"), "\n"));
-
                         return MMOInfo(
                           mapNames[name]!,
                           groupSeed.toUInt(),
@@ -134,7 +127,6 @@ class MassiveMassOutbreakPointerDebugScreen extends StatelessWidget {
                       children: [
                         ElevatedButton(
                             onPressed: () {
-                              print("clicked");
                               refresh();
                             },
                             child: const Text("Refresh")),

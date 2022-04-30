@@ -34,10 +34,7 @@ class PathSpawnInfo {
   late final List<List<Spawn>> pokemon = _generatePokemon();
   late final List<Spawn> matches = pokemon // remove ghost pokemon
       .whereIndexed(_isNotGhostSpawnGroup) //
-      .expand((list) => list.where((element) {
-        print("  Filter: $element ${_filter(element)}");
-        return _filter(element);
-      },).toList())
+      .expand((list) => list.where(_filter).toList())
       .toList();
 
   late final List<Tuple3<String, int, List<Spawn>>> summary = (List.generate(
@@ -92,7 +89,6 @@ class PathSpawnInfo {
       encounterTable: encounterTable,
       outbreakType: OutbreakType.massiveMassOutbreak,
     );
-    print("PathSpawnInfo: [0x${seed.first.toHex()}, 0x${seed.last.toHex()}], $spawn");
     return spawn!;
   }
 }

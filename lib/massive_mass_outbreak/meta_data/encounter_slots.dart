@@ -8891,32 +8891,6 @@ Map<String, EncounterTable> encounterSlotsMap = {
   ])
 };
 
-// This code snippet is used to recreate the encounter tables
-// void main(List<String> args) {
-//   print(".");
-//   Map<String, dynamic> pEncounterSlotsMap = {};
-//   encounterSlotsMap.entries.forEach((element) {
-//     var key = element.key;
-//     var value = element.value;
-//     var eslots = [];
-
-//     var slotsKey = value.map((e) => e['slot']).join(",");
-//     var s = slots[slotsKey]!;
-//     for (var i = 0; i < value.length; i++) {
-//       value[i]['slot'] = '"${s[i].toRadixString(16).toUpperCase()}".parseBigInt()';
-//       value[i]['name'] = '"${value[i]['name']}"';
-//       eslots
-//           .add({'"slot"': value[i]["slot"], '"name"': value[i]["name"], '"alpha"': value[i]["alpha"], '"level"': value[i]["level"], '"ivs"': value[i]["ivs"]});
-
-//       /// arrays not printed well
-//     }
-
-//     pEncounterSlotsMap['"${key}"'] = eslots;
-//   });
-
-//   print(pEncounterSlotsMap);
-// }
-
 PokedexEntry findDexEntry(String name) {
   return pokedex.values.firstWhere((element) => element.pokemon == name, orElse: () => PokedexEntry('NULL($name)', -1, 0));
 }

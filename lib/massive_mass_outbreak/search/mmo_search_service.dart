@@ -88,7 +88,6 @@ class DefaultMMOSearchService implements MMOSearchService {
     // TODO :: Run in an isolate
     return outbreaks
         .map((info) { 
-          print("Searching: ${info.initialRoundEncouterTable.slots.first.pkmn.pokemon} 0x${info.groupSeed.toHex()}");
           return MMOSearchResults(
             info,
             aggressivePaths(spawns: info.spawns, bonusSpawns: info.bonusSpawns ?? 0) //
@@ -99,10 +98,6 @@ class DefaultMMOSearchService implements MMOSearchService {
           );
         })
         .where((results) => results.paths.isNotEmpty)
-        .where((element) {
-          print("Search Result: $element");
-          return true;
-        })
         .toList();
   }
 

@@ -57,7 +57,6 @@ class MassOutbreakSearcherService implements MassOutbreakSearcher {
             var generatorSeed = await reader.readPointerInt("[[main+4268ee0]+330]+${(0x70 + groupId * 0x440 + 0x20).toHex()}", 8);
             var groupSeed = (generatorSeed - BigInt.parse("82A2B175229D6A5B", radix: 16)) & BigInt.parse("FFFFFFFFFFFFFFFF", radix: 16);
 
-            print([groupSeed.toRadixString(16), spawns.toInt(), species.toInt()].join(", "));
             return Future(() => MassOutbreakInformation(groupSeed.toRadixString(16), spawns.toInt(), species.toInt()));
           }
         }

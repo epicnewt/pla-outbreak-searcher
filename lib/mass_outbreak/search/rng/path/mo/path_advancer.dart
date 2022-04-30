@@ -57,7 +57,6 @@ List<Spawn> getFinalReseedOfPath(BigInt seed, PokedexEntry pkmn, List<int> path,
 }
 
 Spawn generateSpawn(XOROSHIRO mainRng, XOROSHIRO spawnerRng, bool spawnedAlpha, PokedexEntry pkmn, int rolls) {
-  print("genSpawn[legacy](${mainRng.current.toHex()})");
   spawnerRng.reseed(mainRng.next());
   mainRng.next();
   var alpha = (spawnerRng.next() > ALPHA_LIMIT) && !spawnedAlpha;

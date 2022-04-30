@@ -56,4 +56,8 @@ class PokedexStore {
     GetIt.I.registerSingleton(await SharedPreferences.getInstance());
     GetIt.I.registerSingleton(PokedexStore.load());
   }
+
+  static PokedexStore provide() {
+    return GetIt.I.get();
+  }
 }

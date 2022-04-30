@@ -6,11 +6,11 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 class PokemonSprite extends StatelessWidget {
   final int dexNumber;
   final bool shiny;
-  final bool checked;
+  final bool? checked;
   final String? form;
   final bool alpha;
 
-  const PokemonSprite({Key? key, required this.dexNumber, this.shiny = false, this.checked = false, this.form, this.alpha = false}) : super(key: key);
+  const PokemonSprite({Key? key, required this.dexNumber, this.shiny = false, this.checked, this.form, this.alpha = false}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +42,7 @@ class PokemonSprite extends StatelessWidget {
             color: Colors.white,
           ),
         ),
-      ].where((element) => checked),
+      ].where((element) => checked ?? false),
       ...[Padding(
         padding: EdgeInsets.only(top: 45 - (alpha ? 12 : 0) - 5, left: 45 - 5),
         child: Container(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/components/pokemon_sprite.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_path_spawn_info.dart';
 import 'package:mmo_searcher/navigator.dart';
+import 'package:mmo_searcher/pokedex/pokedex_store.dart';
 
 class SearchResultDetails extends StatelessWidget {
   final String groupSeed;
@@ -11,7 +12,6 @@ class SearchResultDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(match.matches);
     return GestureDetector(
       onTap: () {
         AppRouteNavigator.provide().toMMOSearchResultSpawns(context, match);
@@ -40,6 +40,7 @@ class SearchResultDetails extends StatelessWidget {
                           form: spawn.form,
                           shiny: spawn.shiny,
                           alpha: spawn.alpha,
+                          checked: PokedexStore.provide().pokedexCaught[spawn.pkmn.pokemon],
                         ),
                         Padding(
                           padding: const EdgeInsets.only(top: 8, bottom: 8, left: 4),
