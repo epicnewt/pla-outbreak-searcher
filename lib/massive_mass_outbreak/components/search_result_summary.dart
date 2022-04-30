@@ -41,12 +41,12 @@ class SearchResultSummary extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.only(bottom: 8.0),
                         child: Text(
-                          pkmn.pokemon,
+                          "${pkmn.pokemon} (${[results.mmo.spawns, results.mmo.bonusSpawns ?? 0].where((e) => e > 0).join(", ")})",
                           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24 - 8),
                         ),
                       ),
                       ...paths.map((e) => Text(e.mmoPath.toString())).take(10),
-                      ...[Text('...')].where((element) => paths.length > 10)
+                      ...[const Text('...')].where((element) => paths.length > 10)
                     ],
                   ),
                 ),
