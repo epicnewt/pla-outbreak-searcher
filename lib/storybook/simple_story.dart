@@ -18,15 +18,17 @@ import 'package:mmo_searcher/massive_mass_outbreak/state/massive_mass_outbreak_s
 import 'package:mmo_searcher/num.dart';
 import 'package:mmo_searcher/pokedex/pokedex.dart';
 import 'package:mmo_searcher/pokedex/pokedex_page.dart';
+import 'package:mmo_searcher/pokedex/pokedex_store.dart';
 import 'package:mmo_searcher/pokedex/widgets/pokedex_entry_summary.dart';
 import 'package:mmo_searcher/storybook/services/mmo/app_route_navigator_stub.dart';
 import 'package:mmo_searcher/storybook/services/mmo/mmo_search_service_stub.dart';
 import 'package:provider/provider.dart';
 import 'package:storybook_flutter/storybook_flutter.dart';
 
-void main() {
+void main() async {
   AppRouteNavigatorStub.register();
   MMOSearchServiceStub.register();
+  await PokedexStore.register();
   runApp(const StorybookApp());
 }
 
@@ -108,8 +110,8 @@ class StorybookApp extends StatelessWidget {
                       BigInt.parse("895610BECE218FD3", radix: 16).toUInt(),
                       9,
                       7,
-                      encounterSlotsMap["D3FB11A4B88400FC"]!,
                       encounterSlotsMap["64064A0B10810230"]!,
+                      encounterSlotsMap["D3FB11A4B88400FC"]!,
                     ),
                     alphaRequired: false,
                     shinyRequired: true)!),
