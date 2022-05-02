@@ -4,6 +4,9 @@ import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_path_spawn_i
 import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_search_results.dart';
 
 abstract class AppRouteNavigator {
+  toMOSearch(BuildContext context);
+
+  toMMOSearch(BuildContext context);
   toMMOSearchResults(BuildContext context, List<MMOSearchResults> param);
   toMMOSearchResultDetails(BuildContext context, MMOSearchResults param);
   toMMOSearchResultSpawns(BuildContext context, PathSpawnInfo param);
@@ -12,8 +15,17 @@ abstract class AppRouteNavigator {
 }
 
 class DefaultAppRouteNavigator implements AppRouteNavigator {
-
   static void register() => GetIt.I.registerSingleton<AppRouteNavigator>(DefaultAppRouteNavigator());
+
+  @override
+  toMOSearch(BuildContext context) {
+    Navigator.pushNamed(context, 'mo-search');
+  }
+
+  @override
+  toMMOSearch(BuildContext context) {
+    Navigator.pushNamed(context, 'mmo-search');
+  }
 
   @override
   toMMOSearchResults(BuildContext context, List<MMOSearchResults> param) {

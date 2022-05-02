@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mmo_searcher/common/widgets/app_drawer.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/components/search_filters.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/mmo_search_service.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/state/massive_mass_outbreak_state.dart';
@@ -50,6 +51,7 @@ class ConnectAndSearchPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text("MMO Searcher"),
       ),
+      drawer: const AppDrawer(),
       body: SingleChildScrollView(
         child: Consumer<MassiveMassOutbreakData>(
           builder: (context, mmoData, child) {
