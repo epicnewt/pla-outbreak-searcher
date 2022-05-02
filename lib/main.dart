@@ -20,7 +20,7 @@ import 'package:provider/provider.dart';
 void main() {
   DefaultAppRouteNavigator.register();
   DefaultMMOSearchService.register();
-  MassOutbreakSearcherService.register();
+  DefaultMassOutbreakSearcherService.register();
   PokedexStore.register().then((_) {
     runApp(MultiProvider(
       providers: [
