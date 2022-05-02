@@ -7,19 +7,7 @@ class PokemonList extends StatelessWidget {
   final List<PokedexEntry> entries;
   final bool shrinkWrap;
 
-  const PokemonList({Key? key, required this.entries, this.shrinkWrap = false}) : super(key: key); 
-  onPokedexEntryChange(int action, String pokemon, PokedexStore state) {
-    if (action == 0) {
-      state.toggleCompletion(pokemon);
-    } else if (action == 1) {
-      state.togglePerfection(pokemon);
-    } else if (action == 2) {
-      state.toggleShinyCharm();
-    } else if (action == 3) {
-      state.toggleCaught(pokemon);
-    }
-    state.save();
-  }
+  const PokemonList({Key? key, required this.entries, this.shrinkWrap = false}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -31,27 +19,8 @@ class PokemonList extends StatelessWidget {
             return const CircularProgressIndicator();
           }
 
-          return StatefulBuilder(
-            builder: (context, setState) {
-              var shinyCharm = snapshot.data?.shinyCharm ?? false;
-              return Column(
-                // shrinkWrap: shrinkWrap,
-                children: entries.map((e) {
-                  return PokedexEntrySummary(
-                    pokedexEntry: e,
-                    caught: snapshot.data?.pokedexCaught[e.pokemon] ?? false,
-                    complete: snapshot.data?.pokedexCompletion[e.pokemon] ?? false,
-                    perfect: snapshot.data?.pokedexPerfection[e.pokemon] ?? false,
-                    shinyCharm: shinyCharm,
-                    onChange: (index) {
-                      setState(() {
-                        onPokedexEntryChange(index, e.pokemon, snapshot.data!);
-                      });
-                    },
-                  );
-                }).toList(),
-              );
-            },
+          return Column(
+            children: entries.map((e) => PokedexEntrySummary(pokedexEntry: e)).toList(),
           );
         });
   }

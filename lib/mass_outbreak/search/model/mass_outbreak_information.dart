@@ -1,14 +1,8 @@
 
 class MassOutbreakInformation {
-  late final String seed;
-  late final int? spawns;
-  late final int species;
-
-  MassOutbreakInformation.empty() {
-    seed = "";
-    spawns = null;
-    species = -1;
-  }
+  final String seed;
+  final int? spawns;
+  final int species;
 
   MassOutbreakInformation(this.seed, this.spawns, this.species);
 }

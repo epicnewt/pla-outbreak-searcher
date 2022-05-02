@@ -3,7 +3,9 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mmo_searcher/mass_outbreak/pages/mo_connect_and_search_page.dart';
+import 'package:mmo_searcher/mass_outbreak/search/model/mass_outbreak_information.dart';
 import 'package:mmo_searcher/mass_outbreak/search/model/mass_outbreak_search_data.dart';
+import 'package:mmo_searcher/mass_outbreak/search/model/mass_outbreak_searcher.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/pages/mmo_search_result_spawns_page.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/meta_data/encounter_slots.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/pages/mmo_connect_and_search_page.dart';
@@ -24,12 +26,14 @@ import 'package:mmo_searcher/pokedex/pokedex_store.dart';
 import 'package:mmo_searcher/pokedex/widgets/pokedex_entry_summary.dart';
 import 'package:mmo_searcher/storybook/services/mmo/app_route_navigator_stub.dart';
 import 'package:mmo_searcher/storybook/services/mmo/mmo_search_service_stub.dart';
+import 'package:mmo_searcher/storybook/services/mmo/mo_search_service_stub.dart';
 import 'package:provider/provider.dart';
 import 'package:storybook_flutter/storybook_flutter.dart';
 
 void main() async {
   AppRouteNavigatorStub.register();
   MMOSearchServiceStub.register();
+  MOSearchServiceStub.register();
   await PokedexStore.register();
   runApp(const StorybookApp());
 }
@@ -57,14 +61,21 @@ class StorybookApp extends StatelessWidget {
           ),
           Story(
             name: 'MO/Initial Page (connected)',
-            builder: (context) => MultiProvider(
-              providers: [
-                ChangeNotifierProvider.value(
-                  value: MassOutbreakSearchData(),
-                ),
-              ],
-              child: const MOConnectAndSearchPage(),
-            ),
+            builder: (context) => FutureBuilder<MassOutbreakInformation>(
+                future: GetIt.I.get<MassOutbreakSearcher>().gatherOutbreakInformation(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return const CircularProgressIndicator();
+                  }
+                  return MultiProvider(
+                    providers: [
+                      ChangeNotifierProvider.value(
+                        value: MassOutbreakSearchData()..moInfo = snapshot.data,
+                      ),
+                    ],
+                    child: const MOConnectAndSearchPage(),
+                  );
+                }),
           ),
           Story(
             name: 'MMO/Initial Page',
@@ -145,27 +156,9 @@ class StorybookApp extends StatelessWidget {
             builder: (context) => ListView(
               shrinkWrap: true,
               children: [
-                PokedexEntrySummary(
-                  pokedexEntry: randomPokedexEntry(),
-                  caught: true,
-                  complete: true,
-                  perfect: true,
-                  shinyCharm: true,
-                ),
-                PokedexEntrySummary(
-                  pokedexEntry: randomPokedexEntry(),
-                  caught: true,
-                  complete: true,
-                  perfect: true,
-                  shinyCharm: true,
-                ),
-                PokedexEntrySummary(
-                  pokedexEntry: randomPokedexEntry(),
-                  caught: false,
-                  complete: true,
-                  perfect: true,
-                  shinyCharm: true,
-                ),
+                PokedexEntrySummary(pokedexEntry: randomPokedexEntry()),
+                PokedexEntrySummary(pokedexEntry: randomPokedexEntry()),
+                PokedexEntrySummary(pokedexEntry: randomPokedexEntry()),
               ],
             ),
           ),
@@ -179,7 +172,7 @@ class StorybookApp extends StatelessWidget {
                     .map(
                       (size) => Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Container(
+                        child: SizedBox(
                           width: size.toDouble(),
                           height: size.toDouble(),
                           // color: Colors.black,
@@ -200,7 +193,7 @@ class StorybookApp extends StatelessWidget {
                     .map(
                       (size) => Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Container(
+                        child: SizedBox(
                           width: size.toDouble(),
                           height: size.toDouble(),
                           // color: Colors.black,

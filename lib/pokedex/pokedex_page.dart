@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mmo_searcher/pokedex/pokedex.dart';
-import 'package:mmo_searcher/pokedex/pokedex_store.dart';
 import 'package:mmo_searcher/pokedex/widgets/pokemon_list.dart';
 
 List<PokedexEntry> entries = pokedex.entries //
@@ -12,19 +11,6 @@ List<PokedexEntry> entriesByDexNumber = entries..sort((a, b) => a.nationalDexNum
 
 class PokedexPage extends StatelessWidget {
   const PokedexPage({Key? key}) : super(key: key);
-
-  onPokedexEntryChange(int action, String pokemon, PokedexStore state) {
-    if (action == 0) {
-      state.toggleCompletion(pokemon);
-    } else if (action == 1) {
-      state.togglePerfection(pokemon);
-    } else if (action == 2) {
-      state.toggleShinyCharm();
-    } else if (action == 3) {
-      state.toggleCaught(pokemon);
-    }
-    state.save();
-  }
 
   @override
   Widget build(BuildContext context) {

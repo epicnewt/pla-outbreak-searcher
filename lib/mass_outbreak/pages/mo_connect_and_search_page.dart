@@ -3,8 +3,12 @@ import 'package:mmo_searcher/common/connection/switch_connection_exception.dart'
 import 'package:mmo_searcher/common/debug.dart';
 import 'package:mmo_searcher/common/widgets/app_drawer.dart';
 import 'package:mmo_searcher/mass_outbreak/pages/widgets/mo_search_filters.dart';
+import 'package:mmo_searcher/mass_outbreak/search/model/mass_outbreak_information.dart';
 import 'package:mmo_searcher/mass_outbreak/search/model/mass_outbreak_search_data.dart';
 import 'package:mmo_searcher/mass_outbreak/search/model/mass_outbreak_searcher.dart';
+import 'package:mmo_searcher/pokedex/pokedex.dart';
+import 'package:mmo_searcher/pokedex/pokedex_store.dart';
+import 'package:mmo_searcher/pokedex/widgets/pokedex_entry_summary.dart';
 import 'package:provider/provider.dart';
 
 class MOConnectAndSearchPage extends StatelessWidget {
@@ -68,10 +72,27 @@ class MOConnectAndSearchPage extends StatelessWidget {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () => connect(context),
-                    child: Text("Connect"),
+                    child: Consumer<MassOutbreakSearchData>(
+                      builder: (context, value, child) {
+                        return value.moInfo == null ? const Text("Connect") : const Text("Reconnect");
+                      },
+                    ),
                   ),
                 ),
               ],
+            ),
+            Selector<MassOutbreakSearchData, MassOutbreakInformation?>(
+              selector: (_, data) => data.moInfo,
+              builder: (context, moInfo, child) {
+                if (moInfo != null) {
+                  var species = pokedex[moInfo.species]!;
+                  return ListView(
+                    shrinkWrap: true,
+                    children: [PokedexEntrySummary(pokedexEntry: species)],
+                  );
+                }
+                return const SizedBox.shrink();
+              },
             )
           ]),
         ),

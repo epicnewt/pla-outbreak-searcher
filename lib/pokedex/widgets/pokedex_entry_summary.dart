@@ -1,24 +1,47 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/pages/widgets/pokemon_sprite.dart';
 import 'package:mmo_searcher/pokedex/pokedex.dart';
+import 'package:mmo_searcher/pokedex/pokedex_store.dart';
 
-class PokedexEntrySummary extends StatelessWidget {
+class PokedexEntrySummary extends StatefulWidget {
   final PokedexEntry pokedexEntry;
-  final bool caught;
-  final bool complete;
-  final bool perfect;
-  final bool shinyCharm;
-  final Function(int)? onChange;
+  const PokedexEntrySummary({Key? key, required this.pokedexEntry}) : super(key: key);
 
-  const PokedexEntrySummary({
-    Key? key,
-    required this.pokedexEntry,
-    required this.caught,
-    required this.complete,
-    required this.perfect,
-    required this.shinyCharm,
-    this.onChange
-  }) : super(key: key);
+  @override
+  State<PokedexEntrySummary> createState() => _PokedexEntrySummaryState();
+}
+
+class _PokedexEntrySummaryState extends State<PokedexEntrySummary> {
+  late bool caught = GetIt.I.get<PokedexStore>().pokedexCaught[widget.pokedexEntry.pokemon] ?? false;
+
+  late bool complete = GetIt.I.get<PokedexStore>().pokedexCompletion[widget.pokedexEntry.pokemon] ?? false;
+
+  late bool perfect = GetIt.I.get<PokedexStore>().pokedexPerfection[widget.pokedexEntry.pokemon] ?? false;
+
+  late bool shinyCharm = GetIt.I.get<PokedexStore>().shinyCharm;
+
+  toggleCaught() {
+    setState(() {
+      caught = !caught;
+    });
+    GetIt.I.get<PokedexStore>().toggleCaught(widget.pokedexEntry.pokemon);
+  }
+
+  toggleCompletion() {
+    complete = !complete;
+    GetIt.I.get<PokedexStore>().toggleCompletion(widget.pokedexEntry.pokemon);
+  }
+
+  togglePerfection() {
+    perfect = !perfect;
+    GetIt.I.get<PokedexStore>().togglePerfection(widget.pokedexEntry.pokemon);
+  }
+
+  toggleShinyCharm() {
+    shinyCharm = !shinyCharm;
+    GetIt.I.get<PokedexStore>().toggleShinyCharm();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,9 +51,9 @@ class PokedexEntrySummary extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           GestureDetector(
-            onTap: () => onChange?.call(3),
+            onTap: toggleCaught,
             child: PokemonSprite(
-              dexNumber: pokedexEntry.nationalDexNumber,
+              dexNumber: widget.pokedexEntry.nationalDexNumber,
               checked: caught,
             ),
           ),
@@ -44,32 +67,43 @@ class PokedexEntrySummary extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 8.0),
                     child: Text(
-                      pokedexEntry.pokemon,
+                      widget.pokedexEntry.pokemon,
                       style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24 - 8),
                     ),
                   ),
                   SizedBox(
                     height: 24 + 4,
                     child: Padding(
-                        padding: const EdgeInsets.only(right: 12, bottom: 4),
-                        child: LayoutBuilder(
-                          builder: (context, constraints) {
-                            return ToggleButtons(
-                              constraints: BoxConstraints.expand(
-                                width: constraints.maxWidth / 3 - (3 + 1.0) / 3,
-                                height: 24,
-                              ),
-                              children: const [
-                                Text("Complete"),
-                                Text("Perfect"),
-                                Text("Shiny Charm"),
-                              ],
-                              onPressed: (index) => onChange?.call(index),
-                              isSelected: [shinyCharm || perfect || complete, perfect, shinyCharm],
-                            );
-                          },
-                        ),
+                      padding: const EdgeInsets.only(right: 12, bottom: 4),
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          return ToggleButtons(
+                            constraints: BoxConstraints.expand(
+                              width: constraints.maxWidth / 3 - (3 + 1.0) / 3,
+                              height: 24,
+                            ),
+                            children: const [
+                              Text("Complete"),
+                              Text("Perfect"),
+                              Text("Shiny Charm"),
+                            ],
+                            onPressed: (index) => setState(() {
+                              switch (index) {
+                                case 0:
+                                  toggleCompletion();
+                                  break;
+                                case 1:
+                                  togglePerfection();
+                                  break;
+                                default:
+                                  toggleShinyCharm();
+                              }
+                            }),
+                            isSelected: [shinyCharm || (perfect) || (complete), (perfect), shinyCharm],
+                          );
+                        },
                       ),
+                    ),
                   ),
                 ],
               ),

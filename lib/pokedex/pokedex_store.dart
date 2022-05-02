@@ -9,23 +9,41 @@ class PokedexStore {
   Map<String, bool> pokedexCompletion;
   Map<String, bool> pokedexPerfection;
   bool shinyCharm;
+  dynamic _dirty;
 
   PokedexStore(this.pokedexCaught, this.pokedexCompletion, this.pokedexPerfection, this.shinyCharm);
 
-  void toggleCompletion(String pokemon) {
-    pokedexCompletion.update(pokemon, (value) => !value, ifAbsent: () => true);
+  bool toggleCompletion(String pokemon) {
+    _queueUpdate();
+    return pokedexCompletion.update(pokemon, (value) => !value, ifAbsent: () => true);
   }
 
-  void togglePerfection(String pokemon) {
-    pokedexPerfection.update(pokemon, (value) => !value, ifAbsent: () => true);
+  bool togglePerfection(String pokemon) {
+    _queueUpdate();
+    return pokedexPerfection.update(pokemon, (value) => !value, ifAbsent: () => true);
   }
 
-  void toggleCaught(String pokemon) {
-    pokedexCaught.update(pokemon, (value) => !value, ifAbsent: () => true);
+  bool toggleCaught(String pokemon) {
+    _queueUpdate();
+    return pokedexCaught.update(pokemon, (value) => !value, ifAbsent: () => true);
   }
 
-  void toggleShinyCharm() {
-    shinyCharm = !shinyCharm;
+  bool toggleShinyCharm() {
+    _queueUpdate();
+    return shinyCharm = !shinyCharm;
+  }
+
+  void _queueUpdate() async {
+    _dirty ??= Future.delayed(
+      const Duration(milliseconds: 100),
+      () {
+        try {
+          _save();
+        } finally {
+          _dirty = null;
+        }
+      },
+    );
   }
 
   static PokedexStore load() {
@@ -43,7 +61,7 @@ class PokedexStore {
     );
   }
 
-  save() {
+  _save() {
     var sharedPreferences = GetIt.I.get<SharedPreferences>();
     sharedPreferences.setString("pokedex_completion", jsonEncode(pokedexCompletion));
     sharedPreferences.setString("pokedex_perfection", jsonEncode(pokedexPerfection));
