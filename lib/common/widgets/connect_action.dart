@@ -38,8 +38,8 @@ class _ConnectActionState extends State<ConnectAction> {
                     height: 7,
                     margin: const EdgeInsets.only(top: 10, left: 5.5),
                     child: const CircularProgressIndicator(
-                      color: Colors.black,
-                      strokeWidth: 1,
+                      // color: Colors.black,
+                      strokeWidth: 2,
                     ),
                   )
                 ],
