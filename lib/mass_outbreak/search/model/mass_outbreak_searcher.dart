@@ -5,11 +5,11 @@ import 'package:mmo_searcher/mass_outbreak/search/model/search_result.dart';
 import 'package:mmo_searcher/mass_outbreak/search/rng/path/mo/search.dart';
 
 // TODO rename to MassOutbreakSearcherService
-abstract class MassOutbreakSearcher {
+abstract class MassOutbreakSearcherService {
   Future<MassOutbreakInformation> gatherOutbreakInformation();
   Future<SearchResult> performSearch(MassOutbreakInformation moInfo, MassOutbreakSearchData filters, int rolls, bool multimatch, void Function(MassOutbreakResult?) onMatch, Function onTick);
 
-  static MassOutbreakSearcher provide() {
-    return GetIt.I.get<MassOutbreakSearcher>();
+  static MassOutbreakSearcherService provide() {
+    return GetIt.I.get<MassOutbreakSearcherService>();
   }
 }

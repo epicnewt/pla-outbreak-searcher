@@ -6,7 +6,7 @@ import 'package:mmo_searcher/mass_outbreak/search/rng/path/mo/search.dart';
 import 'package:mmo_searcher/mass_outbreak/search/model/search_result.dart';
 import 'package:mmo_searcher/pokedex/pokedex.dart';
 
-class MOSearchServiceStub implements MassOutbreakSearcher {
+class MOSearchServiceStub implements MassOutbreakSearcherService {
   var _delay = const Duration(seconds: 1);
 
   @override
@@ -20,9 +20,9 @@ class MOSearchServiceStub implements MassOutbreakSearcher {
     return SearchResult(75643, [1, 2, 4, 4, 0, 0, 0, 0, 6], -1, pokedex[25]!);
   }
 
-  static set delay(Duration delay) => (MassOutbreakSearcher.provide() as MOSearchServiceStub)._delay = delay;
+  static set delay(Duration delay) => (MassOutbreakSearcherService.provide() as MOSearchServiceStub)._delay = delay;
 
   static void register() {
-    GetIt.I.registerSingleton<MassOutbreakSearcher>(MOSearchServiceStub());
+    GetIt.I.registerSingleton<MassOutbreakSearcherService>(MOSearchServiceStub());
   }
 }

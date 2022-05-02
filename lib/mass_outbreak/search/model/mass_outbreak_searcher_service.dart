@@ -11,7 +11,7 @@ import 'package:mmo_searcher/num.dart';
 import 'package:mmo_searcher/pokedex/pokedex.dart';
 
 // TODO rename to DefaultMassOutbreakSearcherService
-class DefaultMassOutbreakSearcherService implements MassOutbreakSearcher {
+class DefaultMassOutbreakSearcherService implements MassOutbreakSearcherService {
   @override
   Future<MassOutbreakInformation> gatherOutbreakInformation() async {
     String address = await findSwitchIpAddress();
@@ -85,6 +85,6 @@ class DefaultMassOutbreakSearcherService implements MassOutbreakSearcher {
   }
 
   static void register() {
-    GetIt.I.registerSingleton<MassOutbreakSearcher>(DefaultMassOutbreakSearcherService());
+    GetIt.I.registerSingleton<MassOutbreakSearcherService>(DefaultMassOutbreakSearcherService());
   }
 }

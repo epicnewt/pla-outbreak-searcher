@@ -17,7 +17,7 @@ class MOConnectAndSearchPage extends StatelessWidget {
 
   Future<dynamic> connect(context) async {
     try {
-      MassOutbreakSearchData.provide(context).moInfo = await MassOutbreakSearcher.provide().gatherOutbreakInformation();
+      MassOutbreakSearchData.provide(context).moInfo = await MassOutbreakSearcherService.provide().gatherOutbreakInformation();
     } on SwitchConnectionException catch (sce) {
       debug("Switch connection error: ${sce.availableAddresses}");
       ScaffoldMessenger.of(context).showSnackBar(

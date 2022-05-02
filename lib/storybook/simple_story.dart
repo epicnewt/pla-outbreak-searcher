@@ -64,7 +64,7 @@ class StorybookApp extends StatelessWidget {
             builder: (context) => FutureBuilder<MassOutbreakInformation>(
                 future: Future(() {
                   MOSearchServiceStub.delay = Duration.zero;
-                }).then((value) => GetIt.I.get<MassOutbreakSearcher>().gatherOutbreakInformation())
+                }).then((value) => GetIt.I.get<MassOutbreakSearcherService>().gatherOutbreakInformation())
                 .whenComplete(() => MOSearchServiceStub.delay = const Duration(seconds: 1)),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
