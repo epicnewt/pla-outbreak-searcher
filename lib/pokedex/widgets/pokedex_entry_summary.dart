@@ -6,10 +6,12 @@ import 'package:mmo_searcher/pokedex/pokedex_store.dart';
 
 class PokedexEntrySummary extends StatefulWidget {
   final PokedexEntry pokedexEntry;
-  const PokedexEntrySummary({Key? key, required this.pokedexEntry}) : super(key: key);
+  final Widget? subHeading; 
+  const PokedexEntrySummary({Key? key, required this.pokedexEntry, this.subHeading}) : super(key: key);
 
   @override
-  State<PokedexEntrySummary> createState() => _PokedexEntrySummaryState();
+  // ignore: no_logic_in_create_state
+  State<PokedexEntrySummary> createState() => _PokedexEntrySummaryState(subHeading: subHeading);
 }
 
 class _PokedexEntrySummaryState extends State<PokedexEntrySummary> {
@@ -20,6 +22,10 @@ class _PokedexEntrySummaryState extends State<PokedexEntrySummary> {
   late bool perfect = GetIt.I.get<PokedexStore>().pokedexPerfection[widget.pokedexEntry.pokemon] ?? false;
 
   late bool shinyCharm = GetIt.I.get<PokedexStore>().shinyCharm;
+
+  final Widget? subHeading;
+
+  _PokedexEntrySummaryState({this.subHeading});
 
   toggleCaught() {
     setState(() {
@@ -64,44 +70,45 @@ class _PokedexEntrySummaryState extends State<PokedexEntrySummary> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
-                    child: Text(
+                  Text(
                       widget.pokedexEntry.pokemon,
                       style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24 - 8),
                     ),
-                  ),
-                  SizedBox(
-                    height: 24 + 4,
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 12, bottom: 4),
-                      child: LayoutBuilder(
-                        builder: (context, constraints) {
-                          return ToggleButtons(
-                            constraints: BoxConstraints.expand(
-                              width: constraints.maxWidth / 3 - (3 + 1.0) / 3,
-                              height: 24,
-                            ),
-                            children: const [
-                              Text("Complete"),
-                              Text("Perfect"),
-                              Text("Shiny Charm"),
-                            ],
-                            onPressed: (index) => setState(() {
-                              switch (index) {
-                                case 0:
-                                  toggleCompletion();
-                                  break;
-                                case 1:
-                                  togglePerfection();
-                                  break;
-                                default:
-                                  toggleShinyCharm();
-                              }
-                            }),
-                            isSelected: [shinyCharm || (perfect) || (complete), (perfect), shinyCharm],
-                          );
-                        },
+                  subHeading ?? const SizedBox.shrink(),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: SizedBox(
+                      height: 24 + 4,
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 12, bottom: 4),
+                        child: LayoutBuilder(
+                          builder: (context, constraints) {
+                            return ToggleButtons(
+                              constraints: BoxConstraints.expand(
+                                width: constraints.maxWidth / 3 - (3 + 1.0) / 3,
+                                height: 24,
+                              ),
+                              children: const [
+                                Text("Complete"),
+                                Text("Perfect"),
+                                Text("Shiny Charm"),
+                              ],
+                              onPressed: (index) => setState(() {
+                                switch (index) {
+                                  case 0:
+                                    toggleCompletion();
+                                    break;
+                                  case 1:
+                                    togglePerfection();
+                                    break;
+                                  default:
+                                    toggleShinyCharm();
+                                }
+                              }),
+                              isSelected: [shinyCharm || (perfect) || (complete), (perfect), shinyCharm],
+                            );
+                          },
+                        ),
                       ),
                     ),
                   ),

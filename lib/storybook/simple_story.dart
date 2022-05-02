@@ -62,7 +62,10 @@ class StorybookApp extends StatelessWidget {
           Story(
             name: 'MO/Initial Page (connected)',
             builder: (context) => FutureBuilder<MassOutbreakInformation>(
-                future: GetIt.I.get<MassOutbreakSearcher>().gatherOutbreakInformation(),
+                future: Future(() {
+                  MOSearchServiceStub.delay = Duration.zero;
+                }).then((value) => GetIt.I.get<MassOutbreakSearcher>().gatherOutbreakInformation())
+                .whenComplete(() => MOSearchServiceStub.delay = const Duration(seconds: 1)),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
                     return const CircularProgressIndicator();
