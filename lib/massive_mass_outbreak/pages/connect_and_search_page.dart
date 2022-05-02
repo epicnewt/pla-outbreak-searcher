@@ -19,7 +19,7 @@ class ConnectAndSearchPage extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                margin: EdgeInsets.only(right: 20),
+                margin: const EdgeInsets.only(right: 20),
                 width: 10,
                 height: 10,
                 decoration: const BoxDecoration(
@@ -67,21 +67,16 @@ class ConnectAndSearchPage extends StatelessWidget {
                     mmoData.multimatch = multimatch;
                   },
                 ),
-                ...([
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: ElevatedButton(
-                            onPressed: () => connect(context),
-                            child: const Text("Connect"),
-                          ),
-                        ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () => connect(context),
+                        child: outbreaks.isEmpty ? const Text("Connect") : const Text("Reconnect"),
                       ),
-                    ],
-                  )
-                ].where((element) => outbreaks.isEmpty)),
+                    ),
+                  ],
+                ),
                 PokemonList(
                   shrinkWrap: true,
                   entries: outbreaks
