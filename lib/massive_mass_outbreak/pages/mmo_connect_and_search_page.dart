@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:mmo_searcher/common/connection/switch_connection_exception.dart';
 import 'package:mmo_searcher/common/widgets/app_drawer.dart';
-import 'package:mmo_searcher/massive_mass_outbreak/components/search_filters.dart';
+import 'package:mmo_searcher/massive_mass_outbreak/pages/widgets/search_filters.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/mmo_search_service.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/state/massive_mass_outbreak_state.dart';
 import 'package:mmo_searcher/navigator.dart';
 import 'package:mmo_searcher/pokedex/widgets/pokemon_list.dart';
 import 'package:provider/provider.dart';
 
-class ConnectAndSearchPage extends StatelessWidget {
-  const ConnectAndSearchPage({Key? key}) : super(key: key);
+class MMOConnectAndSearchPage extends StatelessWidget {
+  const MMOConnectAndSearchPage({Key? key}) : super(key: key);
 
   void connect(context) async {
     try {
-      MassiveMassOutbreakData.provide(context).mmoInfo = await MMOSearchService.provide().gatherOutbreakInformation();
+      MassiveMassOutbreakSearchData.provide(context).mmoInfo = await MMOSearchService.provide().gatherOutbreakInformation();
     } on SwitchConnectionException catch (sce) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -41,7 +42,7 @@ class ConnectAndSearchPage extends StatelessWidget {
 
   void search(context) async {
     print("Searching");
-    var results = await MMOSearchService.provide().performSearch(MassiveMassOutbreakData.provide(context));
+    var results = await MMOSearchService.provide().performSearch(MassiveMassOutbreakSearchData.provide(context));
     AppRouteNavigator.provide().toMMOSearchResults(context, results);
   }
 
@@ -53,7 +54,7 @@ class ConnectAndSearchPage extends StatelessWidget {
       ),
       drawer: const AppDrawer(),
       body: SingleChildScrollView(
-        child: Consumer<MassiveMassOutbreakData>(
+        child: Consumer<MassiveMassOutbreakSearchData>(
           builder: (context, mmoData, child) {
             var outbreaks = mmoData.mmoInfo;
             return Padding(

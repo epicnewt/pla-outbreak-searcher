@@ -1,8 +1,7 @@
 import 'dart:io';
 
+import 'package:mmo_searcher/common/debug.dart';
 import 'package:mmo_searcher/num.dart';
-
-const debug = false;
 
 class NxReader {
   Socket? connection;
@@ -19,14 +18,14 @@ class NxReader {
   Future<dynamic> connect() async {
     // host
     connection = await Socket.connect(host, 6000);
-    if (debug) {
-      print("Connected to $host");
-    }
+    
+    debug("Connected to $host");
+    
     connection?.write("configure echoCommands 0\r\n");
     connection?.listen((event) {
-      if (debug) {
-        print('Received: $event');
-      }
+      
+      debug('Received: $event');
+      
       input.addAll(event);
     });
     await Future.delayed(const Duration(seconds: 1));
@@ -40,9 +39,9 @@ class NxReader {
       return result;
     }
 
-    // if (debug) {
-    //   print("Waiting for lock");
-    // }
+    // 
+    // debug("Waiting for lock");
+    // 
     return Future.delayed(Duration.zero, () => acquireLock(fn));
   }
 
@@ -59,9 +58,9 @@ class NxReader {
   }
 
   void sendCommand(String command) {
-    if (debug) {
-      print('$command -- ${command.replaceAll("[}{]", "")}');
-    }
+    
+    debug('$command -- ${command.replaceAll("[}{]", "")}');
+    
     connection?.write(command + '\r\n');
   }
   Future<BigInt> readPointerInt(String pointer, int size) async {
@@ -71,16 +70,16 @@ class NxReader {
     for (var i = hexlifiied.length - 2; i >= 0; i -= 2) {
       value += hexlifiied.substring(i, i + 2);
     }
-    if (debug) {
-      print("unhexlify(${hexlifiied}$chars) === $value");
-    }
+    
+    debug("unhexlify($hexlifiied$chars) === $value");
+    
     return BigInt.parse(value, radix: 16);
   }
 
   Future<List<int>> readPointer(String pointer, int size) async {
-    if (debug) {
-      print("pointerPeek $pointer $size");
-    }
+    
+    debug("pointerPeek $pointer $size");
+    
     var jumps = pointer.replaceAll("[", "").replaceAll('+', '').replaceFirst("main", "").replaceAll('+', '').split("]").map((j) => j.toUpperCase());
 
     return acquireLock(() async {

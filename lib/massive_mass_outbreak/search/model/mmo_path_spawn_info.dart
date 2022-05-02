@@ -1,10 +1,9 @@
-import 'package:mmo_searcher/mass_outbreak/search/rng/spawn.dart';
-import 'package:mmo_searcher/mass_outbreak/search/rng/xoroshiro.dart';
+import 'package:mmo_searcher/common/rng/spawn.dart';
+import 'package:mmo_searcher/common/rng/xoroshiro.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/meta_data/encounter_slots.dart';
 
 import 'package:collection/collection.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/mmo_path_generator.dart';
-import 'package:mmo_searcher/num.dart';
 
 var _mainRng = XOROSHIROLite();
 var _spawnerRng = XOROSHIROLite();

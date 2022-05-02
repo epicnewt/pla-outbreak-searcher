@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mmo_searcher/massive_mass_outbreak/components/pokemon_sprite.dart';
+import 'package:mmo_searcher/massive_mass_outbreak/pages/widgets/pokemon_sprite.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_path_spawn_info.dart';
 import 'package:mmo_searcher/navigator.dart';
 import 'package:mmo_searcher/pokedex/pokedex_store.dart';

@@ -1,24 +1,18 @@
 import 'package:get_it/get_it.dart';
+import 'package:mmo_searcher/common/network/ip_address_scan.dart';
+import 'package:mmo_searcher/common/network/nxreader.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/mmo_path_advancer.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/mmo_path_generator.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_info.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_search_results.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/state/massive_mass_outbreak_state.dart';
-import 'package:mmo_searcher/network/ip_address_scan.dart';
 import 'package:mmo_searcher/num.dart';
-import 'package:mmo_searcher/network/nxreader.dart';
 
 import '../meta_data/encounter_slots.dart';
 
-class SwitchConnectionException implements Exception {
-  final List<String> availableAddresses;
-
-  SwitchConnectionException(this.availableAddresses);
-}
-
 abstract class MMOSearchService {
   Future<List<MMOInfo>> gatherOutbreakInformation({String? switchIpAddress});
-  Future<List<MMOSearchResults>> performSearch(MassiveMassOutbreakData data);
+  Future<List<MMOSearchResults>> performSearch(MassiveMassOutbreakSearchData data);
 
   static MMOSearchService provide() {
     return GetIt.I.get<MMOSearchService>();
@@ -40,7 +34,7 @@ class DefaultMMOSearchService implements MMOSearchService {
 
     var mmoPointer = "[[[[[[main+42BA6B0]+2B0]+58]+18]";
 
-    String address = switchIpAddress ?? await getSwitchIpAddress();
+    String address = switchIpAddress ?? await findSwitchIpAddress();
 
     print("Connecting to switch on $address:6000");
 
@@ -95,18 +89,8 @@ class DefaultMMOSearchService implements MMOSearchService {
         .toList();
   }
 
-  Future<String> getSwitchIpAddress() async {
-    var addresses = await findSwitchIpAddress();
-
-    if (addresses.length == 1) {
-      return addresses.first;
-    } else {
-      return Future.error(SwitchConnectionException(addresses));
-    }
-  }
-
   @override
-  Future<List<MMOSearchResults>> performSearch(MassiveMassOutbreakData data) async {
+  Future<List<MMOSearchResults>> performSearch(MassiveMassOutbreakSearchData data) async {
     // TODO :: Run in an isolate
     return data.mmoInfo
         .map((info) { 

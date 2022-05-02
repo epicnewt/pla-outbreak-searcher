@@ -1,5 +1,5 @@
 import 'package:get_it/get_it.dart';
-import 'package:mmo_searcher/mass_outbreak/search/rng/xoroshiro.dart';
+import 'package:mmo_searcher/common/rng/xoroshiro.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/meta_data/encounter_slots.dart';
 import 'package:mmo_searcher/num.dart';
 import 'package:mmo_searcher/pokedex/pokedex.dart';

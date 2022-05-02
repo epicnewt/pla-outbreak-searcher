@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:mmo_searcher/common/network/nxreader.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/meta_data/encounter_slots.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/mmo_path_advancer.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/mmo_path_generator.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_info.dart';
 import 'package:mmo_searcher/num.dart';
-import 'package:mmo_searcher/network/nxreader.dart';
-import 'package:mmo_searcher/pokedex/pokedex.dart';
 
 class MassiveMassOutbreakPointerDebugScreen extends StatelessWidget {
   const MassiveMassOutbreakPointerDebugScreen({Key? key}) : super(key: key);

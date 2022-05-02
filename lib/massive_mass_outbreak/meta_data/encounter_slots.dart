@@ -1,5 +1,4 @@
 import 'package:mmo_searcher/big_num.dart';
-import 'package:mmo_searcher/mass_outbreak/search/rng/xoroshiro.dart';
 import 'package:mmo_searcher/num.dart';
 import 'package:mmo_searcher/pokedex/pokedex.dart';
 
@@ -8893,14 +8892,4 @@ Map<String, EncounterTable> encounterSlotsMap = {
 
 PokedexEntry findDexEntry(String name) {
   return pokedex.values.firstWhere((element) => element.pokemon == name, orElse: () => PokedexEntry('NULL($name)', -1, 0));
-}
-
-void main(List<String> args) {
-  var enc = encounterSlotsMap["64064A0B10810230"]!;
-  var rng = XOROSHIROLite();
-
-  for (var i = 0; i < 10; i++) {
-    var num = rng.next();
-    enc.findSlot(num);
-  }
 }

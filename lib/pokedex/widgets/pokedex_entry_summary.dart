@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mmo_searcher/massive_mass_outbreak/components/pokemon_sprite.dart';
+import 'package:mmo_searcher/massive_mass_outbreak/pages/widgets/pokemon_sprite.dart';
 import 'package:mmo_searcher/pokedex/pokedex.dart';
 
 class PokedexEntrySummary extends StatelessWidget {

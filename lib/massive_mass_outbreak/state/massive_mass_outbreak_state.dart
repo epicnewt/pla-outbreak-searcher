@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_info.dart';
 import 'package:provider/provider.dart';
 
-class MassiveMassOutbreakData extends ChangeNotifier {
+class MassiveMassOutbreakSearchData extends ChangeNotifier {
 
   bool _shiny = true;
   bool _alpha = true;
@@ -37,7 +37,7 @@ class MassiveMassOutbreakData extends ChangeNotifier {
     notifyListeners();
   }
 
-  static MassiveMassOutbreakData provide(context) {
-    return Provider.of<MassiveMassOutbreakData>(context, listen: false);
+  static MassiveMassOutbreakSearchData provide(context) {
+    return Provider.of<MassiveMassOutbreakSearchData>(context, listen: false);
   } 
 }

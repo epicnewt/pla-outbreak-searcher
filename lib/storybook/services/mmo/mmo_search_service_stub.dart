@@ -65,7 +65,7 @@ class MMOSearchServiceStub extends MMOSearchService {
   }
 
   @override
-  Future<List<MMOSearchResults>> performSearch(MassiveMassOutbreakData data) async {
+  Future<List<MMOSearchResults>> performSearch(MassiveMassOutbreakSearchData data) async {
     print("MMOSearchServiceStub#performSearch([..])");
     return data.mmoInfo
         .map((e) => MMOSearchResults(e, [

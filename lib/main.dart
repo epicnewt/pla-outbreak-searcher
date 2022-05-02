@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:mmo_searcher/mass_outbreak/search/pages/mass_outbreak_search.dart';
-import 'package:mmo_searcher/mass_outbreak/search/pages/mass_outbreak_search_result.dart';
-import 'package:mmo_searcher/massive_mass_outbreak/components/massive_mass_outbreak_pointer_debug_screen.dart';
-import 'package:mmo_searcher/massive_mass_outbreak/pages/connect_and_search_page.dart';
+import 'package:mmo_searcher/mass_outbreak/pages/mo_connect_and_search_page.dart';
+import 'package:mmo_searcher/mass_outbreak/pages/mo_search_result_spawns_page.dart';
+import 'package:mmo_searcher/mass_outbreak/search/model/mass_outbreak_search_data.dart';
+import 'package:mmo_searcher/mass_outbreak/search/model/mass_outbreak_searcher_service.dart';
+import 'package:mmo_searcher/massive_mass_outbreak/pages/mmo_connect_and_search_page.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/pages/mmo_search_result_details_page.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/pages/mmo_search_result_spawns_page.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/pages/mmo_search_results_page.dart';
+import 'package:mmo_searcher/massive_mass_outbreak/pages/widgets/massive_mass_outbreak_pointer_debug_screen.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/mmo_search_service.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_path_spawn_info.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_search_results.dart';
@@ -18,20 +20,24 @@ import 'package:provider/provider.dart';
 void main() {
   DefaultAppRouteNavigator.register();
   DefaultMMOSearchService.register();
+  MassOutbreakSearcherService.register();
   PokedexStore.register().then((_) {
     runApp(MultiProvider(
       providers: [
-        ChangeNotifierProvider.value(value: MassiveMassOutbreakData()),
+        //v1.0.2
+        ChangeNotifierProvider.value(value: MassOutbreakSearchData()),
+        //v1.1.0
+        ChangeNotifierProvider.value(value: MassiveMassOutbreakSearchData()),
       ],
       child: MaterialApp(
         title: "Pokémon Arceus Legends RNG Tools",
         initialRoute: 'mmo-search',
         // initialRoute: 'mo-search',
         routes: {
-          'mo-search': (context) => dummyMassOutbreakSearch,
-          'mo-search-results': (context) => const MassOutbreakSearchResult(),
+          'mo-search': (context) => const MOConnectAndSearchPage(),
+          'mo-search-results': (context) => const MOSearchResultSpawnsPage(),
           'mmo-pointer-debug': (context) => const MassiveMassOutbreakPointerDebugScreen(),
-          'mmo-search': (context) => const ConnectAndSearchPage(),
+          'mmo-search': (context) => const MMOConnectAndSearchPage(),
           'mmo-search-results': (context) {
             return SimpleRoutedWidget<List<MMOSearchResults>>(
               builder: (context, argument) => MMOSearchResultsPage(searchResults: argument),

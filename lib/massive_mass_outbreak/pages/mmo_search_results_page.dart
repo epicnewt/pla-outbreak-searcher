@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mmo_searcher/massive_mass_outbreak/components/search_result_summary.dart';
+import 'package:mmo_searcher/massive_mass_outbreak/pages/widgets/search_result_summary.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_search_results.dart';
 
 class MMOSearchResultsPage extends StatelessWidget {

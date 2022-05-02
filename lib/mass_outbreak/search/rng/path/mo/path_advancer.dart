@@ -1,12 +1,6 @@
-import 'package:mmo_searcher/mass_outbreak/search/rng/xoroshiro.dart';
-import 'package:mmo_searcher/massive_mass_outbreak/meta_data/encounter_slots.dart';
-import 'package:mmo_searcher/massive_mass_outbreak/search/mmo_path_advancer.dart';
-import 'package:mmo_searcher/massive_mass_outbreak/search/mmo_path_generator.dart';
-import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_info.dart';
+import 'package:mmo_searcher/common/rng/spawn.dart';
+import 'package:mmo_searcher/common/rng/xoroshiro.dart';
 import 'package:mmo_searcher/pokedex/pokedex.dart';
-
-import '../../spawn.dart';
-import 'package:mmo_searcher/num.dart';
 
 final ALPHA_LIMIT = BigInt.parse("FD7720F353A4BBFF", radix: 16);
 // final ALPHA_LIMIT_LITE = 0xFD7720F353A4BBFF;

@@ -2,12 +2,14 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:mmo_searcher/massive_mass_outbreak/components/pokemon_sprite.dart';
+import 'package:mmo_searcher/mass_outbreak/pages/mo_connect_and_search_page.dart';
+import 'package:mmo_searcher/mass_outbreak/search/model/mass_outbreak_search_data.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/pages/mmo_search_result_spawns_page.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/meta_data/encounter_slots.dart';
-import 'package:mmo_searcher/massive_mass_outbreak/pages/connect_and_search_page.dart';
+import 'package:mmo_searcher/massive_mass_outbreak/pages/mmo_connect_and_search_page.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/pages/mmo_search_result_details_page.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/pages/mmo_search_results_page.dart';
+import 'package:mmo_searcher/massive_mass_outbreak/pages/widgets/pokemon_sprite.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/mmo_path_advancer.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/mmo_path_generator.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/mmo_search_service.dart';
@@ -43,14 +45,36 @@ class StorybookApp extends StatelessWidget {
   Widget build(BuildContext context) => Storybook(
         stories: [
           Story(
+            name: 'MO/Initial Page',
+            builder: (context) => MultiProvider(
+              providers: [
+                ChangeNotifierProvider.value(
+                  value: MassOutbreakSearchData(),
+                ),
+              ],
+              child: const MOConnectAndSearchPage(),
+            ),
+          ),
+          Story(
+            name: 'MO/Initial Page (connected)',
+            builder: (context) => MultiProvider(
+              providers: [
+                ChangeNotifierProvider.value(
+                  value: MassOutbreakSearchData(),
+                ),
+              ],
+              child: const MOConnectAndSearchPage(),
+            ),
+          ),
+          Story(
             name: 'MMO/Initial Page',
             builder: (context) => MultiProvider(
               providers: [
                 ChangeNotifierProvider.value(
-                  value: MassiveMassOutbreakData(),
+                  value: MassiveMassOutbreakSearchData(),
                 ),
               ],
-              child: const ConnectAndSearchPage(),
+              child: const MMOConnectAndSearchPage(),
             ),
           ),
           Story(
@@ -59,20 +83,20 @@ class StorybookApp extends StatelessWidget {
               providers: [
                 ChangeNotifierProvider(
                   create: (context) {
-                    var data = MassiveMassOutbreakData();
+                    var data = MassiveMassOutbreakSearchData();
                     GetIt.I.get<MMOSearchService>().gatherOutbreakInformation().then((value) => data.mmoInfo = value);
                     return data;
                   },
                 ),
               ],
-              child: const ConnectAndSearchPage(),
+              child: const MMOConnectAndSearchPage(),
             ),
           ),
           Story(
             name: 'MMO/Result Summary Page',
             builder: (context) => FutureBuilder<List<MMOSearchResults>>(
               future: MMOSearchService.provide().gatherOutbreakInformation().then((mmoInfo) {
-                var data = MassiveMassOutbreakData();
+                var data = MassiveMassOutbreakSearchData();
                 data.mmoInfo = mmoInfo;
                 return MMOSearchService.provide().performSearch(data);
               }),
@@ -88,7 +112,7 @@ class StorybookApp extends StatelessWidget {
             name: 'MMO/Search Result Details Page',
             builder: (context) => FutureBuilder<MMOSearchResults>(
               future: MMOSearchService.provide().gatherOutbreakInformation().then((mmoInfo) {
-                var data = MassiveMassOutbreakData();
+                var data = MassiveMassOutbreakSearchData();
                 data.mmoInfo = mmoInfo;
                 return MMOSearchService.provide().performSearch(data);
               }).then((value) => value[0]),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:mmo_searcher/mass_outbreak/search/rng/spawn.dart';
-import 'package:mmo_searcher/massive_mass_outbreak/components/pokemon_sprite.dart';
+import 'package:mmo_searcher/common/rng/spawn.dart';
+import 'package:mmo_searcher/massive_mass_outbreak/pages/widgets/pokemon_sprite.dart';
 
 class SpawnDetails extends StatelessWidget {
   final Spawn spawn;

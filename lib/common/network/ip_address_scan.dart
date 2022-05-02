@@ -1,9 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:mmo_searcher/common/connection/switch_connection_exception.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 
-Future<List<String>> findSwitchIpAddress() async {
+Future<String> findSwitchIpAddress() async {
   List<Future<String>> futures = [];
   await for (var item in _ipAddresses().map((ipAddress) {
     return Socket.connect(ipAddress, 6000, timeout: const Duration(seconds: 2)).then((socket) {
@@ -14,7 +15,12 @@ Future<List<String>> findSwitchIpAddress() async {
     futures.add(item);
   }
 
-  return (await Future.wait(futures)).where((element) => element.isNotEmpty).toList();
+  var addresses = (await Future.wait(futures)).where((element) => element.isNotEmpty).toList();
+  
+  if (addresses.length != 1) {
+    return Future.error(SwitchConnectionException(addresses));
+  }
+  return addresses.first;
 }
 
 Stream<String> _ipAddresses() async* {

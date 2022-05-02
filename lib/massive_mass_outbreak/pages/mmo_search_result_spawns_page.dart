@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mmo_searcher/massive_mass_outbreak/components/spaw.dart';
+import 'package:mmo_searcher/massive_mass_outbreak/pages/widgets/spawn.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_path_spawn_info.dart';
 
 class Tuple2<F, S> {

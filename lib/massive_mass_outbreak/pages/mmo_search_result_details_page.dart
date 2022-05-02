@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mmo_searcher/massive_mass_outbreak/components/pokemon_sprite.dart';
-import 'package:mmo_searcher/massive_mass_outbreak/components/search_result_details.dart';
+import 'package:mmo_searcher/massive_mass_outbreak/pages/widgets/pokemon_sprite.dart';
+import 'package:mmo_searcher/massive_mass_outbreak/pages/widgets/search_result_details.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_search_results.dart';
 
 class MMOSearchResultDetailsPage extends StatelessWidget {

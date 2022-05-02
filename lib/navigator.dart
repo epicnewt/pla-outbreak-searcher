@@ -19,12 +19,12 @@ class DefaultAppRouteNavigator implements AppRouteNavigator {
 
   @override
   toMOSearch(BuildContext context) {
-    Navigator.pushNamed(context, 'mo-search');
+    Navigator.popAndPushNamed(context, 'mo-search');
   }
 
   @override
   toMMOSearch(BuildContext context) {
-    Navigator.pushNamed(context, 'mmo-search');
+    Navigator.popAndPushNamed(context, 'mmo-search');
   }
 
   @override
