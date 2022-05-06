@@ -22,12 +22,9 @@ class SearchResultDetails extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0),
-              child: Hero(
-                tag: match.mmoPath.toString(),
-                child: Text(
-                  match.mmoPath.toString(),
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24 - 8),
-                ),
+              child: Text(
+                match.mmoPath.toString(),
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24 - 8),
               ),
             ),
             ...match.matches

@@ -6,10 +6,10 @@ import 'package:mmo_searcher/navigator.dart';
 import 'package:mmo_searcher/pokedex/pokedex.dart';
 import 'package:mmo_searcher/pokedex/pokedex_store.dart';
 
-class SearchResultSummary extends StatelessWidget {
+class MMOSearchResultSummary extends StatelessWidget {
   final MMOSearchResults results;
 
-  const SearchResultSummary({Key? key, required this.results}) : super(key: key);
+  const MMOSearchResultSummary({Key? key, required this.results}) : super(key: key);
 
   PokedexEntry get pkmn => results.mmo.initialRoundEncouterTable.slots.first.pkmn;
   List<PathSpawnInfo> get paths => results.paths;

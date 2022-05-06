@@ -3,9 +3,12 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mmo_searcher/mass_outbreak/pages/mo_connect_and_search_page.dart';
+import 'package:mmo_searcher/mass_outbreak/pages/mo_search_results_summary_page.dart';
 import 'package:mmo_searcher/mass_outbreak/search/model/mass_outbreak_information.dart';
 import 'package:mmo_searcher/mass_outbreak/search/model/mass_outbreak_search_data.dart';
 import 'package:mmo_searcher/mass_outbreak/search/model/mass_outbreak_searcher.dart';
+import 'package:mmo_searcher/mass_outbreak/search/model/search_result.dart';
+import 'package:mmo_searcher/mass_outbreak/search/rng/path/mo/search.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/pages/mmo_search_result_spawns_page.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/meta_data/encounter_slots.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/pages/mmo_connect_and_search_page.dart';
@@ -24,6 +27,7 @@ import 'package:mmo_searcher/pokedex/pokedex.dart';
 import 'package:mmo_searcher/pokedex/pokedex_page.dart';
 import 'package:mmo_searcher/pokedex/pokedex_store.dart';
 import 'package:mmo_searcher/pokedex/widgets/pokedex_entry_summary.dart';
+import 'package:mmo_searcher/simple_routed_widget.dart';
 import 'package:mmo_searcher/storybook/services/mmo/app_route_navigator_stub.dart';
 import 'package:mmo_searcher/storybook/services/mmo/mmo_search_service_stub.dart';
 import 'package:mmo_searcher/storybook/services/mmo/mo_search_service_stub.dart';
@@ -79,6 +83,15 @@ class StorybookApp extends StatelessWidget {
                     child: const MOConnectAndSearchPage(),
                   );
                 }),
+          ),
+          Story(
+            name: 'MO/Search Summary Page',
+            builder: (context) {
+              return MOSearchResultsSummaryPage(results: [
+                MassOutbreakResult(235324345, [1,2,4,0,0,3], randomPokedexEntry()),
+                MassOutbreakResult(8792464644, [1,2,4,0,0,3,1,2,4,0,0,3,1,2,4,0,0,3], randomPokedexEntry()),
+              ]);
+            }
           ),
           Story(
             name: 'MMO/Initial Page',

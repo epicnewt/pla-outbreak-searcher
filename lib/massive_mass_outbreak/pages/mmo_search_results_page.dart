@@ -15,7 +15,7 @@ class MMOSearchResultsPage extends StatelessWidget {
       ),
       body: ListView(
         children: searchResults.map((e) => GestureDetector(
-          child: SearchResultSummary(
+          child: MMOSearchResultSummary(
             results: e,
           ),
         )).toList(),

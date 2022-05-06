@@ -75,6 +75,8 @@ class MassOutbreakResult {
     return advances;
   }
 
+  List<Spawn> get matches => [advances().last].expand((advance) => advance.reseeds.expand((reseeds) => reseeds.spawns)).toList();
+
   @override
   String toString() {
     return 'MassOutbreakResult{seed: $seed, path: $path, pokemon: $pokemon}';
