@@ -9,7 +9,7 @@ class MassOutbreakSearchData extends ChangeNotifier {
   bool _female = true;
   bool _multimatch = true;
 
-  MassOutbreakInformation? _moInfo;
+  List<MassOutbreakInformation>? _moInfo;
 
   MassOutbreakSearchData();
 
@@ -28,9 +28,9 @@ class MassOutbreakSearchData extends ChangeNotifier {
     notifyListeners();
   }
 
-  MassOutbreakInformation? get moInfo => _moInfo;
+  List<MassOutbreakInformation>? get moInfo => _moInfo;
 
-  set moInfo(MassOutbreakInformation? moInfo) {
+  set moInfo(List<MassOutbreakInformation>? moInfo) {
     _moInfo = moInfo;
     notifyListeners();
   }

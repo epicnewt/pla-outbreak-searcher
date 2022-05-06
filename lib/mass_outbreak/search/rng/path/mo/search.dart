@@ -1,5 +1,6 @@
 import 'dart:isolate';
 
+import 'package:mmo_searcher/common/debug.dart';
 import 'package:mmo_searcher/common/rng/spawn.dart';
 import 'package:mmo_searcher/common/rng/xoroshiro.dart';
 import 'package:mmo_searcher/mass_outbreak/search/rng/path/mo/pass_path_generator.dart';
@@ -27,7 +28,7 @@ class MassOutbreakResult {
 
   MassOutbreakResult(this.seed, this.path, this.pokemon);
 
-  List<Advance> advances(int rolls) {
+  List<Advance> advances() {
     XOROSHIROLite rng = XOROSHIROLite();
     XOROSHIROLite spawnRng = XOROSHIROLite();
     rng.reseed(seed);
@@ -80,130 +81,134 @@ class MassOutbreakResult {
   }
 }
 
-void fastSearch(List<Object> params) {
+void fastSearch(List<Object> params) async {
   SendPort sendPort = params[0] as SendPort;
   SearchParams sp = params[1] as SearchParams;
-
-  bool matcher(Spawn spawn) {
-    if (spawn == Spawn.DUMMY_ALPHA) {
-      return false;
-    }
-
-    if (!sp.pkmn.isGenderFixed() && !(sp.male && sp.female)) {
-      if (sp.male && spawn.gender != "M") {
+  try {
+    bool matcher(Spawn spawn) {
+      if (spawn == Spawn.DUMMY_ALPHA) {
         return false;
       }
-      if (sp.female && spawn.gender != "F") {
-        return false;
+
+      if (!sp.pkmn.isGenderFixed() && !(sp.male && sp.female)) {
+        if (sp.male && spawn.gender != "M") {
+          return false;
+        }
+        if (sp.female && spawn.gender != "F") {
+          return false;
+        }
       }
+
+      return true;
     }
 
-    return true;
-  }
+    List<int> pathSeedsState = List.generate(25, (index) => -1);
+    List<int?> pathSeeds = List.generate(25, (index) => null);
 
-  List<int> pathSeedsState = List.generate(25, (index) => -1);
-  List<int?> pathSeeds = List.generate(25, (index) => null);
+    List<Spawn> currentMatches = []; //cleared for each path
 
-  List<Spawn> currentMatches = []; //cleared for each path
+    var rng = XOROSHIROLite();
+    var spawnerRng = XOROSHIROLite();
+    var lastPathLength = 1;
 
-  var rng = XOROSHIROLite();
-  var spawnerRng = XOROSHIROLite();
-  var lastPathLength = 1;
+    for (var path in passivePaths(sp.spawns, maxDepth: 20)) {
+      currentMatches.clear();
 
-  for (var path in passivePaths(sp.spawns, maxDepth: 20)) {
-    currentMatches.clear();
+      if (lastPathLength < path.length) {
+        lastPathLength = path.length;
+        pathSeedsState.fillRange(0, path.length, -1);
+      }
 
-    if (lastPathLength < path.length) {
-      lastPathLength = path.length;
-      pathSeedsState.fillRange(0, path.length, -1);
-    }
+      for (var i = 0; i < path.length; i++) {
+        var lastPathAction = pathSeedsState[i];
+        var lastSeed = i == 0 ? sp.seed : pathSeeds[i - 1];
+        var action = path[i];
+        var isLast = i == path.length - 1;
 
-    for (var i = 0; i < path.length; i++) {
-      var lastPathAction = pathSeedsState[i];
-      var lastSeed = i == 0 ? sp.seed : pathSeeds[i - 1];
-      var action = path[i];
-      var isLast = i == path.length - 1;
+        if (lastPathAction == action) {
+          continue;
+        } else if (lastPathAction == -1) {
+          // we need to generate a new seed
+          rng.reseed(lastSeed!);
 
-      if (lastPathAction == action) {
-        continue;
-      } else if (lastPathAction == -1) {
-        // we need to generate a new seed
-        rng.reseed(lastSeed!);
-
-        if (isLast && action == 0) {
-          // we want to avoid advancing the seed here
-          // it will be used to spawn pokemon
-          pathSeeds[i] = lastSeed;
-        } else {
-          var newSeed = rng.advanceAndReseed(4);
-          for (var i = 0; i < action; i++) {
+          if (isLast && action == 0) {
+            // we want to avoid advancing the seed here
+            // it will be used to spawn pokemon
+            pathSeeds[i] = lastSeed;
+          } else {
+            var newSeed = rng.advanceAndReseed(4);
+            for (var i = 0; i < action; i++) {
+              newSeed = rng.advanceAndReseed(1);
+            }
+            pathSeeds[i] = newSeed;
+          }
+        } else if (lastPathAction < action) {
+          // extend actions
+          var newSeed = pathSeeds[i];
+          rng.reseed(newSeed!);
+          if (isLast && lastPathAction == 0) {
+            // we have to advance the seed
+            newSeed = rng.advanceAndReseed(4);
+          }
+          for (var i = lastPathAction; i < action; i++) {
             newSeed = rng.advanceAndReseed(1);
           }
           pathSeeds[i] = newSeed;
+          pathSeedsState.fillRange(i, path.length, -1);
+        } else {
+          throw StateError("Cannot process path: $path :: $lastPathAction >= $action");
         }
-      } else if (lastPathAction < action) {
-        // extend actions
-        var newSeed = pathSeeds[i];
-        rng.reseed(newSeed!);
-        if (isLast && lastPathAction == 0) {
-          // we have to advance the seed
-          newSeed = rng.advanceAndReseed(4);
-        }
-        for (var i = lastPathAction; i < action; i++) {
-          newSeed = rng.advanceAndReseed(1);
-        }
-        pathSeeds[i] = newSeed;
-        pathSeedsState.fillRange(i, path.length, -1);
-      } else {
-        throw StateError("Cannot process path: $path :: $lastPathAction >= $action");
+
+        pathSeedsState[i] = action;
       }
 
-      pathSeedsState[i] = action;
-    }
+      var count = path.last == 0 ? 4 : 1;
+      var spawnedAlpha = false;
 
-    var count = path.last == 0 ? 4 : 1;
-    var spawnedAlpha = false;
+      for (var i = 0; i < count; i++) {
+        var spawn = generateSpawnLite(rng, spawnerRng, spawnedAlpha, sp.pkmn, alphaRequired: sp.alpha, shinyRequired: sp.shiny, rolls: sp.rolls);
 
-    for (var i = 0; i < count; i++) {
-      var spawn = generateSpawnLite(rng, spawnerRng, spawnedAlpha, sp.pkmn, alphaRequired: sp.alpha, shinyRequired: sp.shiny);
-
-      if (spawn == null) {
-        // wasn't alpha or shiny
-        continue;
-      }
-
-      if (matcher(spawn)) {
-        currentMatches.add(spawn);
-      }
-
-      if (sp.alpha && spawn.alpha) {
-        // no more alphas will spawn
-        break;
-      }
-
-      spawnedAlpha = spawnedAlpha || spawn.alpha;
-    }
-
-    if (currentMatches.isNotEmpty) {
-      if (sp.multimatch) {
-        if (!findAdditonalMatchInPath(sp.seed, path, sp.rolls, sp.pkmn, matcher, alphaRequired: sp.alpha, shinyRequired: sp.shiny)) {
+        if (spawn == null) {
+          // wasn't alpha or shiny
           continue;
         }
+
+        if (matcher(spawn)) {
+          currentMatches.add(spawn);
+        }
+
+        if (sp.alpha && spawn.alpha) {
+          // no more alphas will spawn
+          break;
+        }
+
+        spawnedAlpha = spawnedAlpha || spawn.alpha;
       }
 
-      sendPort.send(MassOutbreakResult(sp.seed, path, sp.pkmn));
-      return;
-    }
+      if (currentMatches.isNotEmpty) {
+        if (sp.multimatch) {
+          if (!findAdditonalMatchInPath(sp.seed, path, sp.pkmn, matcher, alphaRequired: sp.alpha, shinyRequired: sp.shiny, rolls: sp.rolls)) {
+            continue;
+          }
+        }
 
-    // print("$path :: ${pathSeeds[path.length - 1].toHex()}");
+        sendPort.send(MassOutbreakResult(sp.seed, path, sp.pkmn));
+        return;
+      }
+
+      // print("$path :: ${pathSeeds[path.length - 1].toHex()}");
+    }
+  } catch (e, s) {
+    debug("Caught error: $e\n$s");
+    sendPort.send(null);
   }
 }
 
 var _mainRng = XOROSHIROLite();
 var _spawnerRng = XOROSHIROLite();
 
-bool findAdditonalMatchInPath(int seed, List<int> path, int rolls, PokedexEntry pkmn, bool Function(Spawn spawn) matcher,
-    {required bool alphaRequired, required bool shinyRequired}) {
+bool findAdditonalMatchInPath(int seed, List<int> path, PokedexEntry pkmn, bool Function(Spawn spawn) matcher,
+    {required bool alphaRequired, required bool shinyRequired, int? rolls}) {
   _mainRng.reseed(seed);
 
   for (var action in path) {
@@ -213,7 +218,7 @@ bool findAdditonalMatchInPath(int seed, List<int> path, int rolls, PokedexEntry 
       _mainRng.advanceAndReseed(4);
     } else {
       for (var i = -3; i < action; i++) {
-        var spawn = generateSpawnLite(_mainRng, _spawnerRng, spawnedAlpha, pkmn, alphaRequired: alphaRequired, shinyRequired: shinyRequired);
+        var spawn = generateSpawnLite(_mainRng, _spawnerRng, spawnedAlpha, pkmn, alphaRequired: alphaRequired, shinyRequired: shinyRequired, rolls: rolls);
         if (spawn != null) {
           spawnedAlpha = spawnedAlpha || spawn.alpha;
 
@@ -235,7 +240,7 @@ bool findAdditonalMatchInPath(int seed, List<int> path, int rolls, PokedexEntry 
   return false;
 }
 
-void isolatedSearch(SearchParams params, Function onTick, void Function(MassOutbreakResult?) onMatch) async {
+void isolatedSearch(SearchParams params, Function onTick, void Function(MassOutbreakResult? result) onMatch) async {
   var receivePort = ReceivePort();
   var isolate = await Isolate.spawn(fastSearch, [receivePort.sendPort, params]);
   receivePort.listen((message) {

@@ -181,7 +181,7 @@ enum OutbreakType {
 }
 
 Spawn? generateSpawnLite(XOROSHIROLite mainRng, XOROSHIROLite spawnerRng, bool spawnedAlpha, PokedexEntry? pkmn,
-    {EncounterTable? encounterTable, bool alphaRequired = false, bool shinyRequired = false, bool debug = false, OutbreakType outbreakType = OutbreakType.massOutbreak}) {
+    {EncounterTable? encounterTable, bool alphaRequired = false, bool shinyRequired = false, bool debug = false, OutbreakType outbreakType = OutbreakType.massOutbreak, int? rolls}) {
   spawnerRng.reseed(mainRng.next());
   mainRng.next();
 
@@ -202,7 +202,7 @@ Spawn? generateSpawnLite(XOROSHIROLite mainRng, XOROSHIROLite spawnerRng, bool s
     spawnerRng.next(),
     pokedexEntry,
     alpha,
-    getRolls(pokedexEntry.pokemon) + (outbreakType == OutbreakType.massOutbreak ? 26 : 13),
+    rolls ?? PokedexStore.getRolls(pokedexEntry.pokemon) + (outbreakType == OutbreakType.massOutbreak ? 26 : 13),
     shinyRequired: shinyRequired,
     guranteedIVs: guarateedIVs,
     form: encounterSlot.form,
@@ -210,11 +210,3 @@ Spawn? generateSpawnLite(XOROSHIROLite mainRng, XOROSHIROLite spawnerRng, bool s
   return fromSeedLite ?? _default;
 }
 
-int getRolls(String pokemon) {
-  var store = GetIt.I.get<PokedexStore>();
-  return [
-    store.pokedexCompletion[pokemon] ?? false,
-    store.pokedexPerfection[pokemon] ?? false,
-    store.shinyCharm,
-  ].mapIndexed((index, element) => (element) ? index + 1 : 0).sum;
-}

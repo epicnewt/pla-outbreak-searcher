@@ -45,8 +45,8 @@ class MOConnectAndSearchPage extends StatelessWidget {
     return;
   }
 
-  void search() {
-debug("Search clicked");
+  Future search(BuildContext context) async {
+    debug(await MassOutbreakSearcherService.provide().performSearch(MassOutbreakSearchData.provide(context)));
   }
 
   @override
@@ -81,20 +81,23 @@ debug("Search clicked");
                 );
               },
             ),
-            Selector<MassOutbreakSearchData, MassOutbreakInformation?>(
+            Selector<MassOutbreakSearchData, List<MassOutbreakInformation>?>(
               selector: (_, data) => data.moInfo,
               builder: (context, moInfo, child) {
                 if (moInfo != null) {
-                  var species = pokedex[moInfo.species]!;
                   return ListView(
                     shrinkWrap: true,
-                    children: [
-                      PokedexEntrySummary(
-                        pokedexEntry: species,
-                        subHeading: const Text("Seed: 0x5678987654\nSpawns: 10"),
+                    children: moInfo.map<Widget>(
+                      (moInfo) {
+                        return PokedexEntrySummary(
+                          pokedexEntry: pokedex[moInfo.species]!,
+                          subHeading: Text("Seed: 0x${moInfo.seed.toUpperCase()}\nSpawns: ${moInfo.spawns}"),
+                        );
+                      },
+                    ).toList()
+                      ..add(
+                        SearchButton(onPressed: () => search(context)),
                       ),
-                      SearchButton(onPressed: () => search()),
-                    ],
                   );
                 }
                 return const SizedBox.shrink();

@@ -32,7 +32,7 @@ class _ConnectActionState extends State<ConnectAction> {
             child: Stack(
               children: [
                 const FaIcon(FontAwesomeIcons.plug),
-                if (isLoading) ...[
+                if (isLoading)
                   Container(
                     width: 7,
                     height: 7,
@@ -41,8 +41,7 @@ class _ConnectActionState extends State<ConnectAction> {
                       // color: Colors.black,
                       strokeWidth: 2,
                     ),
-                  )
-                ],
+                  ),
               ],
             ),
           ),

@@ -1,3 +1,5 @@
+import 'package:mmo_searcher/common/debug.dart';
+
 const Map<int, Map<int, Map<int, int>>> totalCombinations = {
   10: {
     1: {5: 6, 11: 7},
@@ -135,6 +137,7 @@ const Map<int, Map<int, Map<int, int>>> totalCombinations = {
 
 Iterable<List<int>> passivePaths(int spawns, {int depth = 1, int maxDepth = 20, despawnLimit = 11}) sync* {
   for (int d = depth; d <= maxDepth; d++) {
+    debug("Running v1.0.2 search at depth $d");
     var maxDespawns = spawns - 4;
     final int base = ((maxDespawns > despawnLimit) ? despawnLimit : maxDespawns) + 1;
     final List<int> path = List.filled(d, 0);

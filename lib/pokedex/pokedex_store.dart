@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -67,6 +67,15 @@ class PokedexStore {
     sharedPreferences.setString("pokedex_perfection", jsonEncode(pokedexPerfection));
     sharedPreferences.setString("pokedex_caught", jsonEncode(pokedexCaught));
     sharedPreferences.setBool("pokedex_shiny_charm", shinyCharm);
+  }
+
+  static int getRolls(String pokemon) {
+    var store = GetIt.I.get<PokedexStore>();
+    return [
+      store.pokedexCompletion[pokemon] ?? false,
+      store.pokedexPerfection[pokemon] ?? false,
+      store.shinyCharm,
+    ].mapIndexed((index, element) => (element) ? index + 1 : 0).sum;
   }
 
   static Future register() async {

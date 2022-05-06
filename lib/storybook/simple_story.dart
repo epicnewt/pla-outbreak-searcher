@@ -61,7 +61,7 @@ class StorybookApp extends StatelessWidget {
           ),
           Story(
             name: 'MO/Initial Page (connected)',
-            builder: (context) => FutureBuilder<MassOutbreakInformation>(
+            builder: (context) => FutureBuilder<List<MassOutbreakInformation>>(
                 future: Future(() {
                   MOSearchServiceStub.delay = Duration.zero;
                 }).then((value) => GetIt.I.get<MassOutbreakSearcherService>().gatherOutbreakInformation())
