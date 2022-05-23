@@ -5,8 +5,9 @@ import 'package:mmo_searcher/massive_mass_outbreak/pages/widgets/pokemon_sprite.
 
 class SpawnDetails extends StatelessWidget {
   final Spawn spawn;
+  final bool isRevisit;
 
-  const SpawnDetails({Key? key, required this.spawn}) : super(key: key);
+  const SpawnDetails({Key? key, required this.spawn, required this.isRevisit}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +26,7 @@ class SpawnDetails extends StatelessWidget {
                   shiny: spawn.shiny,
                   alpha: spawn.alpha,
                   checked: checked,
+                  ghost: isRevisit,
                 ),
               );
             }),

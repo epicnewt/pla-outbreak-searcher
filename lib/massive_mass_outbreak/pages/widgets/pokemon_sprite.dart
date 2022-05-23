@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -9,16 +7,24 @@ class PokemonSprite extends StatelessWidget {
   final bool? checked;
   final String? form;
   final bool alpha;
+  final bool ghost;
 
-  const PokemonSprite({Key? key, required this.dexNumber, this.shiny = false, this.checked, this.form, this.alpha = false}) : super(key: key);
+  const PokemonSprite({Key? key, required this.dexNumber, this.shiny = false, this.checked, this.form, this.alpha = false, this.ghost = false})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    var image = Image.asset(
-      "assets/sprites/" + dexNumber.toString().padLeft(3, "0") + (form == null ? "" : "-$form") + (shiny ? "-shiny.png" : ".png"),
-      width: 56,
-      height: 56,
-    );
+    var image = ghost
+        ? Image.asset(
+            "assets/sprites/ghost-spawn.png",
+            width: 56,
+            height: 56,
+          )
+        : Image.asset(
+            "assets/sprites/" + dexNumber.toString().padLeft(3, "0") + (form == null ? "" : "-$form") + (shiny ? "-shiny.png" : ".png"),
+            width: 56,
+            height: 56,
+          );
 
     return Stack(children: [
       Container(

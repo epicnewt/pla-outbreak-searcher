@@ -32,7 +32,7 @@ class MMOSearchResultSpawnsPage extends StatelessWidget {
                   ),
                   color: Colors.grey[200],
                 ),
-                ...e.third.map((spawn) => SpawnDetails(spawn: spawn)),
+                ...e.third.map((spawn) => SpawnDetails(spawn: spawn, isRevisit: e.first == "R")),
               ],
             )
             .toList(),
