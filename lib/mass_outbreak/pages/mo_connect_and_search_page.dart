@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mmo_searcher/common/connection/switch_connection_exception.dart';
 import 'package:mmo_searcher/common/debug.dart';
-import 'package:mmo_searcher/common/feature_switches.dart';
 import 'package:mmo_searcher/common/widgets/app_drawer.dart';
 import 'package:mmo_searcher/common/widgets/connect_action.dart';
 import 'package:mmo_searcher/common/widgets/search_button.dart';

@@ -75,7 +75,7 @@ class PathSpawnInfo {
   }
 
   bool _isNotGhostSpawnGroup(int index, dynamic _) =>
-      index < (mmoPath.initialPath.length) || index >= (mmoPath.initialPath.length + mmoPath.revisit.length);
+      index < (mmoPath.initialPath.length) || index > (mmoPath.initialPath.length + mmoPath.revisit.length);
 
   Spawn _fromSeed(List<int> seed, bool isBonusSpawn) {
     _mainRng.reseed(seed.first, s1: seed.last);
