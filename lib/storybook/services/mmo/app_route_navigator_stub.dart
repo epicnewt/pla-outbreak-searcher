@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:mmo_searcher/mass_outbreak/search/rng/path/mo/search.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_search_results.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_path_spawn_info.dart';
 import 'package:mmo_searcher/navigator.dart';
@@ -30,5 +31,10 @@ class AppRouteNavigatorStub implements AppRouteNavigator {
   @override
   toMMOSearchResultDetails(BuildContext context, MMOSearchResults param) {
     print('AppRouteNavigator#toMMOSearchResultsDetails');
+  }
+
+  @override
+  toMOSearchResults(BuildContext context, List<MassOutbreakResult> matches) {
+      print('AppRouteNavigator#toMOSearchResults');
   }
 }

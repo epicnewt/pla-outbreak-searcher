@@ -125,7 +125,7 @@ class StorybookApp extends StatelessWidget {
               future: MMOSearchService.provide().gatherOutbreakInformation().then((mmoInfo) {
                 var data = MassiveMassOutbreakSearchData();
                 data.mmoInfo = mmoInfo;
-                return MMOSearchService.provide().performSearch(data);
+                return MMOSearchService.provide().performSearch(data).catchError((error) => print(error));
               }),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
