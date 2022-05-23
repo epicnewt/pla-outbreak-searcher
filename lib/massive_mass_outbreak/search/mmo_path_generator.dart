@@ -3,7 +3,6 @@ import 'dart:core';
 
 import 'package:collection/collection.dart';
 
-
 class MutableMMOPath {
   List<int> initialPath = [];
   List<int> revisit = [];
@@ -21,7 +20,7 @@ class MutableMMOPath {
         (bonusPath.isNotEmpty ? " + $bonusPath" : "");
   }
 
-  MMOPath get readonly  => _readonly;
+  MMOPath get readonly => _readonly;
 }
 
 class MMOPath {
@@ -82,6 +81,7 @@ Iterable<List<int>> _aggressivePaths(int spawns, {int length = 1, bool includeIn
     yield* _aggressivePaths(spawns, length: length + 1);
   }
 }
+
 /// Returns the number of pokemon that should remain before despawning and returning
 Iterable<List<int>> revisits({required int remainingSpawns}) => [
       [],
@@ -103,16 +103,16 @@ Iterable<MMOPath> aggressivePaths({required int spawns, int bonusSpawns = 0}) sy
     mmoPath.bonusPath = [];
 
     if (initialPath.sum == maxDespawns) {
-      for (var revisit in revisits(remainingSpawns: spawns - initialPath.sum)) {
-        mmoPath.revisit = revisit;
-        if (bonusSpawns > 0) {
-          for (var bonusPath in _aggressivePaths(bonusSpawns)) {
+      if (bonusSpawns > 0) {
+        for (var revisit in revisits(remainingSpawns: spawns - initialPath.sum)) {
+          mmoPath.revisit = revisit;
+          for (var bonusPath in _aggressivePaths(bonusSpawns, includeEmpty: false)) {
             mmoPath.bonusPath = bonusPath;
             yield mmoPath.readonly;
           }
-        } else {
-          yield mmoPath.readonly;
         }
+      } else {
+        yield mmoPath.readonly;
       }
     } else {
       mmoPath.revisit = [];
