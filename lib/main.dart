@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:mmo_searcher/common/feature_switches.dart';
 import 'package:mmo_searcher/mass_outbreak/pages/mo_connect_and_search_page.dart';
 import 'package:mmo_searcher/mass_outbreak/pages/mo_search_result_spawns_page.dart';
+import 'package:mmo_searcher/mass_outbreak/pages/mo_search_results_summary_page.dart';
 import 'package:mmo_searcher/mass_outbreak/search/model/mass_outbreak_search_data.dart';
 import 'package:mmo_searcher/mass_outbreak/search/model/mass_outbreak_searcher_service.dart';
+import 'package:mmo_searcher/mass_outbreak/search/rng/path/mo/search.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/pages/mmo_connect_and_search_page.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/pages/mmo_search_result_details_page.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/pages/mmo_search_result_spawns_page.dart';
@@ -21,6 +24,8 @@ void main() {
   DefaultAppRouteNavigator.register();
   DefaultMMOSearchService.register();
   DefaultMassOutbreakSearcherService.register();
+  FeatureSwitchService.register();
+  
   PokedexStore.register().then((_) {
     runApp(MultiProvider(
       providers: [

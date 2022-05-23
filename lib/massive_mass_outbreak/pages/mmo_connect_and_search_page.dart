@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mmo_searcher/common/connection/switch_connection_exception.dart';
+import 'package:mmo_searcher/common/feature_switches.dart';
 import 'package:mmo_searcher/common/widgets/app_drawer.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/pages/widgets/search_filters.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/mmo_search_service.dart';
@@ -52,7 +53,7 @@ class MMOConnectAndSearchPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text("MMO Searcher"),
       ),
-      drawer: const AppDrawer(),
+      drawer: FeatureSwitchService.provide().isMassOutbreakPathingEnabled() ? const AppDrawer() : null,
       body: SingleChildScrollView(
         child: Consumer<MassiveMassOutbreakSearchData>(
           builder: (context, mmoData, child) {
