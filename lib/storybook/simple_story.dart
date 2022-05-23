@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:mmo_searcher/common/feature_switches.dart';
 import 'package:mmo_searcher/mass_outbreak/pages/mo_connect_and_search_page.dart';
 import 'package:mmo_searcher/mass_outbreak/pages/mo_search_results_summary_page.dart';
 import 'package:mmo_searcher/mass_outbreak/search/model/mass_outbreak_information.dart';
@@ -27,7 +28,6 @@ import 'package:mmo_searcher/pokedex/pokedex.dart';
 import 'package:mmo_searcher/pokedex/pokedex_page.dart';
 import 'package:mmo_searcher/pokedex/pokedex_store.dart';
 import 'package:mmo_searcher/pokedex/widgets/pokedex_entry_summary.dart';
-import 'package:mmo_searcher/simple_routed_widget.dart';
 import 'package:mmo_searcher/storybook/services/mmo/app_route_navigator_stub.dart';
 import 'package:mmo_searcher/storybook/services/mmo/mmo_search_service_stub.dart';
 import 'package:mmo_searcher/storybook/services/mmo/mo_search_service_stub.dart';
@@ -38,6 +38,8 @@ void main() async {
   AppRouteNavigatorStub.register();
   MMOSearchServiceStub.register();
   MOSearchServiceStub.register();
+  FeatureSwitchService.register();
+
   await PokedexStore.register();
   runApp(const StorybookApp());
 }
@@ -79,6 +81,7 @@ class StorybookApp extends StatelessWidget {
                       ChangeNotifierProvider.value(
                         value: MassOutbreakSearchData()..moInfo = snapshot.data,
                       ),
+                      ChangeNotifierProvider.value(value: PokedexStore.provide())
                     ],
                     child: const MOConnectAndSearchPage(),
                   );

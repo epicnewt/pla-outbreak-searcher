@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class PokedexStore {
+class PokedexStore extends ChangeNotifier {
   Map<String, bool> pokedexCaught;
   Map<String, bool> pokedexCompletion;
   Map<String, bool> pokedexPerfection;
@@ -13,27 +13,38 @@ class PokedexStore {
 
   PokedexStore(this.pokedexCaught, this.pokedexCompletion, this.pokedexPerfection, this.shinyCharm);
 
-  bool toggleCompletion(String pokemon) {
-    _queueUpdate();
+  T notify<T>(T Function() fn) {
+    var result = fn;
+    notifyListeners();
+    _queueSave();
+    return result();
+  }
+
+  int select(String pokemon) {
+    var change = pokedexCompletion[pokemon] == true ? 8 : 0;
+    change |= pokedexPerfection[pokemon] == true ? 4 : 0;
+    change |= pokedexCaught[pokemon] == true ? 2 : 0;
+    change |= shinyCharm == true ? 0x1 : 0;
+    return change;
+  }
+
+  bool toggleCompletion(String pokemon) => notify(() {
     return pokedexCompletion.update(pokemon, (value) => !value, ifAbsent: () => true);
-  }
+  });
 
-  bool togglePerfection(String pokemon) {
-    _queueUpdate();
+  bool togglePerfection(String pokemon) => notify(() {
     return pokedexPerfection.update(pokemon, (value) => !value, ifAbsent: () => true);
-  }
+  });
 
-  bool toggleCaught(String pokemon) {
-    _queueUpdate();
+  bool toggleCaught(String pokemon) => notify(() {
     return pokedexCaught.update(pokemon, (value) => !value, ifAbsent: () => true);
-  }
+  });
 
-  bool toggleShinyCharm() {
-    _queueUpdate();
+  bool toggleShinyCharm() => notify(() {
     return shinyCharm = !shinyCharm;
-  }
+  });
 
-  void _queueUpdate() async {
+  void _queueSave() async {
     _dirty ??= Future.delayed(
       const Duration(milliseconds: 100),
       () {

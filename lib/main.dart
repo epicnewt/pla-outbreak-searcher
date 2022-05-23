@@ -33,6 +33,7 @@ void main() {
         ChangeNotifierProvider.value(value: MassOutbreakSearchData()),
         //v1.1.0
         ChangeNotifierProvider.value(value: MassiveMassOutbreakSearchData()),
+        ChangeNotifierProvider(create: (context) => PokedexStore.provide())
       ],
       child: MaterialApp(
         title: "Pokémon Arceus Legends RNG Tools",
