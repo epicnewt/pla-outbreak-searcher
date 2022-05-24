@@ -70,8 +70,9 @@ class StorybookApp extends StatelessWidget {
             builder: (context) => FutureBuilder<List<MassOutbreakInformation>>(
                 future: Future(() {
                   MOSearchServiceStub.delay = Duration.zero;
-                }).then((value) => GetIt.I.get<MassOutbreakSearcherService>().gatherOutbreakInformation())
-                .whenComplete(() => MOSearchServiceStub.delay = const Duration(seconds: 1)),
+                })
+                    .then((value) => GetIt.I.get<MassOutbreakSearcherService>().gatherOutbreakInformation())
+                    .whenComplete(() => MOSearchServiceStub.delay = const Duration(seconds: 1)),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
                     return const CircularProgressIndicator();
@@ -81,21 +82,20 @@ class StorybookApp extends StatelessWidget {
                       ChangeNotifierProvider.value(
                         value: MassOutbreakSearchData()..moInfo = snapshot.data,
                       ),
-                      ChangeNotifierProvider.value(value: PokedexStore.provide())
+                      ChangeNotifierProvider.value(value: PokedexStore.provide()),
                     ],
                     child: const MOConnectAndSearchPage(),
                   );
                 }),
           ),
           Story(
-            name: 'MO/Search Summary Page',
-            builder: (context) {
-              return MOSearchResultsSummaryPage(results: [
-                MassOutbreakResult(235324345, [1,2,4,0,0,3], randomPokedexEntry()),
-                MassOutbreakResult(8792464644, [1,2,4,0,0,3,1,2,4,0,0,3,1,2,4,0,0,3], randomPokedexEntry()),
-              ]);
-            }
-          ),
+              name: 'MO/Search Summary Page',
+              builder: (context) {
+                return MOSearchResultsSummaryPage(results: [
+                  MassOutbreakResult(235324345, [1, 2, 4, 0, 0, 3], randomPokedexEntry()),
+                  MassOutbreakResult(8792464644, [1, 2, 4, 0, 0, 3, 1, 2, 4, 0, 0, 3, 1, 2, 4, 0, 0, 3], randomPokedexEntry()),
+                ]);
+              }),
           Story(
             name: 'MMO/Initial Page',
             builder: (context) => MultiProvider(
@@ -118,6 +118,7 @@ class StorybookApp extends StatelessWidget {
                     return data;
                   },
                 ),
+                ChangeNotifierProvider.value(value: PokedexStore.provide()),
               ],
               child: const MMOConnectAndSearchPage(),
             ),

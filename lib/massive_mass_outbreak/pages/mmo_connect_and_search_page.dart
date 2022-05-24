@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mmo_searcher/common/connection/switch_connection_exception.dart';
 import 'package:mmo_searcher/common/feature_switches.dart';
 import 'package:mmo_searcher/common/widgets/app_drawer.dart';
+import 'package:mmo_searcher/common/widgets/connect_action.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/pages/widgets/search_filters.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/mmo_search_service.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/state/massive_mass_outbreak_state.dart';
@@ -12,7 +13,7 @@ import 'package:provider/provider.dart';
 class MMOConnectAndSearchPage extends StatelessWidget {
   const MMOConnectAndSearchPage({Key? key}) : super(key: key);
 
-  void connect(context) async {
+  connect(context) async {
     try {
       MassiveMassOutbreakSearchData.provide(context).mmoInfo = await MMOSearchService.provide().gatherOutbreakInformation();
     } on SwitchConnectionException catch (sce) {
@@ -52,8 +53,16 @@ class MMOConnectAndSearchPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("MMO Searcher"),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: ConnectAction(
+              onPress: () => connect(context),
+            ),
+          )
+        ],
       ),
-      drawer: FeatureSwitchService.provide().isMassOutbreakPathingEnabled() ? const AppDrawer() : null,
+      drawer: const AppDrawer(),
       body: SingleChildScrollView(
         child: Consumer<MassiveMassOutbreakSearchData>(
           builder: (context, mmoData, child) {
@@ -70,16 +79,6 @@ class MMOConnectAndSearchPage extends StatelessWidget {
                     mmoData.alpha = alpha;
                     mmoData.multimatch = multimatch;
                   },
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () => connect(context),
-                        child: outbreaks.isEmpty ? const Text("Connect") : const Text("Reconnect"),
-                      ),
-                    ),
-                  ],
                 ),
                 PokemonList(
                   shrinkWrap: true,

@@ -61,14 +61,17 @@ class MOConnectAndSearchPage extends StatelessWidget {
     var isLoading = false;
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Mass Outbreak Searcher"), actions: [
-        Padding(
-          padding: const EdgeInsets.only(right: 16.0),
-          child: ConnectAction(
-            onPress: () => connect(context),
+      appBar: AppBar(
+        title: const Text("Mass Outbreak Searcher"),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: ConnectAction(
+              onPress: () => connect(context),
+            ),
           ),
-        ),
-      ]),
+        ],
+      ),
       drawer: const AppDrawer(),
       body: SingleChildScrollView(
         child: Padding(
