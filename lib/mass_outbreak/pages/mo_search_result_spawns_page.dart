@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mmo_searcher/common/rng/spawn.dart';
 import 'package:mmo_searcher/mass_outbreak/search/rng/path/mo/search.dart';
 import 'package:collection/collection.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/pages/widgets/spawn.dart';
@@ -14,7 +13,7 @@ class MOSearchResultSpawnsPage extends StatelessWidget {
 
   pathDescription(List<int> action, bool isFirst) {
     switch (action.first) {
-      case 4:
+      case 0:
         return isFirst ? "Intial Spawns" : "Return to town";
       default:
         return "Catch ${action.first}";
@@ -40,7 +39,7 @@ class MOSearchResultSpawnsPage extends StatelessWidget {
                         Container(
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text(pathDescription([4], i == 0)),
+                            child: Text(pathDescription([0], i == 0)),
                           ),
                           color: Colors.grey[200],
                         ),
