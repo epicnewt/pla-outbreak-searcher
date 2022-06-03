@@ -43,4 +43,9 @@ class AppRouteNavigatorStub implements AppRouteNavigator {
   toMOSearchResults(BuildContext context, List<MassOutbreakResult> matches) {
     print('AppRouteNavigator#toMOSearchResults');
   }
+
+  @override
+  String getDefaultRoute() {
+    return 'mmo-search';
+  }
 }

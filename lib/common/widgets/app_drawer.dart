@@ -44,7 +44,7 @@ class AppDrawer extends StatelessWidget {
           if (moEnabled)
             ListTile(
               selected: ModalRoute.of(context)?.settings.name?.startsWith("mmo-") ?? false,
-              title: const Text("v1.1.X"),
+              title: const Text("v1.1.1"),
               onTap: () {
                 ModalRoute.of(context)?.isCurrent;
                 AppRouteNavigator.provide().toMMOSearch(context);

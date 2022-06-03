@@ -37,7 +37,7 @@ void main() {
       ],
       child: MaterialApp(
         title: "Pokémon Arceus Legends RNG Tools",
-        initialRoute: 'mmo-search',
+        initialRoute: AppRouteNavigator.provide().getDefaultRoute(),
         // initialRoute: 'mo-search',
         routes: {
           'mo-search': (context) => const MOConnectAndSearchPage(),
