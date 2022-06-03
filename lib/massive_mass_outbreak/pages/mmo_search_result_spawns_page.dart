@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/pages/widgets/spawn.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_path_spawn_info.dart';
+import 'package:mmo_searcher/pokedex/pokedex.dart';
+import 'package:mmo_searcher/pokedex/widgets/pokedex_entry_summary.dart';
 
 class Tuple2<F, S> {
   final F first;
@@ -21,21 +23,28 @@ class MMOSearchResultSpawnsPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(match.mmoPath.toString()),
       ),
-      body: ListView(
-        children: match.summary
-            .expand(
-              (e) => [
-                Container(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(pathDescrition(e.first, e.second)),
-                  ),
-                  color: Colors.grey[200],
-                ),
-                ...e.third.map((spawn) => SpawnDetails(spawn: spawn, isRevisit: e.first == "R")),
-              ],
-            )
-            .toList(),
+      body: Column(
+        children: [
+          ...match.pokemon.expand((element) => element).map((e) => e.pkmn).toSet().nationalDexOrder().map((e) => PokedexEntrySummary(pokedexEntry: e)),
+          Expanded(
+            child: ListView(
+              children: match.summary
+                  .expand(
+                    (e) => [
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(pathDescrition(e.first, e.second)),
+                        ),
+                        color: Colors.grey[200],
+                      ),
+                      ...e.third.map((spawn) => SpawnDetails(spawn: spawn, isRevisit: e.first == "R")),
+                    ],
+                  )
+                  .toList(),
+            ),
+          ),
+        ],
       ),
     );
   }

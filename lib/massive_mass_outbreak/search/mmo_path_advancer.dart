@@ -105,7 +105,7 @@ PathSpawnInfo? generateSpawnsOfPath(MMOPath mmoPath, MMOInfo info, {required boo
     info.initialRoundEncouterTable,
     info.bonusRoundEncouterTable,
     mmoPath.copy(),
-    (s) => s.alpha == alphaRequired && s.shiny == shinyRequired
+    (s) => (s.alpha == alphaRequired || !alphaRequired) && (s.shiny == shinyRequired || !shinyRequired)
   );
 }
 

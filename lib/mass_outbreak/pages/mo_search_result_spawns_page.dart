@@ -36,7 +36,7 @@ class MOSearchResultSpawnsPage extends StatelessWidget {
                   children: [
                     ...result.advances().expandIndexed((i, advance) {
                       return [
-                        Container(
+                        Card(
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(pathDescription([0], i == 0)),
@@ -45,7 +45,7 @@ class MOSearchResultSpawnsPage extends StatelessWidget {
                         ),
                         ...advance.reseeds.first.spawns.map((spawn) => SpawnDetails(spawn: spawn)),
                         if (advance.reseeds.length > 1)
-                          Container(
+                          Card(
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(pathDescription(advance.actions, false)),
