@@ -80,6 +80,16 @@ class DefaultMassOutbreakSearcherService implements MassOutbreakSearcherService 
         ),
         () {},
         (result) {
+          if (result != null) {
+            print("Setting filter");
+            result.filter = (spawn) {
+              var rtrn = (!info.shiny || spawn.shiny) //
+               && (!info.alpha || spawn.alpha) //
+               ;//&& (spawn.gender == 'G' || (info.male && spawn.gender == 'M') || (info.female && spawn.gender == 'F'));
+               print("${spawn} -> $rtrn");
+               return rtrn;
+            };
+          }
           completer.complete(result);
         },
       );

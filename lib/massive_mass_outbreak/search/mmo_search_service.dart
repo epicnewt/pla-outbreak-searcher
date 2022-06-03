@@ -4,6 +4,7 @@ import 'package:mmo_searcher/common/network/nxreader.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/mmo_path_advancer.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/mmo_path_generator.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_info.dart';
+import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_path_spawn_info.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_search_results.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/state/massive_mass_outbreak_state.dart';
 import 'package:mmo_searcher/num.dart';
@@ -98,8 +99,8 @@ class DefaultMMOSearchService implements MMOSearchService {
             info,
             aggressivePaths(spawns: info.spawns, bonusSpawns: info.bonusSpawns ?? 0) //
                 .map((path) => generateSpawnsOfPath(path, info, alphaRequired: data.alpha, shinyRequired: data.shiny))
-                .where((element) => element != null && element.matches.isNotEmpty)
-                .map((e) => e!)
+                .whereType<PathSpawnInfo>()
+                .where((element) => element.matches.isNotEmpty)
                 .toList(),
           );
         })

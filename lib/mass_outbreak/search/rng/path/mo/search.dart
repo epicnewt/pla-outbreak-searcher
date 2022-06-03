@@ -27,7 +27,11 @@ class MassOutbreakResult {
   final List<int> path;
   final PokedexEntry pokemon;
   late List<Advance> _advances;
+  List<Spawn> _matches = [];
   late int rolls = -1;
+  bool Function(Spawn spawn) filter = (spawn) {
+    return true;
+  };
 
   MassOutbreakResult(this.seed, this.path, this.pokemon);
 
@@ -36,9 +40,21 @@ class MassOutbreakResult {
     if (this.rolls != rolls) {
       this.rolls = rolls;
       _advances = _genAdvances();
+      _matches = _genMatches();
     }
 
     return _advances;
+  }
+
+  List<Spawn> get matches {
+    var rolls = PokedexStore.getRolls(pokemon.pokemon);
+    if (this.rolls != rolls) {
+      this.rolls = rolls;
+      _advances = _genAdvances();
+      _matches = _genMatches();
+    }
+
+    return _matches;
   }
 
   List<Advance> _genAdvances() {
@@ -88,11 +104,23 @@ class MassOutbreakResult {
     return advances;
   }
 
-  List<Spawn> get matches => [advances().last].expand((advance) => advance.reseeds.expand((reseeds) => reseeds.spawns)).toList();
-
   @override
   String toString() {
     return 'MassOutbreakResult{seed: $seed, path: $path, pokemon: $pokemon}';
+  }
+
+  List<Spawn> _genMatches() {
+    return _advances
+        .expand(
+          (advance) => advance.reseeds.expand(
+            (reseeds) => reseeds.spawns,
+          ),
+        ).where((s) {
+          var r = filter(s);
+          print("SPAWN: $s -> $r");
+          return r;
+        })
+        .toList();
   }
 }
 
