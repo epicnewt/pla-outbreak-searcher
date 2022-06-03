@@ -13,7 +13,7 @@
         {
             "name": "mmo_searcher",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
         },
         {
             "name": "mmo_searcher (profile mode)",

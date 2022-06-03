@@ -7,6 +7,7 @@ import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_search_resul
 abstract class AppRouteNavigator {
   toMOSearch(BuildContext context);
   toMOSearchResults(BuildContext context, List<MassOutbreakResult> matches);
+  toMOSearchResultSpawns(BuildContext context, MassOutbreakResult result);
 
   toMMOSearch(BuildContext context);
   toMMOSearchResults(BuildContext context, List<MMOSearchResults> param);
@@ -28,6 +29,11 @@ class DefaultAppRouteNavigator implements AppRouteNavigator {
   @override
   toMOSearchResults(BuildContext context, List<MassOutbreakResult> matches) {
     Navigator.popAndPushNamed(context, 'mo-search-results', arguments: matches);
+  }
+  
+  @override
+  toMOSearchResultSpawns(BuildContext context, MassOutbreakResult result) {
+    Navigator.popAndPushNamed(context, 'mo-search-result-spawns', arguments: result);
   }
 
   @override

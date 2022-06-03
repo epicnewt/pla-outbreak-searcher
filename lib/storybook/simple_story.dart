@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mmo_searcher/common/feature_switches.dart';
 import 'package:mmo_searcher/mass_outbreak/pages/mo_connect_and_search_page.dart';
+import 'package:mmo_searcher/mass_outbreak/pages/mo_search_result_spawns_page.dart';
 import 'package:mmo_searcher/mass_outbreak/pages/mo_search_results_summary_page.dart';
 import 'package:mmo_searcher/mass_outbreak/search/model/mass_outbreak_information.dart';
 import 'package:mmo_searcher/mass_outbreak/search/model/mass_outbreak_search_data.dart';
@@ -89,13 +90,27 @@ class StorybookApp extends StatelessWidget {
                 }),
           ),
           Story(
-              name: 'MO/Search Summary Page',
-              builder: (context) {
-                return MOSearchResultsSummaryPage(results: [
-                  MassOutbreakResult(235324345, [1, 2, 4, 0, 0, 3], randomPokedexEntry()),
-                  MassOutbreakResult(8792464644, [1, 2, 4, 0, 0, 3, 1, 2, 4, 0, 0, 3, 1, 2, 4, 0, 0, 3], randomPokedexEntry()),
-                ]);
-              }),
+            name: 'MO/Search Summary Page',
+            builder: (context) {
+              return MOSearchResultsSummaryPage(results: [
+                MassOutbreakResult(235324345, [1, 2, 4, 0, 0, 3], randomPokedexEntry()),
+                MassOutbreakResult(8792464644, [1, 2, 4, 0, 0, 3, 1, 2, 4, 0, 0, 3, 1, 2, 4, 0, 0, 3], randomPokedexEntry()),
+              ]);
+            },
+          ),
+          Story(
+            name: 'MO/Search Result Spawns Page',
+            builder: (context) {
+              return MultiProvider(
+                providers: [
+                  ChangeNotifierProvider.value(value: PokedexStore.provide()),
+                ],
+                child: MOSearchResultSpawnsPage(
+                  result: MassOutbreakResult(235324345, [1, 2, 4, 0, 0, 3], randomPokedexEntry()),
+                ),
+              );
+            },
+          ),
           Story(
             name: 'MMO/Initial Page',
             builder: (context) => MultiProvider(

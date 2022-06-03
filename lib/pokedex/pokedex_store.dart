@@ -82,9 +82,11 @@ class PokedexStore extends ChangeNotifier {
 
   static int getRolls(String pokemon) {
     var store = GetIt.I.get<PokedexStore>();
+    var perfect = store.pokedexPerfection[pokemon] ?? false;
+    var complete = (store.pokedexCompletion[pokemon] ?? false) || perfect || store.shinyCharm;
     return [
-      store.pokedexCompletion[pokemon] ?? false,
-      store.pokedexPerfection[pokemon] ?? false,
+      complete,
+      perfect,
       store.shinyCharm,
     ].mapIndexed((index, element) => (element) ? index + 1 : 0).sum;
   }

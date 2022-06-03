@@ -5,6 +5,7 @@ import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_search_resul
 import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_path_spawn_info.dart';
 import 'package:mmo_searcher/navigator.dart';
 
+// ignore_for_file: avoid_print
 class AppRouteNavigatorStub implements AppRouteNavigator {
   static void register() => GetIt.I.registerSingleton<AppRouteNavigator>(AppRouteNavigatorStub());
 
@@ -16,6 +17,11 @@ class AppRouteNavigatorStub implements AppRouteNavigator {
   @override
   toMMOSearch(BuildContext context) {
     print('AppRouteNavigator#toMMOSearch');
+  }
+
+  @override
+  toMOSearchResultSpawns(BuildContext context, MassOutbreakResult result) {
+    print('AppRouteNavigator#toMOSearchResultSpawns');
   }
 
   @override
@@ -35,6 +41,6 @@ class AppRouteNavigatorStub implements AppRouteNavigator {
 
   @override
   toMOSearchResults(BuildContext context, List<MassOutbreakResult> matches) {
-      print('AppRouteNavigator#toMOSearchResults');
+    print('AppRouteNavigator#toMOSearchResults');
   }
 }

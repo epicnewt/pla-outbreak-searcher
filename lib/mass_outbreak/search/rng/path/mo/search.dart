@@ -6,6 +6,7 @@ import 'package:mmo_searcher/common/rng/xoroshiro.dart';
 import 'package:mmo_searcher/mass_outbreak/search/rng/path/mo/pass_path_generator.dart';
 import 'package:mmo_searcher/num.dart';
 import 'package:mmo_searcher/pokedex/pokedex.dart';
+import 'package:mmo_searcher/pokedex/pokedex_store.dart';
 
 class Advance {
   final List<int> actions;
@@ -25,10 +26,22 @@ class MassOutbreakResult {
   final int seed;
   final List<int> path;
   final PokedexEntry pokemon;
+  late List<Advance> _advances;
+  late int rolls = -1;
 
   MassOutbreakResult(this.seed, this.path, this.pokemon);
 
   List<Advance> advances() {
+    var rolls = PokedexStore.getRolls(pokemon.pokemon);
+    if (this.rolls != rolls) {
+      this.rolls = rolls;
+      _advances = _genAdvances();
+    }
+
+    return _advances;
+  }
+
+  List<Advance> _genAdvances() {
     XOROSHIROLite rng = XOROSHIROLite();
     XOROSHIROLite spawnRng = XOROSHIROLite();
     rng.reseed(seed);

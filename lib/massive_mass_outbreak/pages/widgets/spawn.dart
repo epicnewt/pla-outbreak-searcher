@@ -7,7 +7,7 @@ class SpawnDetails extends StatelessWidget {
   final Spawn spawn;
   final bool isRevisit;
 
-  const SpawnDetails({Key? key, required this.spawn, required this.isRevisit}) : super(key: key);
+  const SpawnDetails({Key? key, required this.spawn, this.isRevisit = false}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

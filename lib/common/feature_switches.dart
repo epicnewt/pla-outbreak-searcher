@@ -3,7 +3,7 @@ import 'package:get_it/get_it.dart';
 
 class FeatureSwitchService {
   bool isMassOutbreakPathingEnabled() {
-    return false;
+    return true;
   }
 
   static void register() {

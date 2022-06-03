@@ -42,8 +42,13 @@ void main() {
         routes: {
           'mo-search': (context) => const MOConnectAndSearchPage(),
           'mo-search-results': (context) => SimpleRoutedWidget<List<MassOutbreakResult>>(
-                builder: (context, argument) => MOSearchResultsSummaryPage(results: argument),
-              ),
+            builder: (context, argument) => MOSearchResultsSummaryPage(results: argument),
+          ),
+          'mo-search-result-spawns': (context) {
+            return SimpleRoutedWidget<MassOutbreakResult>(
+              builder: (context, argument) => MOSearchResultSpawnsPage(result: argument),
+            );
+          },
           'mmo-pointer-debug': (context) => const MassiveMassOutbreakPointerDebugScreen(),
           'mmo-search': (context) => const MMOConnectAndSearchPage(),
           'mmo-search-results': (context) {
