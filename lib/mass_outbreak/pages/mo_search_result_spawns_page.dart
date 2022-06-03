@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mmo_searcher/common/rng/spawn.dart';
 import 'package:mmo_searcher/mass_outbreak/search/rng/path/mo/search.dart';
 import 'package:collection/collection.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/pages/widgets/spawn.dart';

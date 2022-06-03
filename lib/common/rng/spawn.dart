@@ -1,9 +1,7 @@
-import 'package:get_it/get_it.dart';
 import 'package:mmo_searcher/common/rng/xoroshiro.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/meta_data/encounter_slots.dart';
 import 'package:mmo_searcher/num.dart';
 import 'package:mmo_searcher/pokedex/pokedex.dart';
-import 'package:collection/collection.dart';
 
 import 'package:mmo_searcher/pokedex/pokedex_store.dart';
 
@@ -48,12 +46,13 @@ var _mainRng = XOROSHIRO();
 var _mainRngLite = XOROSHIROLite();
 
 class Spawn {
-  static final Spawn DUMMY_ALPHA = Spawn(false, true, [], "", "", pkmn: pokedex[-1]!);
+  static final Spawn DUMMY_ALPHA = Spawn("dummy-alpha", false, true, [], "", "", pkmn: pokedex[-1]!);
   static final UINT = BigInt.from(0xFFFFFFFF);
   static final USHORT = BigInt.from(0xFFFF);
   static final UINT_Lite = 0xFFFFFFFF;
   static final USHORT_Lite = 0xFFFF;
 
+  final String id;
   final bool shiny;
   final bool alpha;
   final List<int> ivs;
@@ -63,7 +62,7 @@ class Spawn {
   final PokedexEntry pkmn;
   final String? form;
 
-  Spawn(this.shiny, this.alpha, this.ivs, this.gender, this.nature, {required this.pkmn, String? this.form}) : evs = ivs.map((e) => _evs[e]).join("");
+  Spawn(this.id, this.shiny, this.alpha, this.ivs, this.gender, this.nature, {required this.pkmn, this.form}) : evs = ivs.map((e) => _evs[e]).join("");
 
   static Spawn fromSeed(BigInt seed, PokedexEntry pkmn, bool alpha, int rolls) {
     _mainRng.reseed(seed);
@@ -112,7 +111,15 @@ class Spawn {
 
     var nature = _natures[_mainRng.rand(BigInt.from(25)).toInt()];
 
-    return Spawn(shiny, alpha, ivs, gender, nature, pkmn: pkmn);
+    return Spawn(
+      [_mainRng.s0, _mainRng.s1].map((e) => e.toHex()).join("|"),
+      shiny,
+      alpha,
+      ivs,
+      gender,
+      nature,
+      pkmn: pkmn,
+    );
   }
 
   static Spawn? fromSeedLite(int seed, PokedexEntry pkmn, bool alpha, int rolls, {int guranteedIVs = -1, bool shinyRequired = false, String? form}) {
@@ -167,7 +174,16 @@ class Spawn {
 
     var nature = _natures[_mainRngLite.rand(25).toInt()];
 
-    return Spawn(shiny, alpha, ivs, gender, nature, pkmn: pkmn, form: form);
+    return Spawn(
+      [_mainRngLite.s0, _mainRngLite.s1].map((e) => e.toHex()).join("|"),
+      shiny,
+      alpha,
+      ivs,
+      gender,
+      nature,
+      pkmn: pkmn,
+      form: form,
+    );
   }
 
   @override
@@ -176,12 +192,15 @@ class Spawn {
   }
 }
 
-enum OutbreakType {
-  massiveMassOutbreak, massOutbreak
-}
+enum OutbreakType { massiveMassOutbreak, massOutbreak }
 
 Spawn? generateSpawnLite(XOROSHIROLite mainRng, XOROSHIROLite spawnerRng, bool spawnedAlpha, PokedexEntry? pkmn,
-    {EncounterTable? encounterTable, bool alphaRequired = false, bool shinyRequired = false, bool debug = false, OutbreakType outbreakType = OutbreakType.massOutbreak, int? rolls}) {
+    {EncounterTable? encounterTable,
+    bool alphaRequired = false,
+    bool shinyRequired = false,
+    bool debug = false,
+    OutbreakType outbreakType = OutbreakType.massOutbreak,
+    int? rolls}) {
   spawnerRng.reseed(mainRng.next());
   mainRng.next();
 
@@ -209,4 +228,3 @@ Spawn? generateSpawnLite(XOROSHIROLite mainRng, XOROSHIROLite spawnerRng, bool s
   );
   return fromSeedLite ?? _default;
 }
-

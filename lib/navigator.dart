@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mmo_searcher/mass_outbreak/search/rng/path/mo/search.dart';
+import 'package:mmo_searcher/massive_mass_outbreak/pages/widgets/spawn.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_path_spawn_info.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/model/mmo_search_results.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -42,6 +43,7 @@ class DefaultAppRouteNavigator implements AppRouteNavigator {
 
   @override
   toMOSearchResults(BuildContext context, List<MassOutbreakResult> matches) {
+    reset();
     Navigator.pushNamed(context, 'mo-search-results', arguments: matches);
   }
 
@@ -57,6 +59,7 @@ class DefaultAppRouteNavigator implements AppRouteNavigator {
 
   @override
   toMMOSearchResults(BuildContext context, List<MMOSearchResults> param) {
+    reset();
     Navigator.pushNamed(context, 'mmo-search-results', arguments: param);
   }
 

@@ -3,6 +3,12 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mmo_searcher/common/rng/spawn.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/pages/widgets/pokemon_sprite.dart';
 
+Map<String, bool> spawnState = {};
+
+void reset() {
+  spawnState = {};
+}
+
 class SpawnDetails extends StatelessWidget {
   final Spawn spawn;
   final bool isRevisit;
@@ -19,13 +25,13 @@ class SpawnDetails extends StatelessWidget {
             padding: const EdgeInsets.only(right: 5),
             child: StatefulBuilder(builder: (context, setState) {
               return GestureDetector(
-                onTap: () => setState(() { checked = !checked; }),
+                onTap: () => setState(() { spawnState[spawn.id] = !(spawnState[spawn.id] ?? false); }),
                 child: PokemonSprite(
                   dexNumber: spawn.pkmn.nationalDexNumber,
                   form: spawn.form,
                   shiny: spawn.shiny,
                   alpha: spawn.alpha,
-                  checked: checked,
+                  checked: spawnState[spawn.id] ?? false,
                   ghost: isRevisit,
                 ),
               );
