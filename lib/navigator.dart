@@ -28,12 +28,12 @@ class DefaultAppRouteNavigator implements AppRouteNavigator {
 
   @override
   toMOSearchResults(BuildContext context, List<MassOutbreakResult> matches) {
-    Navigator.popAndPushNamed(context, 'mo-search-results', arguments: matches);
+    Navigator.pushNamed(context, 'mo-search-results', arguments: matches);
   }
   
   @override
   toMOSearchResultSpawns(BuildContext context, MassOutbreakResult result) {
-    Navigator.popAndPushNamed(context, 'mo-search-result-spawns', arguments: result);
+    Navigator.pushNamed(context, 'mo-search-result-spawns', arguments: result);
   }
 
   @override
