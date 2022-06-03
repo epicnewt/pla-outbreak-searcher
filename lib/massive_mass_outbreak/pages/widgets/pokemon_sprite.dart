@@ -35,7 +35,7 @@ class PokemonSprite extends StatelessWidget {
       ),
       image,
       ...[
-        Container(
+        if (!ghost) Container(
           margin: const EdgeInsets.all(8),
           decoration: const BoxDecoration(color: Color.fromARGB(127, 0, 0, 0), shape: BoxShape.circle),
           width: 40,
@@ -49,7 +49,7 @@ class PokemonSprite extends StatelessWidget {
           ),
         ),
       ].where((element) => checked ?? false),
-      Container(
+      SizedBox(
         width: 56,
         height: 56,
         child: Column(
@@ -57,8 +57,8 @@ class PokemonSprite extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            ...[Container(width: 12, height: 12, child: CustomPaint(painter: AlphaLogoPainter()))].where((element) => alpha),
-            ...[Container(width: 12, height: 12, child: CustomPaint(painter: ShinyLogoPainter()))].where((element) => shiny),
+            ...[SizedBox(width: 12, height: 12, child: CustomPaint(painter: AlphaLogoPainter()))].where((element) => alpha),
+            ...[SizedBox(width: 12, height: 12, child: CustomPaint(painter: ShinyLogoPainter()))].where((element) => shiny),
           ]
               .map((e) => Padding(
                     padding: const EdgeInsets.only(top: 1, bottom: 1),
