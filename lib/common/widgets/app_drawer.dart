@@ -59,13 +59,13 @@ class AppDrawer extends StatelessWidget {
               var info = await PackageInfo.fromPlatform();
 
               showAboutDialog(context: context, applicationName: info.appName, applicationVersion: '${info.version} #${info.buildNumber}', children: [
-                Text("This app provides tools for taking advantage of RNG exploits in Pokémon Legends Arceus"),
-                Text(""),
-                Text("Credit should go to Cappy, Linlon-LM and AdamJ who have researched the methods and pointers that are used by this application."),
-                Text(""),
-                Text("Disclaimer: None of the authors, contributors or anyone else connected with this app, can be held responsible for an damages to your Nintendo Switch or the banning of your system from Nintendo Online services, or any other damages. By using this application you accept these risks."),
-                Text(""),
-                Text("If you find this useful and would like to help support the further development of this app then please feel free to"),
+                const Text("This app provides tools for taking advantage of RNG exploits in Pokémon Legends Arceus"),
+                const Text(""),
+                const Text("Credit should go to Cappy, Linlon-LM and AdamJ who have researched the methods and pointers that are used by this application."),
+                const Text(""),
+                const Text("Disclaimer: None of the authors, contributors or anyone else connected with this app, can be held responsible for an damages to your Nintendo Switch or the banning of your system from Nintendo Online services, or any other damages. By using this application you accept these risks."),
+                const Text(""),
+                const Text("If you find this useful and would like to help support the further development of this app then please feel free to"),
                 GestureDetector(
                   onTap: () async {
                     var url = Uri.parse("https://www.buymeacoffee.com/EpicNewt");
