@@ -4,6 +4,8 @@ import 'package:mmo_searcher/massive_mass_outbreak/meta_data/encounter_slots.dar
 
 import 'package:collection/collection.dart';
 import 'package:mmo_searcher/massive_mass_outbreak/search/mmo_path_generator.dart';
+import 'package:mmo_searcher/pokedex/pokedex.dart';
+import 'package:mmo_searcher/pokedex/pokedex_store.dart';
 
 var _mainRng = XOROSHIROLite();
 var _spawnerRng = XOROSHIROLite();
@@ -30,13 +32,37 @@ class PathSpawnInfo {
   final EncounterTable? bonusTable;
   final MMOPath mmoPath;
   bool Function(Spawn) _filter;
-  late final List<List<Spawn>> pokemon = _generatePokemon();
-  late final List<Spawn> matches = pokemon // remove ghost pokemon
-      .whereIndexed(_isNotGhostSpawnGroup) //
-      .expand((list) => list.where(_filter).toList())
-      .toList();
+  String _rolls = "";
+  List<List<Spawn>> _pokemon = [];
+  List<Spawn> _matches = [];
+  late final entries = pokemon.expand((element) => element).map((e) => e.pkmn).toSet().dexOrder();
 
-  late final List<Tuple3<String, int, List<Spawn>>> summary = (List.generate(
+  bool _hasRollsChanged() {
+    var rolls = (initialTable.slots + (bonusTable?.slots ?? [])).map((e) => e.pkmn).dexOrder().map((e) => PokedexStore.getRolls(e.pokemon)).join("|");
+    if (_rolls != rolls) {
+      _rolls = rolls;
+      return true;
+    }
+    return false;
+  }
+
+  List<List<Spawn>> get pokemon {
+    if (_hasRollsChanged()) {
+      _pokemon = _generatePokemon();
+      _matches = _generateMacthes();
+    }
+    return _pokemon;
+  }
+
+  List<Spawn> get matches {
+    if (_hasRollsChanged()) {
+      _pokemon = _generatePokemon();
+      _matches = _generateMacthes();
+    }
+    return _matches;
+  }
+
+  List<Tuple3<String, int, List<Spawn>>> get summary => (List.generate(
         mmoPath.initialPath.length + 1,
         (index) => (index == 0 //
                 ? Tuple3("I", 0, pokemon[index]) //
@@ -72,6 +98,13 @@ class PathSpawnInfo {
 
   List<List<Spawn>> _generatePokemon() {
     return seedsOfSpawnGroups.mapIndexed((i, group) => group.map((seed) => _fromSeed(seed, i > bonusPathStart)).toList()).toList();
+  }
+
+  List<Spawn> _generateMacthes() {
+    return _pokemon // remove ghost pokemon
+      .whereIndexed(_isNotGhostSpawnGroup) //
+      .expand((list) => list.where(_filter).toList())
+      .toList();
   }
 
   bool _isNotGhostSpawnGroup(int index, dynamic _) =>

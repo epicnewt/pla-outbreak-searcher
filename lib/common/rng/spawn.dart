@@ -221,7 +221,7 @@ Spawn? generateSpawnLite(XOROSHIROLite mainRng, XOROSHIROLite spawnerRng, bool s
     spawnerRng.next(),
     pokedexEntry,
     alpha,
-    rolls ?? PokedexStore.getRolls(pokedexEntry.pokemon) + (outbreakType == OutbreakType.massOutbreak ? 26 : 13),
+    rolls ?? (PokedexStore.getRolls(pokedexEntry.pokemon) + (outbreakType == OutbreakType.massOutbreak ? 26 : 13)),
     shinyRequired: shinyRequired,
     guranteedIVs: guarateedIVs,
     form: encounterSlot.form,
